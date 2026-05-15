@@ -38,7 +38,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/otp/verify', [OtpController::class, 'verify'])->name('otp.verify');
     Route::post('/otp/resend', [OtpController::class, 'resend'])->name('otp.resend');
 
-    // Parties (joueur)
+    // Parties
     Route::post('/parties', [PartieController::class, 'store'])->name('parties.store');
     Route::get('/parties/{partie}', [PartieController::class, 'show'])->name('parties.show');
     Route::get('/parties', [PartieController::class, 'index'])->name('parties.index');
@@ -47,15 +47,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/parties/{partie}/enigme', [ProgressionController::class, 'getCurrentEnigme'])->name('progression.enigme');
     Route::post('/parties/{partie}/progression', [ProgressionController::class, 'store'])->name('progression.store');
 
-    // Validation GPS
+    // GPS validation
     Route::post('/lieux/{lieu}/valider', [GPSValidationController::class, 'validatePosition'])->name('gps.valider');
 
-    /*
-|--------------------------------------------------------------------------
-| ROUTES ADMIN ENIGMES
-|--------------------------------------------------------------------------
-| Groupe de routes dédié au CRUD des énigmes
-*/
+    // Admin énigmes
     Route::prefix('/CreateEnigmes')->group(function () {
         Route::get('/', [EnigmeController::class, 'index'])->name('enigmes.index');
         Route::get('/create', [EnigmeController::class, 'create'])->name('enigmes.create');
@@ -65,14 +60,5 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{enigme}', [EnigmeController::class, 'destroy'])->name('enigmes.destroy');
     });
 });
-
-// Pages Légales
-Route::get('/cgu', function () {
-    return Inertia::render('Legal/CGU');
-})->name('legal.cgu');
-
-Route::get('/politique-confidentialite', function () {
-    return Inertia::render('Legal/Privacy');
-})->name('legal.privacy');
 
 require __DIR__ . '/auth.php';

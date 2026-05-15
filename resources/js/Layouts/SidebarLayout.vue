@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import { Link } from "@inertiajs/vue3";
+import Toast from 'primevue/toast';
 // import Button from "primevue/button";
 
 // Import du logo
@@ -32,6 +33,7 @@ const toggleSidebar = () => {
 </script>
 
 <template>
+    <Toast />
 
     <!-- Bouton Mobile -->
     <button

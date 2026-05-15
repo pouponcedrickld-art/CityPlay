@@ -6,12 +6,13 @@
 */
 import SidebarLayout from '@/Layouts/SidebarLayout.vue';
 import { router, Head } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
+import { useToast } from 'primevue/usetoast';
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +23,18 @@ const props = defineProps({
     enigmes: {
         type: Array,
         default: () => []
+    },
+    flash: Object
+});
+
+const toast = useToast();
+
+onMounted(() => {
+    if (props.flash?.success) {
+        toast.add({ severity: 'success', summary: 'Succès', detail: props.flash.success, life: 3000 });
+    }
+    if (props.flash?.error) {
+        toast.add({ severity: 'error', summary: 'Erreur', detail: props.flash.error, life: 3000 });
     }
 });
 
