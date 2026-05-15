@@ -9,6 +9,8 @@ class PhotoLieu extends Model
 {
     use HasFactory;
 
+    protected $table = 'photo_lieus'; // ← forcer le nom
+
     protected $fillable = ['lieu_id', 'url', 'alt_text', 'ordre'];
 
     public function lieu()
