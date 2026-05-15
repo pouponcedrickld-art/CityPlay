@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from "vue";
+import { Link } from "@inertiajs/vue3";
 // import Button from "primevue/button";
 
 // Import du logo
@@ -9,12 +10,12 @@ const visible = ref(false);
 const activeLabel = ref("Tableau de bord");
 
 const menuItems = [
-    { label: "Tableau de bord", icon: "pi pi-th-large" },
-    { label: "Chasses au trésor", icon: "pi pi-map-marker" },
-    { label: "Énigmes", icon: "pi pi-box" },
-    { label: "Joueurs", icon: "pi pi-users" },
-    { label: "Statistiques", icon: "pi pi-chart-bar" },
-    { label: "Paramètres", icon: "pi pi-cog" },
+    { label: "Tableau de bord", icon: "pi pi-th-large", route: "dashboard" },
+    { label: "Chasses au trésor", icon: "pi pi-map-marker", route: "dashboard" },
+    { label: "Énigmes", icon: "pi pi-box", route: "enigmes.index" },
+    { label: "Joueurs", icon: "pi pi-users", route: "dashboard" },
+    { label: "Statistiques", icon: "pi pi-chart-bar", route: "dashboard" },
+    { label: "Paramètres", icon: "pi pi-cog", route: "dashboard" },
 ];
 
 const setActive = (item) => {
@@ -110,9 +111,10 @@ const toggleSidebar = () => {
             <nav
                 class="flex-1 px-3 sm:px-4 py-6 sm:py-8 space-y-2 overflow-y-auto custom-scrollbar"
             >
-                <div
+                <Link
                     v-for="item in menuItems"
                     :key="item.label"
+                    :href="route(item.route)"
                     @click="setActive(item)"
                     class="nav-item group"
                     :class="[
@@ -133,7 +135,7 @@ const toggleSidebar = () => {
                     >
                         {{ item.label }}
                     </span>
-                </div>
+                </Link>
             </nav>
 
         </div>

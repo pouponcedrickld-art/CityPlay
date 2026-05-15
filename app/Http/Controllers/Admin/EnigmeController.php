@@ -4,63 +4,94 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Enigme;
+use App\Models\Lieu;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class EnigmeController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Affiche la liste des énigmes.
      */
     public function index()
     {
-        //
+        return Inertia::render('Admin/Enigmes/Index', [
+            // On récupère les énigmes avec la relation lieu pour l'affichage
+            'enigmes' => Enigme::with('lieu')->latest()->get(),
+        ]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Affiche le formulaire de création d'une nouvelle énigme.
      */
     public function create()
     {
-        //
+        return Inertia::render('Admin/Enigmes/Create', [
+            // On envoie la liste des lieux pour le select du formulaire
+            'lieux' => Lieu::select('id', 'nom')->get(),
+            'types' => ['force1', 'force2', 'force3', 'enfant']
+        ]);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Enregistre une nouvelle énigme en base de données.
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'lieu_id'   => 'required|exists:lieux,id',
+            'type'      => 'required|in:force1,force2,force3,enfant',
+            'titre'     => 'required|string|max:255',
+            'texte'     => 'required|string|min:5',
+            'points'    => 'required|integer|min:0',
+            'image_url' => 'nullable|url',
+            'actif'     => 'boolean',
+        ]);
+
+        Enigme::create($data);
+
+        return redirect()->route('enigmes.index')->with('success', 'Énigme créée avec succès !');
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(Enigme $enigme)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
+     * Affiche le formulaire d'édition d'une énigme existante.
      */
     public function edit(Enigme $enigme)
     {
-        //
+        return Inertia::render('Admin/Enigmes/Edit', [
+            'enigme' => $enigme,
+            'lieux'  => Lieu::select('id', 'nom')->get(),
+            'types'  => ['force1', 'force2', 'force3', 'enfant']
+        ]);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Met à jour une énigme en base de données.
      */
     public function update(Request $request, Enigme $enigme)
     {
-        //
+        $data = $request->validate([
+            'lieu_id'   => 'required|exists:lieux,id',
+            'type'      => 'required|in:force1,force2,force3,enfant',
+            'titre'     => 'required|string|max:255',
+            'texte'     => 'required|string|min:5',
+            'points'    => 'required|integer|min:0',
+            'image_url' => 'nullable|url',
+            'actif'     => 'boolean',
+        ]);
+
+        $enigme->update($data);
+
+        return redirect()->route('enigmes.index')->with('success', 'Énigme mise à jour avec succès !');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Supprime une énigme de la base de données.
      */
     public function destroy(Enigme $enigme)
     {
-        //
+        $enigme->delete();
+
+        return redirect()->route('enigmes.index')->with('success', 'Énigme supprimée avec succès !');
     }
 }

@@ -14,7 +14,9 @@ return new class extends Migration {
                 ->onDelete('cascade');
 
             $table->enum('type', ['force1', 'force2', 'force3', 'enfant']);
+            $table->string('titre')->nullable();
             $table->text('texte');
+            $table->integer('points')->default(0);
             $table->string('image_url')->nullable();
             $table->boolean('actif')->default(true);
             $table->timestamps();

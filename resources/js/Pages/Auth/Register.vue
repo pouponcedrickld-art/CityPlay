@@ -4,13 +4,17 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import Checkbox from '@/Components/Checkbox.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const form = useForm({
     name: '',
+    pseudo: '',
     email: '',
     password: '',
     password_confirmation: '',
+    consent_cgu: false,
+    consent_donnees: false,
 });
 
 const submit = () => {
@@ -39,6 +43,21 @@ const submit = () => {
                 />
 
                 <InputError class="mt-2" :message="form.errors.name" />
+            </div>
+
+            <div class="mt-4">
+                <InputLabel for="pseudo" value="Pseudo" />
+
+                <TextInput
+                    id="pseudo"
+                    type="text"
+                    class="mt-1 block w-full"
+                    v-model="form.pseudo"
+                    required
+                    autocomplete="nickname"
+                />
+
+                <InputError class="mt-2" :message="form.errors.pseudo" />
             </div>
 
             <div class="mt-4">
@@ -90,6 +109,28 @@ const submit = () => {
                     class="mt-2"
                     :message="form.errors.password_confirmation"
                 />
+            </div>
+
+            <!-- Accept CGU -->
+            <div class="mt-4">
+                <label class="flex items-center">
+                    <Checkbox name="consent_cgu" v-model:checked="form.consent_cgu" required />
+                    <span class="ms-2 text-sm text-gray-600">
+                        J'accepte les <Link :href="route('legal.cgu')" class="underline hover:text-gray-900" target="_blank">Conditions Générales d'Utilisation</Link>
+                    </span>
+                </label>
+                <InputError class="mt-2" :message="form.errors.consent_cgu" />
+            </div>
+
+            <!-- Accept Privacy Policy -->
+            <div class="mt-4">
+                <label class="flex items-center">
+                    <Checkbox name="consent_donnees" v-model:checked="form.consent_donnees" required />
+                    <span class="ms-2 text-sm text-gray-600">
+                        J'accepte la <Link :href="route('legal.privacy')" class="underline hover:text-gray-900" target="_blank">Politique de Confidentialité</Link> et le traitement de mes données
+                    </span>
+                </label>
+                <InputError class="mt-2" :message="form.errors.consent_donnees" />
             </div>
 
             <div class="mt-4 flex items-center justify-end">

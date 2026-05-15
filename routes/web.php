@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\EnigmeController;
 use App\Http\Controllers\OtpController;
 use App\Http\Controllers\PartieController;
 use App\Http\Controllers\ProgressionController;
@@ -49,6 +50,29 @@ Route::middleware('auth')->group(function () {
     // Validation GPS
     Route::post('/lieux/{lieu}/valider', [GPSValidationController::class, 'validatePosition'])->name('gps.valider');
 
+    /*
+|--------------------------------------------------------------------------
+| ROUTES ADMIN ENIGMES
+|--------------------------------------------------------------------------
+| Groupe de routes dédié au CRUD des énigmes
+*/
+    Route::prefix('/CreateEnigmes')->group(function () {
+        Route::get('/', [EnigmeController::class, 'index'])->name('enigmes.index');
+        Route::get('/create', [EnigmeController::class, 'create'])->name('enigmes.create');
+        Route::post('/', [EnigmeController::class, 'store'])->name('enigmes.store');
+        Route::get('/{enigme}/edit', [EnigmeController::class, 'edit'])->name('enigmes.edit');
+        Route::put('/{enigme}', [EnigmeController::class, 'update'])->name('enigmes.update');
+        Route::delete('/{enigme}', [EnigmeController::class, 'destroy'])->name('enigmes.destroy');
+    });
 });
+
+// Pages Légales
+Route::get('/cgu', function () {
+    return Inertia::render('Legal/CGU');
+})->name('legal.cgu');
+
+Route::get('/politique-confidentialite', function () {
+    return Inertia::render('Legal/Privacy');
+})->name('legal.privacy');
 
 require __DIR__ . '/auth.php';
