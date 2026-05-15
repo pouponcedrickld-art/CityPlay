@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('enigmes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('lieu_id')
-                ->constrained('lieux')        // ← Important : on référence 'lieux'
+                ->constrained('lieux') // ← Important : on référence 'lieux'
                 ->onDelete('cascade');
 
             $table->enum('type', ['force1', 'force2', 'force3', 'enfant']);

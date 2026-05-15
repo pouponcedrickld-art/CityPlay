@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->integer('duree_vie_lien_heures')->default(24);
             $table->json('messages')->nullable();
             $table->json('regles')->nullable();
-            $table->boolean('actif')->default(true);        // ← Colonne manquante
+            $table->boolean('actif')->default(true);  // ← Colonne manquante(si il a accepte ou non les cgu)
             $table->timestamps();
 
             $table->unique(['ville_id', 'nom']);
