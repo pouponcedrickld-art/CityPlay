@@ -5,15 +5,29 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { useForm, Head, Link } from '@inertiajs/vue3';
+import { onMounted } from 'vue';
+import { useToast } from 'primevue/usetoast';
 
-defineProps({
+const toast = useToast();
+
+const props = defineProps({
     canResetPassword: {
         type: Boolean,
     },
     status: {
         type: String,
     },
+    flash: Object
+});
+
+onMounted(() => {
+    if (props.flash?.success) {
+        toast.add({ severity: 'success', summary: 'Succès', detail: props.flash.success, life: 3000 });
+    }
+    if (props.flash?.error) {
+        toast.add({ severity: 'error', summary: 'Erreur', detail: props.flash.error, life: 3000 });
+    }
 });
 
 const form = useForm({

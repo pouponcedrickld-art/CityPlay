@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <template>
   <AdminLayout>
     <template #breadcrumb>
@@ -270,3 +271,22 @@ const doughnutOptions = {
   background: #ebf8ff;
 }
 </style>
+=======
+<script setup>
+import SidebarLayout from '@/Layouts/SidebarLayout.vue';
+
+</script>
+
+
+<template>
+
+
+
+</template>
+
+
+<style scoped>
+
+
+</style>
+>>>>>>> 3cf28890aa88709638185e3d8842f9dcc479aed2

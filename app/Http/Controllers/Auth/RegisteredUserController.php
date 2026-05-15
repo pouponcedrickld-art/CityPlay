@@ -55,7 +55,7 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        // Rediriger vers la page de vérification OTP
-        return redirect()->route('otp.show');
+        // Rediriger vers la page de vérification OTP avec un message flash
+        return redirect()->route('otp.show')->with('success', 'Votre compte a été créé avec succès ! Veuillez vérifier votre code OTP.');
     }
 }

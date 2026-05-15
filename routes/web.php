@@ -44,7 +44,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/otp/verify', [OtpController::class, 'verify'])->name('otp.verify');
     Route::post('/otp/resend', [OtpController::class, 'resend'])->name('otp.resend');
 
-    // Parties (joueur)
+    // Parties
     Route::post('/parties', [PartieController::class, 'store'])->name('parties.store');
     Route::get('/parties/{partie}', [PartieController::class, 'show'])->name('parties.show');
     Route::get('/parties', [PartieController::class, 'index'])->name('parties.index');
@@ -53,9 +53,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/parties/{partie}/enigme', [ProgressionController::class, 'getCurrentEnigme'])->name('progression.enigme');
     Route::post('/parties/{partie}/progression', [ProgressionController::class, 'store'])->name('progression.store');
 
-    // Validation GPS
+    // GPS validation
     Route::post('/lieux/{lieu}/valider', [GPSValidationController::class, 'validatePosition'])->name('gps.valider');
 
+    // Admin énigmes
+    Route::prefix('/CreateEnigmes')->group(function () {
+        Route::get('/', [EnigmeController::class, 'index'])->name('enigmes.index');
+        Route::get('/create', [EnigmeController::class, 'create'])->name('enigmes.create');
+        Route::post('/', [EnigmeController::class, 'store'])->name('enigmes.store');
+        Route::get('/{enigme}/edit', [EnigmeController::class, 'edit'])->name('enigmes.edit');
+        Route::put('/{enigme}', [EnigmeController::class, 'update'])->name('enigmes.update');
+        Route::delete('/{enigme}', [EnigmeController::class, 'destroy'])->name('enigmes.destroy');
+    });
 });
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
