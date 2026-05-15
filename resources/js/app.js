@@ -11,8 +11,7 @@ import Aura from '@primevue/themes/aura';
 import ConfirmationService from 'primevue/confirmationservice';
 import ToastService from 'primevue/toastservice';
 
-import PrimeVue from 'primevue/config';
-import ToastService from 'primevue/toastservice';
+
 
 // PRIME ICONS
 import 'primeicons/primeicons.css';
