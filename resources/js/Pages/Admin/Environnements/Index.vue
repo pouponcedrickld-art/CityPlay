@@ -11,7 +11,33 @@
       </Link>
     </div>
 
-    <DataTable :value="environnements" stripedRows class="crud-table">
+    <DataTable 
+      v-model:filters="filters"
+      :value="environnements" 
+      stripedRows 
+      class="crud-table"
+      :paginator="true"
+      :rows="10"
+      dataKey="id"
+      filterDisplay="menu"
+      :globalFilterFields="['nom', 'ville.nom']"
+    >
+      <template #header>
+        <div class="flex justify-between items-center">
+          <span class="p-input-icon-left">
+            <i class="pi pi-search" />
+            <InputText v-model="filters['global'].value" placeholder="Recherche..." class="p-inputtext-sm" />
+          </span>
+          <Button type="button" icon="pi pi-filter-slash" label="Effacer" outlined size="small" @click="clearFilter()" />
+        </div>
+      </template>
+
+      <template #empty>
+        <div class="py-4 text-center text-gray-500">
+          Aucun environnement trouvé.
+        </div>
+      </template>
+
       <Column field="ville.nom" header="Ville" sortable />
       <Column field="nom" header="Nom" sortable />
       <Column field="lieux_count" header="Lieux" style="width:80px" />
@@ -36,17 +62,33 @@
 </template>
 
 <script setup>
-import { useForm } from '@inertiajs/vue3'
+import { ref } from 'vue'
+import { useForm, Link } from '@inertiajs/vue3'
 import { useConfirm } from 'primevue/useconfirm'
-import { Link } from '@inertiajs/vue3'
 import AdminLayout from '@/Pages/Admin/Layouts/AdminLayout.vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Button from 'primevue/button'
+import InputText from 'primevue/inputtext'
 import Breadcrumb from 'primevue/breadcrumb'
 import ConfirmDialog from 'primevue/confirmdialog'
+import { FilterMatchMode } from '@primevue/core/api'
 
 defineProps({ environnements: Array, villes: Array })
+
+const filters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  nom: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  'ville.nom': { value: null, matchMode: FilterMatchMode.CONTAINS }
+})
+
+const clearFilter = () => {
+  filters.value = {
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    nom: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    'ville.nom': { value: null, matchMode: FilterMatchMode.CONTAINS }
+  }
+}
 
 const confirm = useConfirm()
 

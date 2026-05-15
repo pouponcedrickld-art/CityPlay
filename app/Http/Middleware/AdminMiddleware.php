@@ -15,7 +15,19 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-         if (!$request->user() || (!$request->user()->is_admin && !$request->user()->hasRole('admin'))) {
+        $user = $request->user();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        \Illuminate\Support\Facades\Log::info('Admin access check', [
+            'email' => $user->email,
+            'is_admin' => $user->is_admin,
+            'has_role_admin' => $user->hasRole('admin')
+        ]);
+
+        if (!$user->is_admin && !$user->hasRole('admin')) {
             abort(403, 'Accès réservé aux administrateurs.');
         }
 

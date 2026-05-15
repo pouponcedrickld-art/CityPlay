@@ -10,7 +10,33 @@
     </div>
 
     <!-- Table des villes -->
-    <DataTable :value="villes" stripedRows class="crud-table">
+    <DataTable 
+      v-model:filters="filters"
+      :value="villes" 
+      stripedRows 
+      class="crud-table"
+      :paginator="true"
+      :rows="10"
+      dataKey="id"
+      filterDisplay="menu"
+      :globalFilterFields="['nom']"
+    >
+      <template #header>
+        <div class="flex justify-between items-center">
+          <span class="p-input-icon-left">
+            <i class="pi pi-search" />
+            <InputText v-model="filters['global'].value" placeholder="Recherche..." class="p-inputtext-sm" />
+          </span>
+          <Button type="button" icon="pi pi-filter-slash" label="Effacer" outlined size="small" @click="clearFilter()" />
+        </div>
+      </template>
+
+      <template #empty>
+        <div class="py-4 text-center text-gray-500">
+          Aucune ville trouvée.
+        </div>
+      </template>
+
       <Column field="nom" header="Nom" sortable />
       <Column field="environnements_count" header="Environnements" style="width:160px" />
       <Column header="Actions" style="width:120px">
@@ -57,10 +83,23 @@ import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import Breadcrumb from 'primevue/breadcrumb'
 import ConfirmDialog from 'primevue/confirmdialog'
+import { FilterMatchMode } from '@primevue/core/api'
 
 const props = defineProps({
   villes: Array,
 })
+
+const filters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  nom: { value: null, matchMode: FilterMatchMode.CONTAINS }
+})
+
+const clearFilter = () => {
+  filters.value = {
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    nom: { value: null, matchMode: FilterMatchMode.CONTAINS }
+  }
+}
 
 const confirm = useConfirm()
 const dialogVisible = ref(false)

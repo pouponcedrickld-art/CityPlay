@@ -10,56 +10,140 @@
       </div>
 
       <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr class="bg-gray-50 border-bottom border-gray-100">
-              <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">ID</th>
-              <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Environnement</th>
-              <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Créateur</th>
-              <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Mode</th>
-              <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Statut</th>
-              <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
-              <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-100">
-            <tr v-for="partie in parties" :key="partie.id" class="hover:bg-gray-50 transition-colors">
-              <td class="px-6 py-4 text-sm font-medium text-gray-900">#{{ partie.id }}</td>
-              <td class="px-6 py-4 text-sm text-gray-600">{{ partie.environnement?.nom }}</td>
-              <td class="px-6 py-4 text-sm text-gray-600">{{ partie.createur?.name }}</td>
-              <td class="px-6 py-4 text-sm text-gray-600 uppercase">{{ partie.mode }}</td>
-              <td class="px-6 py-4">
-                <span :class="getStatusClass(partie.statut)" class="px-2 py-1 rounded-full text-xs font-semibold">
-                  {{ partie.statut }}
-                </span>
-              </td>
-              <td class="px-6 py-4 text-sm text-gray-500">
-                {{ new Date(partie.created_at).toLocaleDateString() }}
-              </td>
-              <td class="px-6 py-4 text-right">
-                <button 
-                  @click="deletePartie(partie)"
-                  class="p-2 text-gray-400 hover:text-red-600 transition-colors"
-                  title="Supprimer"
-                >
-                  <i class="pi pi-trash"></i>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <DataTable
+          v-model:filters="filters"
+          :value="parties"
+          :paginator="true"
+          :rows="10"
+          dataKey="id"
+          responsiveLayout="scroll"
+          stripedRows
+          class="p-datatable-sm"
+          paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+          currentPageReportTemplate="Affichage de {first} à {last} sur {totalRecords} parties"
+          :globalFilterFields="['id', 'environnement.nom', 'createur.name', 'mode', 'statut']"
+          filterDisplay="menu"
+        >
+          <template #header>
+            <div class="flex justify-between items-center">
+              <span class="p-input-icon-left">
+                <i class="pi pi-search" />
+                <InputText v-model="filters['global'].value" placeholder="Recherche globale..." class="p-inputtext-sm" />
+              </span>
+              <Button type="button" icon="pi pi-filter-slash" label="Effacer" outlined size="small" @click="clearFilter()" />
+            </div>
+          </template>
+
+          <template #empty>
+            <div class="py-8 text-center text-gray-500">
+              <i class="pi pi-play text-4xl mb-3 block" />
+              <p>Aucune partie trouvée.</p>
+            </div>
+          </template>
+
+          <Column field="id" header="ID" sortable>
+            <template #body="{ data }">
+              <span class="font-medium text-gray-900">#{{ data.id }}</span>
+            </template>
+          </Column>
+
+          <Column header="Environnement" sortable field="environnement.nom">
+            <template #body="{ data }">
+              {{ data.environnement?.nom }}
+            </template>
+          </Column>
+
+          <Column header="Créateur" sortable field="createur.name">
+            <template #body="{ data }">
+              {{ data.createur?.name }}
+            </template>
+          </Column>
+
+          <Column field="mode" header="Mode" sortable :showFilterMatchModes="false">
+            <template #body="{ data }">
+              <span class="uppercase text-xs font-medium">{{ data.mode }}</span>
+            </template>
+            <template #filter="{ filterModel, filterCallback }">
+              <Dropdown v-model="filterModel.value" @change="filterCallback()" :options="modes" placeholder="Sélectionner" class="p-column-filter" :showClear="true" />
+            </template>
+          </Column>
+
+          <Column field="statut" header="Statut" sortable :showFilterMatchModes="false">
+            <template #body="{ data }">
+              <span :class="getStatusClass(data.statut)" class="px-2 py-1 rounded-full text-xs font-semibold">
+                {{ data.statut }}
+              </span>
+            </template>
+            <template #filter="{ filterModel, filterCallback }">
+              <Dropdown v-model="filterModel.value" @change="filterCallback()" :options="statuts" placeholder="Sélectionner" class="p-column-filter" :showClear="true" />
+            </template>
+          </Column>
+
+          <Column header="Date" sortable field="created_at">
+            <template #body="{ data }">
+              {{ new Date(data.created_at).toLocaleDateString() }}
+            </template>
+          </Column>
+
+          <Column header="Actions" class="text-right">
+            <template #body="{ data }">
+              <Button
+                icon="pi pi-trash"
+                text
+                rounded
+                severity="danger"
+                @click="confirmDelete(data)"
+                v-tooltip.top="'Supprimer'"
+              />
+            </template>
+          </Column>
+        </DataTable>
       </div>
     </div>
+
+    <ConfirmDialog />
   </AdminLayout>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { router } from '@inertiajs/vue3'
 import AdminLayout from '@/Pages/Admin/Layouts/AdminLayout.vue'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
+import Button from 'primevue/button'
+import InputText from 'primevue/inputtext'
+import Dropdown from 'primevue/dropdown'
+import ConfirmDialog from 'primevue/confirmdialog'
+import { useConfirm } from 'primevue/useconfirm'
+import { FilterMatchMode } from '@primevue/core/api'
 
 defineProps({
   parties: Array
 })
+
+const filters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  'environnement.nom': { value: null, matchMode: FilterMatchMode.CONTAINS },
+  'createur.name': { value: null, matchMode: FilterMatchMode.CONTAINS },
+  mode: { value: null, matchMode: FilterMatchMode.EQUALS },
+  statut: { value: null, matchMode: FilterMatchMode.EQUALS }
+})
+
+const modes = ref(['solo', 'team', 'famille'])
+const statuts = ref(['en_cours', 'terminee', 'pause'])
+
+const clearFilter = () => {
+  filters.value = {
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    'environnement.nom': { value: null, matchMode: FilterMatchMode.CONTAINS },
+    'createur.name': { value: null, matchMode: FilterMatchMode.CONTAINS },
+    mode: { value: null, matchMode: FilterMatchMode.EQUALS },
+    statut: { value: null, matchMode: FilterMatchMode.EQUALS }
+  }
+}
+
+const confirm = useConfirm()
 
 const getStatusClass = (statut) => {
   switch (statut) {
@@ -70,9 +154,17 @@ const getStatusClass = (statut) => {
   }
 }
 
-const deletePartie = (partie) => {
-  if (confirm(`Êtes-vous sûr de vouloir supprimer la partie #${partie.id} ?`)) {
-    router.delete(route('admin.parties.destroy', partie.id))
-  }
+const confirmDelete = (partie) => {
+  confirm.require({
+    message: `Êtes-vous sûr de vouloir supprimer la partie #${partie.id} ?`,
+    header: 'Confirmation de suppression',
+    icon: 'pi pi-exclamation-triangle',
+    acceptLabel: 'Supprimer',
+    rejectLabel: 'Annuler',
+    acceptClass: 'p-button-danger',
+    accept: () => {
+      router.delete(route('admin.parties.destroy', partie.id))
+    }
+  })
 }
 </script>
