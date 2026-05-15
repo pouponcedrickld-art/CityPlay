@@ -1,10 +1,15 @@
 import '../css/app.css';
 import './bootstrap';
+import 'primeicons/primeicons.css';
 
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
+import PrimeVue from 'primevue/config';
+import Aura from '@primevue/themes/aura';
+import ConfirmationService from 'primevue/confirmationservice';
+import ToastService from 'primevue/toastservice';
 
 import PrimeVue from 'primevue/config';
 import ToastService from 'primevue/toastservice';
@@ -29,7 +34,17 @@ createInertiaApp({
         })
             .use(plugin)
             .use(ZiggyVue)
-            .use(PrimeVue) // AJOUT IMPORTANT
+            .use(PrimeVue, {
+                theme: {
+                    preset: Aura,
+                    options: {
+                        prefix: 'p',
+                        darkModeSelector: '.my-app-dark',
+                        cssLayer: false
+                    }
+                }
+            })
+            .use(ConfirmationService)
             .use(ToastService)
             .mount(el);
     },
@@ -37,4 +52,4 @@ createInertiaApp({
     progress: {
         color: '#4B5563',
     },
-}); 
+});

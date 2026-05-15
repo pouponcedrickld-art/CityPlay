@@ -10,6 +10,10 @@ class EnigmeSeeder extends Seeder
 {
     public function run(): void
     {
+<<<<<<< HEAD
+        // Les énigmes sont déjà créées par LieuSeeder
+        // Ce seeder est conservé pour la structure mais n'ajoute rien
+=======
         $lieux = Lieu::all();
 
         foreach ($lieux as $lieu) {
@@ -40,5 +44,6 @@ class EnigmeSeeder extends Seeder
                 'image_url' => null,
             ]);
         }
+>>>>>>> 3cf28890aa88709638185e3d8842f9dcc479aed2
     }
 }

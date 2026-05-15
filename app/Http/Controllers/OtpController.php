@@ -20,9 +20,13 @@ class OtpController extends Controller
      */
     public function show()
     {
-        // Si déjà vérifié, rediriger vers dashboard
-        if ($this->otpService->estVerifie(auth()->user())) {
-            return redirect()->route('player.dashboard');
+        $user = auth()->user();
+        // Si déjà vérifié, rediriger vers le dashboard approprié
+        if ($this->otpService->estVerifie($user)) {
+            if ($user->is_admin || $user->hasRole('admin')) {
+                return redirect()->route('admin.dashboard');
+            }
+            return redirect()->route('dashboard');
         }
 
         return Inertia::render('Auth/OTPVerify');
@@ -46,7 +50,12 @@ class OtpController extends Controller
             ]);
         }
 
-        return redirect()->route('player.dashboard')
+        if ($user->is_admin || $user->hasRole('admin')) {
+            return redirect()->route('admin.dashboard')
+                ->with('success', 'Compte admin vérifié avec succès !');
+        }
+
+        return redirect()->route('dashboard')
             ->with('success', 'Compte vérifié avec succès !');
     }
 

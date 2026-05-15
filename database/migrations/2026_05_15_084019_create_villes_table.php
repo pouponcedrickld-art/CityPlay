@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('villes', function (Blueprint $table) {
             $table->id();
             $table->string('nom', 150)->unique();
-            $table->string('slug')->unique();           // ← Ajout du slug
+            $table->string('slug')->unique();  
             $table->text('description')->nullable();
             $table->timestamps();
         });
