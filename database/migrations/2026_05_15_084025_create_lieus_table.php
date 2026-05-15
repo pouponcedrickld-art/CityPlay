@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->string('nom', 150);
             $table->decimal('latitude', 10, 8);
             $table->decimal('longitude', 11, 8);
-            $table->integer('rayon_metres')->default(50);
+            $table->integer('rayon_metres')->default(5);
             $table->string('description', 500);
             $table->boolean('actif')->default(true);
             $table->timestamps();
