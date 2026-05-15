@@ -19,6 +19,9 @@ class Environnement extends Model
         'message_mauvaise_reponse',
         'message_fin',
         'message_pause',
+        'lien_restauration',
+        'lien_boutique',
+        'lien_notation',
     ];
 
     protected $casts = [

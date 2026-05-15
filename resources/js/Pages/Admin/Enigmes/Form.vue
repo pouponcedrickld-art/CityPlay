@@ -105,7 +105,7 @@ const newImageFile = ref(null)
 const newImagePreview = ref(null)
 
 const currentImageUrl = computed(() =>
-  props.enigme?.image_path ? `/storage/${props.enigme.image_path}` : null
+  props.enigme?.image_url ? `/storage/${props.enigme.image_url}` : null
 )
 
 const form = useForm({

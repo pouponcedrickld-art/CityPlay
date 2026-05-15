@@ -27,14 +27,19 @@
 
         <div class="nav-section-title">Gestion</div>
 
-        <Link href="#" class="nav-item" :class="{ active: isActive('admin.stats') }">
-          <i class="pi pi-chart-bar" />
-          <span>Statistiques</span>
-        </Link>
-
-        <Link href="#" class="nav-item" :class="{ active: isActive('admin.users') }">
+        <Link :href="route('admin.users.index')" class="nav-item" :class="{ active: isActive('admin.users') }">
           <i class="pi pi-users" />
           <span>Utilisateurs</span>
+        </Link>
+
+        <Link :href="route('admin.parties.index')" class="nav-item" :class="{ active: isActive('admin.parties') }">
+          <i class="pi pi-play" />
+          <span>Parties</span>
+        </Link>
+
+        <Link :href="route('admin.teams.index')" class="nav-item" :class="{ active: isActive('admin.teams') }">
+          <i class="pi pi-users" />
+          <span>Équipes</span>
         </Link>
       </nav>
     </aside>
@@ -77,7 +82,10 @@ import Button from 'primevue/button'
 const page = usePage()
 
 const isActive = (routeName) => {
-  return page.url.startsWith('/' + routeName.replace('admin.', 'admin/').replace('.', '/'))
+  // Supprime le ".index" pour la comparaison de base
+  const baseRoute = routeName.endsWith('.index') ? routeName.slice(0, -6) : routeName;
+  const currentRoute = route().current();
+  return currentRoute && currentRoute.startsWith(baseRoute);
 }
 
 const logout = () => {

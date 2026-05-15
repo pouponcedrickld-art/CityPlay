@@ -40,7 +40,7 @@
 
         <div class="lieu-actions">
           <Link :href="route('admin.enigmes.index', lieu.id)">
-            <Button icon="pi pi-lightbulb" v-tooltip="'Gérer les énigmes'" text rounded severity="secondary" />
+            <Button icon="pi pi-lightbulb" label="Énigmes" size="small" outlined severity="secondary" />
           </Link>
           <Link :href="route('admin.lieux.edit', [environnement.id, lieu.id])">
             <Button icon="pi pi-pencil" text rounded severity="secondary" />

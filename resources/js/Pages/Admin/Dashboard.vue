@@ -45,6 +45,40 @@
             <div class="stat-label">Énigmes</div>
           </div>
         </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#fff5f5;color:#c53030">
+            <i class="pi pi-users" />
+          </div>
+          <div>
+            <div class="stat-value">{{ stats.users }}</div>
+            <div class="stat-label">Utilisateurs</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#e6fffa;color:#2c7a7b">
+            <i class="pi pi-play" />
+          </div>
+          <div>
+            <div class="stat-value">{{ stats.parties }}</div>
+            <div class="stat-label">Parties</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="charts-section">
+        <div class="chart-container">
+          <h2 class="section-title">Inscriptions (7 derniers jours)</h2>
+          <div class="chart-wrapper">
+            <Line :data="inscriptionsData" :options="lineOptions" />
+          </div>
+        </div>
+        <div class="chart-container">
+          <h2 class="section-title">Parties par ville</h2>
+          <div class="chart-wrapper">
+            <Doughnut :data="partiesData" :options="doughnutOptions" />
+          </div>
+        </div>
       </div>
 
       <!-- Quick actions -->
@@ -63,6 +97,14 @@
             <i class="pi pi-list" />
             <span>Voir tous les environnements</span>
           </Link>
+          <Link :href="route('admin.users.index')" class="action-card">
+            <i class="pi pi-users" />
+            <span>Gérer les utilisateurs</span>
+          </Link>
+          <Link :href="route('admin.parties.index')" class="action-card">
+            <i class="pi pi-play" />
+            <span>Surveiller les parties</span>
+          </Link>
         </div>
       </div>
     </div>
@@ -70,25 +112,89 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { Link } from '@inertiajs/vue3'
 import AdminLayout from '@/Pages/Admin/Layouts/AdminLayout.vue'
+import { Line, Doughnut } from 'vue-chartjs'
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  LineElement,
+  LinearScale,
+  PointElement,
+  CategoryScale,
+  ArcElement
+} from 'chart.js'
 
-defineProps({
-  stats: {
-    type: Object,
-    default: () => ({ villes: 0, environnements: 0, lieux: 0, enigmes: 0 }),
-  },
+ChartJS.register(
+  Title,
+  Tooltip,
+  Legend,
+  LineElement,
+  LinearScale,
+  PointElement,
+  CategoryScale,
+  ArcElement
+)
+
+const props = defineProps({
+  stats: Object,
+  charts: Object
 })
+
+// Configuration du graphique linéaire (inscriptions)
+const inscriptionsData = computed(() => ({
+  labels: props.charts.inscriptions_recentes.map(d => new Date(d.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })),
+  datasets: [{
+    label: 'Inscriptions',
+    data: props.charts.inscriptions_recentes.map(d => d.total),
+    borderColor: '#4299e1',
+    backgroundColor: '#ebf8ff',
+    tension: 0.3,
+    fill: true
+  }]
+}))
+
+const lineOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false }
+  },
+  scales: {
+    y: { beginAtZero: true, ticks: { stepSize: 1 } }
+  }
+}
+
+// Configuration du graphique en anneau (parties par ville)
+const partiesData = computed(() => ({
+  labels: props.charts.parties_par_ville.map(d => d.nom),
+  datasets: [{
+    data: props.charts.parties_par_ville.map(d => d.total),
+    backgroundColor: ['#4299e1', '#48bb78', '#ecc94b', '#ed64a6', '#9f7aea'],
+    borderWidth: 0
+  }]
+}))
+
+const doughnutOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 10 } }
+  }
+}
 </script>
 
 <style scoped>
-.dashboard { max-width: 1100px; }
+.dashboard { max-width: 1100px; padding-bottom: 2rem; }
 .page-title { font-size: 1.5rem; font-weight: 700; color: #1a202c; margin-bottom: 1.5rem; }
-.section-title { font-size: 1rem; font-weight: 600; color: #4a5568; margin-bottom: 1rem; }
+.section-title { font-size: 1rem; font-weight: 600; color: #4a5568; margin-bottom: 1.25rem; }
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 1rem;
   margin-bottom: 2rem;
 }
@@ -113,6 +219,29 @@ defineProps({
 
 .stat-value { font-size: 1.5rem; font-weight: 700; color: #1a202c; }
 .stat-label { font-size: 0.8rem; color: #718096; }
+
+.charts-section {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+  .charts-section { grid-template-columns: 1fr; }
+}
+
+.chart-container {
+  background: #fff;
+  border: 1px solid #e5e9f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.chart-wrapper {
+  height: 250px;
+  position: relative;
+}
 
 .actions-grid {
   display: flex;

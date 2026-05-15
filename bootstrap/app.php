@@ -15,6 +15,15 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
         ]);
+
+        $middleware->redirectUsersTo(function () {
+            $user = auth()->user();
+            if ($user && ($user->is_admin || $user->hasRole('admin'))) {
+                return route('admin.dashboard');
+            }
+            return route('dashboard');
+        });
+
         $middleware->alias([
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
        ]);

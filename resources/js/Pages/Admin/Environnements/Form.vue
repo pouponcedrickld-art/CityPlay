@@ -80,6 +80,30 @@
           </div>
         </section>
 
+        <!-- Liens externes (Conclusion) -->
+        <section class="form-section">
+          <h2 class="section-title">Liens de conclusion (A4)</h2>
+          <p class="section-hint">Liens affichés à la fin de la partie pour orienter les joueurs.</p>
+
+          <div class="field">
+            <label>🍴 Lien restauration</label>
+            <InputText v-model="form.lien_restauration" placeholder="https://..." />
+            <small v-if="form.errors.lien_restauration" class="p-error">{{ form.errors.lien_restauration }}</small>
+          </div>
+
+          <div class="field">
+            <label>🎁 Lien boutique souvenirs</label>
+            <InputText v-model="form.lien_boutique" placeholder="https://..." />
+            <small v-if="form.errors.lien_boutique" class="p-error">{{ form.errors.lien_boutique }}</small>
+          </div>
+
+          <div class="field">
+            <label>⭐ Lien notation / améliorations</label>
+            <InputText v-model="form.lien_notation" placeholder="https://..." />
+            <small v-if="form.errors.lien_notation" class="p-error">{{ form.errors.lien_notation }}</small>
+          </div>
+        </section>
+
         <!-- Actions -->
         <div class="form-actions">
           <Link :href="route('admin.environnements.index')">
@@ -118,6 +142,9 @@ const form = useForm({
   message_mauvaise_reponse: props.environnement?.message_mauvaise_reponse ?? '',
   message_fin:             props.environnement?.message_fin ?? '',
   message_pause:           props.environnement?.message_pause ?? '',
+  lien_restauration:       props.environnement?.lien_restauration ?? '',
+  lien_boutique:           props.environnement?.lien_boutique ?? '',
+  lien_notation:           props.environnement?.lien_notation ?? '',
 })
 
 const retentionOptions = [

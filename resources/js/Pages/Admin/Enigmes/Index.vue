@@ -38,8 +38,8 @@
         <!-- Contenu si existant -->
         <div v-if="enigmes[typeKey]" class="card-content">
           <p class="enigme-texte">{{ enigmes[typeKey].texte }}</p>
-          <div v-if="enigmes[typeKey].image_path" class="enigme-image">
-            <img :src="`/storage/${enigmes[typeKey].image_path}`" alt="Image énigme" />
+          <div v-if="enigmes[typeKey].image_url" class="enigme-image">
+            <img :src="`/storage/${enigmes[typeKey].image_url}`" alt="Image énigme" />
           </div>
           <div v-else class="no-image">
             <i class="pi pi-image" /> Pas d'image
