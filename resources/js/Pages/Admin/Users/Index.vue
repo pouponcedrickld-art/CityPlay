@@ -10,82 +10,176 @@
       </div>
 
       <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr class="bg-gray-50 border-bottom border-gray-100">
-              <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Utilisateur</th>
-              <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Email</th>
-              <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Rôle</th>
-              <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Inscrit le</th>
-              <th class="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-100">
-            <tr v-for="user in users" :key="user.id" class="hover:bg-gray-50 transition-colors">
-              <td class="px-6 py-4">
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs">
-                    {{ user.name.charAt(0) }}
-                  </div>
-                  <div>
-                    <div class="font-medium text-gray-900">{{ user.name }}</div>
-                    <div class="text-xs text-gray-500">@{{ user.pseudo }}</div>
-                  </div>
+        <DataTable
+          v-model:filters="filters"
+          :value="users"
+          :paginator="true"
+          :rows="10"
+          dataKey="id"
+          responsiveLayout="scroll"
+          stripedRows
+          class="p-datatable-sm"
+          paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+          currentPageReportTemplate="Affichage de {first} à {last} sur {totalRecords} utilisateurs"
+          :globalFilterFields="['name', 'pseudo', 'email']"
+          filterDisplay="menu"
+        >
+          <template #header>
+            <div class="flex justify-between items-center">
+              <span class="p-input-icon-left">
+                <i class="pi pi-search" />
+                <InputText v-model="filters['global'].value" placeholder="Recherche globale..." class="p-inputtext-sm" />
+              </span>
+              <Button type="button" icon="pi pi-filter-slash" label="Effacer" outlined size="small" @click="clearFilter()" />
+            </div>
+          </template>
+
+          <template #empty>
+            <div class="py-8 text-center text-gray-500">
+              <i class="pi pi-users text-4xl mb-3 block" />
+              <p>Aucun utilisateur trouvé.</p>
+            </div>
+          </template>
+
+          <Column field="name" header="Utilisateur" sortable>
+            <template #body="{ data }">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs">
+                  {{ data.name.charAt(0) }}
                 </div>
-              </td>
-              <td class="px-6 py-4 text-sm text-gray-600">{{ user.email }}</td>
-              <td class="px-6 py-4">
-                <span :class="user.is_admin ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'" 
-                      class="px-2 py-1 rounded-full text-xs font-semibold">
-                  {{ user.is_admin ? 'Admin' : 'Joueur' }}
-                </span>
-              </td>
-              <td class="px-6 py-4 text-sm text-gray-500">
-                {{ new Date(user.created_at).toLocaleDateString() }}
-              </td>
-              <td class="px-6 py-4 text-right">
-                <div class="flex justify-end gap-2">
-                  <button 
-                    @click="toggleAdmin(user)"
-                    class="p-2 text-gray-400 hover:text-indigo-600 transition-colors"
-                    title="Changer statut Admin"
-                  >
-                    <i class="pi pi-shield"></i>
-                  </button>
-                  <button 
-                    @click="deleteUser(user)"
-                    class="p-2 text-gray-400 hover:text-red-600 transition-colors"
-                    title="Supprimer"
-                  >
-                    <i class="pi pi-trash"></i>
-                  </button>
+                <div>
+                  <div class="font-medium text-gray-900">{{ data.name }}</div>
+                  <div class="text-xs text-gray-500">@{{ data.pseudo }}</div>
                 </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+              </div>
+            </template>
+          </Column>
+
+          <Column field="email" header="Email" sortable></Column>
+
+          <Column field="is_admin" header="Rôle" sortable :showFilterMatchModes="false">
+            <template #body="{ data }">
+              <span :class="data.is_admin ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'"
+                    class="px-2 py-1 rounded-full text-xs font-semibold">
+                {{ data.is_admin ? 'Admin' : 'Joueur' }}
+              </span>
+            </template>
+            <template #filter="{ filterModel, filterCallback }">
+              <Dropdown
+                v-model="filterModel.value"
+                @change="filterCallback()"
+                :options="roleOptions"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Tous"
+                class="p-column-filter"
+                :showClear="true"
+              />
+            </template>
+          </Column>
+
+          <Column header="Inscrit le" sortable field="created_at">
+            <template #body="{ data }">
+              {{ new Date(data.created_at).toLocaleDateString() }}
+            </template>
+          </Column>
+
+          <Column header="Actions" class="text-right">
+            <template #body="{ data }">
+              <div class="flex justify-end gap-2">
+                <Button
+                  icon="pi pi-shield"
+                  text
+                  rounded
+                  severity="secondary"
+                  @click="confirmToggleAdmin(data)"
+                  v-tooltip.top="'Changer statut Admin'"
+                />
+                <Button
+                  icon="pi pi-trash"
+                  text
+                  rounded
+                  severity="danger"
+                  @click="confirmDelete(data)"
+                  v-tooltip.top="'Supprimer'"
+                />
+              </div>
+            </template>
+          </Column>
+        </DataTable>
       </div>
     </div>
+
+    <ConfirmDialog />
   </AdminLayout>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { router } from '@inertiajs/vue3'
 import AdminLayout from '@/Pages/Admin/Layouts/AdminLayout.vue'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
+import Button from 'primevue/button'
+import InputText from 'primevue/inputtext'
+import Dropdown from 'primevue/dropdown'
+import ConfirmDialog from 'primevue/confirmdialog'
+import { useConfirm } from 'primevue/useconfirm'
+import { FilterMatchMode } from '@primevue/core/api'
 
 defineProps({
   users: Array
 })
 
-const toggleAdmin = (user) => {
-  if (confirm(`Voulez-vous vraiment changer le statut administrateur de ${user.name} ?`)) {
-    router.post(route('admin.users.toggle-admin', user.id))
+const filters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+  pseudo: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+  email: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  is_admin: { value: null, matchMode: FilterMatchMode.EQUALS }
+})
+
+const roleOptions = ref([
+  { label: 'Admin', value: true },
+  { label: 'Joueur', value: false }
+])
+
+const clearFilter = () => {
+  filters.value = {
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    pseudo: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    email: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    is_admin: { value: null, matchMode: FilterMatchMode.EQUALS }
   }
 }
 
-const deleteUser = (user) => {
-  if (confirm(`Êtes-vous sûr de vouloir supprimer l'utilisateur ${user.name} ? Cette action est irréversible.`)) {
-    router.delete(route('admin.users.destroy', user.id))
-  }
+const confirm = useConfirm()
+
+const confirmToggleAdmin = (user) => {
+  confirm.require({
+    message: `Voulez-vous vraiment changer le statut administrateur de ${user.name} ?`,
+    header: 'Confirmation de rôle',
+    icon: 'pi pi-shield',
+    acceptLabel: 'Confirmer',
+    rejectLabel: 'Annuler',
+    accept: () => {
+      router.post(route('admin.users.toggle-admin', user.id))
+    }
+  })
+}
+
+const confirmDelete = (user) => {
+  confirm.require({
+    message: `Êtes-vous sûr de vouloir supprimer l'utilisateur ${user.name} ? Cette action est irréversible.`,
+    header: 'Suppression définitive',
+    icon: 'pi pi-exclamation-triangle',
+    acceptLabel: 'Supprimer',
+    rejectLabel: 'Annuler',
+    acceptClass: 'p-button-danger',
+    accept: () => {
+      router.delete(route('admin.users.destroy', user.id))
+    }
+  })
 }
 </script>

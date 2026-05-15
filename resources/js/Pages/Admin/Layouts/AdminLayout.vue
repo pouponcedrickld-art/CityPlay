@@ -54,8 +54,8 @@
           <slot name="breadcrumb" />
         </div>
         <div class="topbar-right">
-          <span class="user-name mr-2 text-sm font-medium text-gray-600">{{ $page.props.auth.user.name }}</span>
-          <span class="admin-badge">Admin</span>
+          <span class="admin-badge">{{ $page.props.auth.user.name }}</span>
+          
           <Button icon="pi pi-sign-out" text rounded severity="secondary" @click="logout" />
         </div>
       </header>
