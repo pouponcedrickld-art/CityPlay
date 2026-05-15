@@ -5,7 +5,6 @@ import { Head } from '@inertiajs/vue3';
 
 <template>
     <Head title="Dashboard" />
-
     <AuthenticatedLayout>
             <!-- Le slot header doit être dans le composant parent du layout de contenu -->
             <template #header>
