@@ -9,6 +9,9 @@ class Lieu extends Model
 {
     use HasFactory;
 
+    // 🔥 Important : on force le nom de la table
+    protected $table = 'lieux';
+
     protected $fillable = [
         'environnement_id',
         'ordre',
