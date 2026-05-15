@@ -2,9 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Ville extends Model
 {
-    //
+    use HasFactory;
+
+    protected $fillable = ['nom', 'slug', 'description'];
+
+    public function environnements()
+    {
+        return $this->hasMany(Environnement::class);
+    }
 }
