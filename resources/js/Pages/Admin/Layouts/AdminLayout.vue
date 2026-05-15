@@ -37,9 +37,11 @@
           <span>Parties</span>
         </Link>
 
-        <Link :href="route('admin.teams.index')" class="nav-item" :class="{ active: isActive('admin.teams') }">
-          <i class="pi pi-users" />
-          <span>Équipes</span>
+        <div class="nav-section-title">Navigation</div>
+
+        <Link :href="route('dashboard')" class="nav-item">
+          <i class="pi pi-external-link" />
+          <span>Retour au site</span>
         </Link>
       </nav>
     </aside>
@@ -52,6 +54,7 @@
           <slot name="breadcrumb" />
         </div>
         <div class="topbar-right">
+          <span class="user-name mr-2 text-sm font-medium text-gray-600">{{ $page.props.auth.user.name }}</span>
           <span class="admin-badge">Admin</span>
           <Button icon="pi pi-sign-out" text rounded severity="secondary" @click="logout" />
         </div>

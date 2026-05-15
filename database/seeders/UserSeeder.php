@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
         Role::firstOrCreate(['name' => 'joueur']);
 
-        $admin = User::firstOrCreate([
+        $admin = User::updateOrCreate([
             'email' => 'admin@example.com',
         ], [
             'name' => 'Admin',
@@ -27,9 +27,9 @@ class UserSeeder extends Seeder
             'otp_verified_at' => now(),
         ]);
 
-        $admin->assignRole($adminRole);
+        $admin->syncRoles([$adminRole]);
 
-        User::firstOrCreate([
+        User::updateOrCreate([
             'email' => 'joueur@example.com',
         ], [
             'name' => 'Joueur',
