@@ -21,6 +21,8 @@ class User extends Authenticatable
         'is_admin',
         'otp_code',
         'otp_verified_at',
+        'keep_account',
+        'expires_at',
     ];
 
     protected $hidden = [
@@ -32,9 +34,11 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'otp_verified_at' => 'datetime',
+        'expires_at' => 'datetime',
         'consent_cgu' => 'boolean',
         'consent_donnees' => 'boolean',
         'is_admin' => 'boolean',
+        'keep_account' => 'boolean',
         'password' => 'hashed',
     ];
 

@@ -90,6 +90,18 @@ class ProgressionController extends Controller
 
         // RÉSULTAT DE LA VÉRIFICATION
         if ($isCorrect) {
+            // Calcul des points basé sur la difficulté
+            $points = match ($enigme->type) {
+                'force3' => 3,
+                'force2' => 2,
+                'force1' => 1,
+                'enfant' => 1,
+                default => 1,
+            };
+
+            $progression->increment('score', $points);
+            $progression->partie->increment('score_total', $points);
+
             // Succès : Le joueur a trouvé ou est au bon endroit -> On passe au lieu suivant.
             return $this->nextEnigme($partie);
         }

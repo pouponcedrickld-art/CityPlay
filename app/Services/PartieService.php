@@ -6,6 +6,7 @@ use App\Models\Environnement;
 use App\Models\Lieu;
 use App\Models\Partie;
 use App\Models\Progression;
+use App\Models\Team;
 use Illuminate\Support\Str;
 
 class PartieService
@@ -19,6 +20,21 @@ class PartieService
 
         // Génération du code de liaison
         $codeLiaison = Str::upper(Str::random(6));
+
+        // Création de l'équipe si mode team
+        $teamId = null;
+        if ($data['mode'] === 'team') {
+            $team = Team::create([
+                'nom' => 'Groupe de ' . auth()->user()->name,
+                'createur_id' => $createurId,
+                'max_joueurs' => $data['nb_joueurs'] ?? 10,
+                'code_liaison' => $codeLiaison,
+            ]);
+            $teamId = $team->id;
+
+            // Ajout du créateur à l'équipe
+            $team->users()->attach($createurId, ['role' => 'challenger']);
+        }
 
         // Calcul du nombre d'énigmes
         $nbEnigmes = $this->calculerNombreEnigmes(
@@ -36,15 +52,16 @@ class PartieService
         $partie = Partie::create([
             'environnement_id' => $environnement->id,
             'createur_id' => $createurId,
-            'team_id' => null, // À gérer plus tard pour les teams
+            'team_id' => $teamId,
             'mode' => $data['mode'],
             'parametres' => [
                 'duree_prevue' => $data['duree_prevue'],
                 'locomotion' => $data['locomotion'],
-                'difficulte' => $data['difficulte'],
+                'difficulte' => $data['difficulte'] ?? $environnement->difficulte ?? 2,
                 'nb_joueurs' => $data['nb_joueurs'] ?? 1,
                 'nb_enigmes' => $nbEnigmes,
             ],
+            'score_total' => 0,
             'code_liaison' => $codeLiaison,
             'statut' => 'en_attente',
             'expire_at' => now()->addHours($environnement->duree_vie_lien_heures),
@@ -60,6 +77,7 @@ class PartieService
             'enigme_courante_id' => null,
             'temps_restant_minutes' => $data['duree_prevue'],
             'nb_enigmes_resolues' => 0,
+            'score' => 0,
         ]);
 
         return $partie->load('environnement');

@@ -1,6 +1,7 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import Button from 'primevue/button';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 const props = defineProps({
     parties: Array,
@@ -27,11 +28,10 @@ const getStatutColor = (statut) => {
 </script>
 
 <template>
-    <Head title="Tableau de Bord" />
+    <AuthenticatedLayout>
+        <Head title="Tableau de Bord" />
 
-<h1>Pas mal</h1>
-<div>
-        <main class="p-6 max-w-4xl mx-auto space-y-8 mt-4">
+        <div class="space-y-8">
             <!-- ACTIVE GAMES -->
             <section class="space-y-4">
                 <h2 class="text-xs font-black text-orange-950 uppercase tracking-[0.2em] border-l-4 border-[#FF9500] pl-3">Mes Parties</h2>
@@ -61,7 +61,7 @@ const getStatutColor = (statut) => {
                         <div class="space-y-3">
                             <div class="flex items-center justify-between text-xs">
                                 <span class="text-orange-900/40 font-bold uppercase">Progression</span>
-                                <span class="text-orange-950 font-black">{{ partie.progression?.nb_enigmes_resolues || 0 }} résolues</span>
+                                <span class="text-orange-950 font-black">{{ partie.progression?.score || 0 }} pts</span>
                             </div>
                             <div class="w-full h-2 bg-orange-50 rounded-full overflow-hidden">
                                 <div 
@@ -110,8 +110,8 @@ const getStatutColor = (statut) => {
                     </div>
                 </div>
             </section>
-        </main>
-    </div>
+        </div>
+    </AuthenticatedLayout>
 </template>
 
 

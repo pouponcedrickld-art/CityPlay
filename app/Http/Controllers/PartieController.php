@@ -59,20 +59,66 @@ class PartieController extends Controller
     {
         $request->validate([
             'environnement_id' => 'required|exists:environnements,id',
+            'mode' => 'required|in:solo,team',
+            'duree_prevue' => 'required|integer|min:15|max:180',
+            'locomotion' => 'required|string|in:pied,velo,voiture',
+            'nb_joueurs' => 'nullable|integer|min:1|max:10',
         ]);
 
-        $data = [
-            'environnement_id' => $request->environnement_id,
-            'mode' => 'solo',
-            'duree_prevue' => 60,
-            'locomotion' => 'pied',
-            'difficulte' => 2,
-        ];
+        $partie = $this->partieService->creerPartie($request->all(), auth()->id());
 
-        $partie = $this->partieService->creerPartie($data, auth()->id());
+        // Si c'est une partie en équipe, on redirige vers le choix du rôle (ou partage du code)
+        if ($partie->mode === 'team') {
+            return redirect()->route('parties.team-setup', $partie->id);
+        }
 
         return redirect()->route('progression.enigme', $partie->id)
             ->with('success', 'La partie a commencé ! Bonne chance.');
+    }
+
+    /**
+     * Affiche la configuration de l'équipe pour une partie multi.
+     */
+    public function teamSetup(Partie $partie)
+    {
+        $partie->load('team.users');
+        return Inertia::render('Player/JoinPartie', [
+            'partie' => $partie
+        ]);
+    }
+
+    /**
+     * Met la partie en pause.
+     */
+    public function pause(Partie $partie)
+    {
+        $partie->update(['statut' => 'pause']);
+        return back()->with('success', 'Partie mise en pause.');
+    }
+
+    /**
+     * Abandonne la partie.
+     */
+    public function abandon(Partie $partie)
+    {
+        $partie->update(['statut' => 'terminee']); // Ou un statut abandon
+        return redirect()->route('dashboard')->with('success', 'Partie abandonnée.');
+    }
+
+    /**
+     * Met à jour le rôle de l'utilisateur dans l'équipe.
+     */
+    public function updateRole(Request $request, Partie $partie)
+    {
+        $request->validate([
+            'role' => 'required|in:challenger,participant'
+        ]);
+
+        $partie->team->users()->updateExistingPivot(auth()->id(), [
+            'role' => $request->role
+        ]);
+
+        return back()->with('success', 'Rôle mis à jour.');
     }
 
     /**

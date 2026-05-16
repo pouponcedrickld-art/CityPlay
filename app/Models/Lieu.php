@@ -15,6 +15,7 @@ class Lieu extends Model
   protected $fillable = [
         'environnement_id',
         'ordre',
+        'actif',
         'latitude',
         'longitude',
         'rayon_metres',
@@ -24,6 +25,7 @@ class Lieu extends Model
     ];
 
     protected $casts = [
+        'actif'        => 'boolean',
         'latitude'     => 'decimal:7',
         'longitude'    => 'decimal:7',
         'rayon_metres' => 'integer',

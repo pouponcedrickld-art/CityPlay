@@ -15,6 +15,7 @@ class Partie extends Model
         'team_id',
         'mode',
         'parametres',
+        'score_total',
         'statut',
         'code_liaison',
         'expire_at',
@@ -24,6 +25,7 @@ class Partie extends Model
 
     protected $casts = [
         'parametres' => 'array',
+        'score_total' => 'integer',
         'expire_at' => 'datetime',
         'started_at' => 'datetime',
         'ended_at' => 'datetime',

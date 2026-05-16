@@ -2,7 +2,7 @@
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { Head, useForm, usePage, Link } from '@inertiajs/vue3';
 import { ref, onMounted } from 'vue';
 import InputOtp from 'primevue/inputotp';
 import { useToast } from 'primevue/usetoast';
@@ -54,6 +54,7 @@ const resendCode = () => {
         </div>
 
         <form @submit.prevent="submit" class="space-y-8">
+            <!-- Zone de saisie du code OTP -->
             <div class="flex flex-col items-center">
                 <InputOtp 
                     v-model="form.code" 
@@ -61,9 +62,11 @@ const resendCode = () => {
                     integerOnly
                     class="custom-otp-input"
                 />
+                <!-- Affichage des erreurs de validation du code -->
                 <InputError class="mt-4" :message="form.errors.code" />
             </div>
 
+            <!-- Boutons d'action -->
             <div class="flex flex-col gap-4">
                 <PrimaryButton
                     class="w-full justify-center py-4 text-sm font-bold uppercase tracking-widest bg-gradient-to-r from-[#FF9500] to-[#FF7B00] border-none shadow-lg shadow-orange-200"
@@ -76,7 +79,7 @@ const resendCode = () => {
                 <button
                     type="button"
                     @click="resendCode"
-                    class="text-sm font-bold text-orange-600 hover:text-orange-700 uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
+                    class="text-xs font-bold text-orange-600 hover:text-orange-700 uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
                     :disabled="form.processing"
                 >
                     <i class="pi pi-refresh" :class="{ 'animate-spin': form.processing }"></i>
@@ -85,9 +88,28 @@ const resendCode = () => {
             </div>
         </form>
 
-        <div class="mt-8 pt-6 border-t border-orange-100 text-center">
-            <p class="text-[10px] uppercase font-black tracking-widest text-orange-900/40">
-                CityPlay - Sécurisation de votre compte
+        <!-- LIEN DE REDIRECTION (OUTSIDE FORM) -->
+        <div class="mt-10 pt-6 border-t border-orange-100 flex flex-col items-center gap-4">
+            <p class="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em]">Vous ne recevez rien ?</p>
+            
+            <Link
+                :href="route('logout.register')"
+                method="post"
+                as="button"
+                class="group flex items-center gap-2 px-6 py-3 bg-orange-50 rounded-2xl text-orange-600 hover:bg-orange-100 transition-all border border-orange-100"
+            >
+                <i class="pi pi-user-plus text-xs group-hover:-translate-x-1 transition-transform"></i>
+                <span class="text-xs font-black uppercase tracking-widest">Retourner à l'inscription</span>
+            </Link>
+            
+            <p class="text-[9px] text-gray-400 font-bold uppercase italic text-center px-4">
+                Utile si vous avez fait une faute dans votre adresse email
+            </p>
+        </div>
+
+        <div class="mt-8 text-center">
+            <p class="text-[9px] uppercase font-black tracking-[0.4em] text-orange-900/10">
+                CityPlay Secure
             </p>
         </div>
     </GuestLayout>

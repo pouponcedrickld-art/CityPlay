@@ -1,6 +1,7 @@
 <script setup>
-import { Head, useForm, router } from '@inertiajs/vue3';
+import { Head, Link, useForm, router } from '@inertiajs/vue3';
 import { onMounted, onUnmounted, ref, computed } from 'vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Dialog from 'primevue/dialog';
@@ -25,39 +26,14 @@ const form = useForm({
 const showHint = ref(false);
 const showSolution = ref(false);
 const showSkipConfirm = ref(false);
+const showPauseConfirm = ref(false);
+const showAbandonConfirm = ref(false);
 const isLocating = ref(false);
 const isOffline = ref(!navigator.onLine);
-const mapContainer = ref(null);
-let map = null;
-let userMarker = null;
 
 // Gestion de l'état offline
 const updateOnlineStatus = () => {
     isOffline.value = !navigator.onLine;
-};
-
-const initMap = () => {
-    if (!mapContainer.value) return;
-
-    // Coordonnées du lieu (point d'arrivée/cible)
-    const targetLat = props.enigme.lieu?.latitude || 48.8566;
-    const targetLng = props.enigme.lieu?.longitude || 2.3522;
-
-    map = L.map(mapContainer.value, {
-        zoomControl: false
-    }).setView([targetLat, targetLng], 15);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap'
-    }).addTo(map);
-
-    // Marqueur de la cible (optionnel, on peut le rendre discret)
-    L.circle([targetLat, targetLng], {
-        color: '#FF9500',
-        fillColor: '#FF9500',
-        fillOpacity: 0.1,
-        radius: 50 // Cercle indicatif
-    }).addTo(map);
 };
 
 const checkLocation = () => {
@@ -78,28 +54,10 @@ const checkLocation = () => {
             form.latitude = latitude;
             form.longitude = longitude;
 
-            if (userMarker) {
-                userMarker.setLatLng([latitude, longitude]);
-            } else {
-                const userIcon = L.divIcon({
-                    className: 'user-location-marker',
-                    html: '<div class="w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-lg animate-pulse"></div>',
-                    iconSize: [16, 16]
-                });
-                userMarker = L.marker([latitude, longitude], { icon: userIcon }).addTo(map);
-            }
-            
-            map.flyTo([latitude, longitude], 17);
-
-            if (props.enigme.lieu?.latitude && props.enigme.lieu?.longitude) {
-                const target = L.latLng(props.enigme.lieu.latitude, props.enigme.lieu.longitude);
-                const user = L.latLng(latitude, longitude);
-                const distance = user.distanceTo(target);
-                form.distance_metres = Math.round(distance);
-
-                if (distance <= 10) {
-                    submitLocationAnswer();
-                }
+            // Vérification directe sans carte (anti-triche)
+            if (props.enigme?.lieu?.latitude && props.enigme?.lieu?.longitude) {
+                // Utilisation d'un helper pour la distance ou envoi direct au serveur
+                submitLocationAnswer();
             }
             isLocating.value = false;
         },
@@ -127,8 +85,17 @@ const confirmSkip = () => {
     router.post(route('progression.next', props.partie.id));
 };
 
+const togglePause = () => {
+    showPauseConfirm.value = false;
+    router.post(route('parties.pause', props.partie.id));
+};
+
+const confirmAbandon = () => {
+    showAbandonConfirm.value = false;
+    router.post(route('parties.abandon', props.partie.id));
+};
+
 onMounted(() => {
-    initMap();
     window.addEventListener('online', updateOnlineStatus);
     window.addEventListener('offline', updateOnlineStatus);
 });
@@ -140,9 +107,10 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <Head title="Énigme en cours" />
+    <AuthenticatedLayout>
+        <Head :title="'Énigme - ' + (partie?.environnement?.nom || 'En cours')" />
 
-    <div class="min-h-screen bg-gray-50 pb-24 transition-opacity duration-300" :class="{ 'opacity-50 pointer-events-none': isOffline }">
+        <div class="min-h-screen bg-gray-50 pb-24 transition-opacity duration-300" :class="{ 'opacity-50 pointer-events-none': isOffline }">
         <!-- OFFLINE BANNER -->
         <div v-if="isOffline" class="bg-red-500 text-white text-[10px] font-bold uppercase tracking-widest p-2 text-center sticky top-0 z-50">
             Mode Hors-Ligne • Connexion perdue
@@ -156,31 +124,41 @@ onUnmounted(() => {
                 </div>
                 <div>
                     <h1 class="text-sm font-black text-orange-950 uppercase tracking-tight">
-                        Énigme {{ progression.nb_enigmes_resolues + 1 }}
+                        Énigme {{ progression?.nb_enigmes_resolues + 1 || 1 }}
                     </h1>
                     <p class="text-[10px] text-orange-900/40 font-bold uppercase tracking-widest">
-                        {{ enigme.type }} • {{ enigme.points }} pts
+                        {{ enigme?.type || 'Type inconnu' }} • {{ enigme?.points || 0 }} pts
                     </p>
                 </div>
             </div>
             
             <div class="flex items-center gap-2">
+                <Button @click="showPauseConfirm = true" icon="pi pi-pause" class="p-button-text p-button-sm text-orange-950" />
                 <div class="px-3 py-1 bg-orange-50 rounded-lg border border-orange-100 flex items-center gap-2">
                     <i class="pi pi-clock text-[#FF9500] text-xs"></i>
-                    <span class="text-xs font-bold text-orange-950">{{ progression.temps_restant_minutes }} min</span>
+                    <span class="text-xs font-bold text-orange-950">{{ progression?.temps_restant_minutes }} min</span>
                 </div>
             </div>
         </div>
 
         <!-- FLASH MESSAGES -->
-        <div v-if="$page.props.flash.error" class="mx-6 mt-4 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-xs font-bold animate-bounce">
+        <div v-if="$page.props.flash?.error" class="mx-6 mt-4 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-xs font-bold animate-bounce">
             <i class="pi pi-exclamation-circle mr-2"></i>
             {{ $page.props.flash.error }}
         </div>
 
         <main class="p-6 max-w-2xl mx-auto space-y-6">
-            <!-- IMAGE -->
-            <div v-if="enigme.image_url" class="relative group rounded-3xl overflow-hidden shadow-lg border-4 border-white transition-transform hover:scale-[1.02]">
+            <!-- IMAGES DU LIEU -->
+            <div v-if="enigme?.lieu?.photos?.length" class="relative group rounded-3xl overflow-hidden shadow-lg border-4 border-white transition-transform hover:scale-[1.02]">
+                <div class="grid grid-cols-2 gap-1 h-48">
+                    <img v-for="(photo, index) in enigme.lieu.photos.slice(0, 4)" :key="index" :src="photo.url" class="w-full h-full object-cover">
+                </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
+                <div class="absolute bottom-3 left-3 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full text-[9px] font-black text-white uppercase tracking-widest">
+                    {{ enigme.lieu.nom }}
+                </div>
+            </div>
+            <div v-else-if="enigme?.image_url" class="relative group rounded-3xl overflow-hidden shadow-lg border-4 border-white transition-transform hover:scale-[1.02]">
                 <img :src="enigme.image_url" alt="Image de l'énigme" class="w-full h-48 object-cover">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
             </div>
@@ -188,27 +166,36 @@ onUnmounted(() => {
             <!-- QUESTION -->
             <div class="bg-white p-8 rounded-3xl border border-orange-100 shadow-sm relative overflow-hidden">
                 <div class="absolute -right-4 -top-4 w-24 h-24 bg-orange-50 rounded-full opacity-50"></div>
-                <h2 class="text-xl font-black text-orange-950 uppercase tracking-tight mb-4 relative z-10">
-                    {{ enigme.titre || 'Défi en cours' }}
-                </h2>
+                <div class="flex justify-between items-start mb-4 relative z-10">
+                    <h2 class="text-xl font-black text-orange-950 uppercase tracking-tight">
+                        {{ enigme?.titre || 'Défi en cours' }}
+                    </h2>
+                    <span class="px-2 py-1 bg-orange-100 text-orange-700 text-[8px] font-black rounded-md uppercase">{{ enigme?.type }}</span>
+                </div>
                 <p class="text-orange-900/80 leading-relaxed text-lg italic relative z-10">
-                    "{{ enigme.texte }}"
+                    "{{ enigme?.texte || 'Pas de description pour cette énigme.' }}"
                 </p>
+                <div v-if="enigme?.lieu?.description" class="mt-4 pt-4 border-t border-orange-50 text-[11px] text-orange-900/50 font-medium">
+                    {{ enigme.lieu.description }}
+                </div>
             </div>
 
-            <!-- CARTE ET GEOLOCALISATION -->
+            <!-- GEOLOCALISATION (SANS CARTE ANTI-TRICHE) -->
             <div class="space-y-4">
-                <div class="bg-white p-2 rounded-3xl border border-orange-100 shadow-sm overflow-hidden relative group">
-                    <div ref="mapContainer" class="w-full h-48 rounded-2xl z-0 grayscale-[0.5] group-hover:grayscale-0 transition-all"></div>
-                    <div v-if="isLocating" class="absolute inset-0 bg-white/60 flex items-center justify-center z-10 backdrop-blur-[2px]">
-                        <ProgressSpinner style="width: 40px; height: 40px" strokeWidth="4" />
+                <div class="bg-blue-50/50 p-6 rounded-3xl border border-dashed border-blue-200 text-center space-y-3">
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
+                        <i class="pi pi-map-marker text-blue-600 text-xl" :class="{ 'animate-bounce': isLocating }"></i>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-xs font-black text-blue-900 uppercase tracking-tight">Vérification de proximité</p>
+                        <p class="text-[9px] text-blue-800/60 font-bold uppercase tracking-widest">Vous devez être à moins de 10m du lieu</p>
                     </div>
                 </div>
 
                 <Button
                     @click="checkLocation"
-                    :label="isLocating ? 'Localisation...' : 'Je suis sur place !'"
-                    :icon="isLocating ? 'pi pi-spin pi-spinner' : 'pi pi-map-marker'"
+                    :label="isLocating ? 'Vérification...' : 'Confirmer ma position'"
+                    :icon="isLocating ? 'pi pi-spin pi-spinner' : 'pi pi-check-circle'"
                     class="w-full p-5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-700 border-none font-black uppercase tracking-widest shadow-xl shadow-blue-200 active:scale-95 transition-all"
                     :disabled="isLocating || isOffline"
                 />
@@ -268,6 +255,16 @@ onUnmounted(() => {
                     </div>
                     <span class="text-[10px] font-black uppercase tracking-widest text-red-900/60">Passer</span>
                 </button>
+
+                <button 
+                    @click="showAbandonConfirm = true"
+                    class="group flex flex-col items-center gap-2 p-4 bg-white rounded-2xl border border-orange-100 shadow-sm hover:border-red-400 hover:shadow-md transition-all active:scale-95"
+                >
+                    <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center group-hover:bg-red-200 transition-colors">
+                        <i class="pi pi-trash text-red-600"></i>
+                    </div>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-red-900/60">Abandon</span>
+                </button>
             </div>
         </main>
 
@@ -289,11 +286,11 @@ onUnmounted(() => {
                         Attention : Voir la solution annulera les points de cette énigme.
                     </p>
                 </div>
-                <div v-if="enigme.solution" class="bg-orange-50 p-5 rounded-2xl border border-orange-100 italic text-orange-950 shadow-inner">
+                <div v-if="enigme?.solution" class="bg-orange-50 p-5 rounded-2xl border border-orange-100 italic text-orange-950 shadow-inner">
                     {{ enigme.solution }}
                 </div>
                 <div v-else class="bg-orange-50 p-5 rounded-2xl border border-orange-100 italic text-orange-950 shadow-inner">
-                    La réponse est : <span class="font-black uppercase tracking-tighter">{{ enigme.reponse }}</span>
+                    La réponse est : <span class="font-black uppercase tracking-tighter">{{ enigme?.reponse || 'Non définie' }}</span>
                 </div>
             </div>
             <template #footer>
@@ -315,7 +312,32 @@ onUnmounted(() => {
                 </div>
             </template>
         </Dialog>
+
+        <Dialog v-model:visible="showPauseConfirm" modal header="Mettre en pause ?" :style="{ width: '90vw', maxWidth: '400px' }" class="custom-dialog">
+            <p class="text-orange-900/80 py-4 font-medium">
+                Votre chrono sera arrêté. Vous pourrez reprendre la partie quand vous le souhaiterez.
+            </p>
+            <template #footer>
+                <div class="flex gap-2 w-full">
+                    <Button label="Continuer" @click="showPauseConfirm = false" class="p-button-text flex-1" />
+                    <Button label="Pause" icon="pi pi-pause" @click="togglePause" class="p-button-orange flex-1" />
+                </div>
+            </template>
+        </Dialog>
+
+        <Dialog v-model:visible="showAbandonConfirm" modal header="Abandonner la partie ?" :style="{ width: '90vw', maxWidth: '400px' }" class="custom-dialog">
+            <p class="text-orange-900/80 py-4 font-medium">
+                Êtes-vous sûr de vouloir abandonner ? Votre progression actuelle sera perdue.
+            </p>
+            <template #footer>
+                <div class="flex gap-2 w-full">
+                    <Button label="Non !" @click="showAbandonConfirm = false" class="p-button-text flex-1" />
+                    <Button label="Oui, abandonner" icon="pi pi-trash" @click="confirmAbandon" class="p-button-danger p-button-outlined flex-1" />
+                </div>
+            </template>
+        </Dialog>
     </div>
+    </AuthenticatedLayout>
 </template>
 
 <style>

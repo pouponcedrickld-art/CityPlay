@@ -3,6 +3,7 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 const props = defineProps({
     partie: Object,
@@ -27,9 +28,10 @@ const handleDeleteProfile = () => {
 </script>
 
 <template>
-    <Head title="Résumé de la partie" />
+    <AuthenticatedLayout>
+        <Head title="Résumé de la partie" />
 
-    <div class="min-h-screen bg-gray-50 pb-12">
+        <div class="min-h-screen bg-gray-50 pb-12">
         <!-- HEADER -->
         <div class="bg-white border-b border-orange-100 p-8 text-center shadow-sm">
             <div class="w-20 h-20 bg-orange-100 rounded-3xl flex items-center justify-center mx-auto mb-4">
@@ -44,7 +46,7 @@ const handleDeleteProfile = () => {
             <div class="bg-gradient-to-br from-[#FF9500] to-[#FF7B00] p-8 rounded-3xl shadow-xl text-white text-center space-y-2">
                 <span class="text-[10px] font-black uppercase tracking-[0.3em] opacity-70">Score Total</span>
                 <div class="text-6xl font-black tabular-nums">
-                    {{ progression.nb_enigmes_resolues * 100 }}
+                    {{ progression?.score || 0 }}
                 </div>
                 <p class="text-sm font-bold uppercase tracking-widest opacity-90">Points CityPlay</p>
             </div>
@@ -143,6 +145,7 @@ const handleDeleteProfile = () => {
             </template>
         </Dialog>
     </div>
+    </AuthenticatedLayout>
 </template>
 
 <style>

@@ -1,13 +1,29 @@
 <script setup>
-import { ref, computed } from "vue";
-import { Link, usePage } from "@inertiajs/vue3";
+import { ref, computed, onMounted } from "vue";
+import { Link, usePage, router } from "@inertiajs/vue3";
 import Toast from 'primevue/toast';
+import VideoLoader from '@/Components/VideoLoader.vue';
 
 // Import du logo
 import logoWhite from "./logo_whrite.jpg";
 
 const page = usePage();
 const visible = ref(false);
+const showLoader = ref(false);
+
+onMounted(() => {
+    router.on('start', () => {
+        showLoader.value = true;
+    });
+    router.on('finish', () => {
+        setTimeout(() => {
+            showLoader.value = false;
+        }, 1200);
+    });
+    router.on('error', () => {
+        showLoader.value = false;
+    });
+});
 
 // Menu adaptatif selon le rôle (Admin ou Player)
 const menuItems = computed(() => {
@@ -47,6 +63,7 @@ const closeSidebar = () => {
 
 <template>
     <div class="min-h-screen bg-gray-50 flex flex-col lg:flex-row">
+        <VideoLoader :show="showLoader" />
         <Toast />
 
         <!-- HEADER MOBILE (Barre supérieure fixe) -->
