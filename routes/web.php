@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\EnigmeController;
+use App\Http\Controllers\Admin\LieuController;
+use App\Http\Controllers\Admin\EnvironnementController;
+use App\Http\Controllers\Admin\StatController;
 use App\Http\Controllers\OtpController;
 use App\Http\Controllers\PartieController;
 use App\Http\Controllers\ProgressionController;
@@ -39,9 +42,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/otp/resend', [OtpController::class, 'resend'])->name('otp.resend');
 
     // Parties
+    Route::get('/parties', [PartieController::class, 'index'])->name('parties.index');
+    Route::get('/parties/create', [PartieController::class, 'create'])->name('parties.create');
     Route::post('/parties', [PartieController::class, 'store'])->name('parties.store');
     Route::get('/parties/{partie}', [PartieController::class, 'show'])->name('parties.show');
-    Route::get('/parties', [PartieController::class, 'index'])->name('parties.index');
 
     // Progression
     Route::get('/parties/{partie}/enigme', [ProgressionController::class, 'getCurrentEnigme'])->name('progression.enigme');
@@ -55,14 +59,46 @@ Route::middleware('auth')->group(function () {
     // Validation GPS
     Route::post('/lieux/{lieu}/valider', [GPSValidationController::class, 'validatePosition'])->name('gps.valider');
 
-    // Admin énigmes
-    Route::prefix('/CreateEnigmes')->group(function () {
-        Route::get('/', [EnigmeController::class, 'index'])->name('enigmes.index');
-        Route::get('/create', [EnigmeController::class, 'create'])->name('enigmes.create');
-        Route::post('/', [EnigmeController::class, 'store'])->name('enigmes.store');
-        Route::get('/{enigme}/edit', [EnigmeController::class, 'edit'])->name('enigmes.edit');
-        Route::put('/{enigme}', [EnigmeController::class, 'update'])->name('enigmes.update');
-        Route::delete('/{enigme}', [EnigmeController::class, 'destroy'])->name('enigmes.destroy');
+    // Administration (Accès restreint aux admins via middleware si nécessaire)
+    Route::prefix('admin')->group(function () {
+        Route::get('/dashboard', [StatController::class, 'index'])->name('admin.dashboard');
+
+        // Lieux
+        Route::resource('lieux', LieuController::class)->names([
+            'index' => 'admin.lieux.index',
+            'create' => 'admin.lieux.create',
+            'store' => 'admin.lieux.store',
+            'show' => 'admin.lieux.show',
+            'edit' => 'admin.lieux.edit',
+            'update' => 'admin.lieux.update',
+            'destroy' => 'admin.lieux.destroy',
+        ]);
+
+        // Énigmes
+        Route::resource('enigmes', EnigmeController::class)->names([
+            'index' => 'admin.enigmes.index',
+            'create' => 'admin.enigmes.create',
+            'store' => 'admin.enigmes.store',
+            'show' => 'admin.enigmes.show',
+            'edit' => 'admin.enigmes.edit',
+            'update' => 'admin.enigmes.update',
+            'destroy' => 'admin.enigmes.destroy',
+        ]);
+
+        // Environnements (Parcours)
+        Route::resource('environnements', EnvironnementController::class)->names([
+            'index' => 'admin.environnements.index',
+            'create' => 'admin.environnements.create',
+            'store' => 'admin.environnements.store',
+            'show' => 'admin.environnements.show',
+            'edit' => 'admin.environnements.edit',
+            'update' => 'admin.environnements.update',
+            'destroy' => 'admin.environnements.destroy',
+        ]);
+
+        Route::get('/parametres', function () {
+            return Inertia::render('Admin/Parametres');
+        })->name('admin.parametres');
     });
 });
 

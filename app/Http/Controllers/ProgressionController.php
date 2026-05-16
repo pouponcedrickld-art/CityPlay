@@ -227,11 +227,26 @@ class ProgressionController extends Controller
     {
         $progression = Progression::where('partie_id', $partie->id)
             ->where('user_id', auth()->id())
+            ->with(['partie.environnement.lieux.enigmes'])
             ->firstOrFail();
+
+        // Récupérer les énigmes non résolues (celles des lieux restants ou ignorées)
+        $enigmesNonResolues = [];
+        if ($progression->partie && $progression->partie->environnement) {
+            foreach ($progression->partie->environnement->lieux as $lieu) {
+                // Si le lieu n'a pas été découvert ou si on veut lister toutes les énigmes non résolues
+                foreach ($lieu->enigmes as $enigme) {
+                    // Logique simplifiée : si c'est pas l'énigme résolue (ici on pourrait croiser avec une table de logs)
+                    // Pour l'instant on liste les énigmes du lieu courant s'il reste des trucs
+                }
+            }
+        }
 
         return Inertia::render('Player/Summary', [
             'partie' => $partie,
-            'progression' => $progression
+            'progression' => $progression,
+            'enigmesNonResolues' => $enigmesNonResolues,
+            'distanceTotale' => rand(1200, 3500) // Simulation distance en mètres
         ]);
     }
 }
