@@ -24,7 +24,7 @@ class DemoSeeder extends Seeder
 
         $this->command->info('Utilisateur test créé : test@cityplay.fr / password');
 
-        $environnement = Environnement::where('nom', 'CityPlay Paris Centre')->first();
+        $environnement = Environnement::where('nom', 'Bordeaux Patrimoine')->first();
 
         $partie = Partie::create([
             'createur_id' => $user->id,

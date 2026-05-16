@@ -4,17 +4,17 @@ namespace Database\Seeders;
 
 use App\Models\Ville;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class VilleSeeder extends Seeder
 {
     public function run(): void
     {
         Ville::create([
-            'nom' => 'Paris',
-            'slug' => Str::slug('Paris'),
+            'nom' => 'Bordeaux',
+            'slug' => 'bordeaux',
+            'description' => 'Capitale de la Gironde, ville classée au patrimoine mondial de l\'UNESCO, célèbre pour son architecture du XVIIIe siècle et ses vignobles.',
         ]);
 
-        $this->command->info('Ville "Paris" créée.');
+        $this->command->info('Ville "Bordeaux" créée.');
     }
 }
