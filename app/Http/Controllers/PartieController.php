@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Partie;
+use App\Models\Environnement;
 use App\Services\PartieService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -18,7 +19,7 @@ class PartieController extends Controller
     }
 
     /**
-     * Affiche la liste des parties de l'utilisateur.
+     * Liste les parties du joueur
      */
     public function index()
     {
@@ -32,19 +33,31 @@ class PartieController extends Controller
     }
 
     /**
-     * Affiche une partie spécifique (vue Inertia)
+     * Affiche le formulaire de création
+     */
+    public function create()
+    {
+        $environnements = Environnement::all();
+
+        return Inertia::render('Player/CreatePartie', [
+            'environnements' => $environnements,
+        ]);
+    }
+
+    /**
+     * Affiche une partie spécifique
      */
     public function show(Partie $partie)
     {
         $this->authorize('view', $partie);
 
-        return Inertia::render('Player/PartieShow', [
+        return Inertia::render('Player/Dashboard', [
             'partie' => $partie->load('environnement', 'progression'),
         ]);
     }
 
     /**
-     * Crée une nouvelle partie.
+     * Crée une nouvelle partie
      */
     public function store(Request $request)
     {
@@ -65,7 +78,7 @@ class PartieController extends Controller
     }
 
     /**
-     * Génère un code d'invitation pour une partie.
+     * Génère un code d'invitation
      */
     public function genererInvitation(Partie $partie)
     {
