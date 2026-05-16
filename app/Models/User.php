@@ -20,6 +20,7 @@ class User extends Authenticatable
         'consent_donnees',
         'otp_code',
         'otp_verified_at',
+        'is_admin',
     ];
 
     protected $hidden = [
@@ -33,10 +34,9 @@ class User extends Authenticatable
         'otp_verified_at' => 'datetime',
         'consent_cgu' => 'boolean',
         'consent_donnees' => 'boolean',
+        'is_admin' => 'boolean',
         'password' => 'hashed',
     ];
-
-    // ---- Relations ----
 
     public function teams()
     {
