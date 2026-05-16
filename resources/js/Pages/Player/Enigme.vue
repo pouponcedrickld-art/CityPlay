@@ -1,9 +1,11 @@
 <script setup>
 import { Head, useForm, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Dialog from 'primevue/dialog';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 const props = defineProps({
     partie: Object,
@@ -12,13 +14,86 @@ const props = defineProps({
 });
 
 const form = useForm({
-    reponse: ''
+    reponse: '',
+    latitude: null,
+    longitude: null,
+    distance_metres: null
 });
 
 const showHint = ref(false);
 const showSolution = ref(false);
+const isLocating = ref(false);
+const mapContainer = ref(null);
+let map = null;
+let userMarker = null;
+let targetCircle = null;
 
-const submitAnswer = () => {
+const initMap = () => {
+    if (!mapContainer.value) return;
+
+    // Centrer par défaut sur le lieu associé à l'énigme
+    const center = props.enigme.lieu?.latitude ? [props.enigme.lieu.latitude, props.enigme.lieu.longitude] : [48.8566, 2.3522];
+    map = L.map(mapContainer.value).setView(center, 16);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+};
+
+const checkLocation = () => {
+    if (!navigator.geolocation) {
+        alert("La géolocalisation n'est pas supportée par votre navigateur.");
+        return;
+    }
+
+    isLocating.value = true;
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            const { latitude, longitude } = position.coords;
+            form.latitude = latitude;
+            form.longitude = longitude;
+
+            // Mise à jour de la carte
+            if (!userMarker) {
+                userMarker = L.marker([latitude, longitude]).addTo(map);
+            } else {
+                userMarker.setLatLng([latitude, longitude]);
+            }
+            map.setView([latitude, longitude], 18);
+
+            // Calcul de la distance par rapport au lieu
+            if (props.enigme.lieu?.latitude && props.enigme.lieu?.longitude) {
+                const target = L.latLng(props.enigme.lieu.latitude, props.enigme.lieu.longitude);
+                const user = L.latLng(latitude, longitude);
+                const distance = user.distanceTo(target);
+                form.distance_metres = Math.round(distance);
+
+                if (distance <= 10) {
+                    submitLocationAnswer();
+                } else {
+                    alert(`Vous êtes à environ ${form.distance_metres} mètres de l'objectif. Rapprochez-vous encore !`);
+                }
+            }
+            isLocating.value = false;
+        },
+        (error) => {
+            console.error(error);
+            alert("Impossible de récupérer votre position. Veuillez vérifier vos paramètres de localisation.");
+            isLocating.value = false;
+        },
+        { enableHighAccuracy: true }
+    );
+};
+
+const submitLocationAnswer = () => {
+    form.post(route('progression.submit', props.partie.id), {
+        onSuccess: () => {
+            // Success logic handled by controller
+        }
+    });
+};
+
+const submitTextAnswer = () => {
     form.post(route('progression.submit', props.partie.id));
 };
 
@@ -27,6 +102,10 @@ const skipEnigme = () => {
         router.post(route('progression.next', props.partie.id));
     }
 };
+
+onMounted(() => {
+    initMap();
+});
 </script>
 
 <template>
@@ -73,9 +152,25 @@ const skipEnigme = () => {
                 </p>
             </div>
 
-            <!-- FORMULAIRE -->
-            <form @submit.prevent="submitAnswer" class="space-y-4">
+            <!-- CARTE ET GEOLOCALISATION -->
+            <div class="space-y-4">
+                <div class="bg-white p-2 rounded-3xl border border-orange-100 shadow-sm overflow-hidden">
+                    <div ref="mapContainer" class="w-full h-48 rounded-2xl z-0"></div>
+                </div>
+
+                <Button
+                    @click="checkLocation"
+                    label="Je suis sur place !"
+                    icon="pi pi-map-marker"
+                    class="w-full p-4 rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600 border-none font-bold uppercase tracking-widest shadow-lg shadow-blue-200"
+                    :loading="isLocating"
+                />
+            </div>
+
+            <!-- FORMULAIRE (Réponse textuelle optionnelle) -->
+            <form @submit.prevent="submitTextAnswer" class="space-y-4">
                 <div class="flex flex-col gap-2">
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-orange-900/40 ml-1">Ou saisissez votre réponse</label>
                     <InputText
                         v-model="form.reponse"
                         placeholder="Votre réponse ici..."
@@ -86,10 +181,11 @@ const skipEnigme = () => {
                 
                 <Button
                     type="submit"
-                    label="Valider ma réponse"
+                    label="Valider le texte"
                     icon="pi pi-check"
-                    class="w-full p-4 rounded-2xl bg-gradient-to-r from-[#FF9500] to-[#FF7B00] border-none font-bold uppercase tracking-widest shadow-lg shadow-orange-200"
+                    class="w-full p-4 rounded-2xl bg-white text-orange-600 border border-orange-200 font-bold uppercase tracking-widest shadow-sm"
                     :loading="form.processing"
+                    v-if="form.reponse"
                 />
             </form>
 
@@ -135,12 +231,15 @@ const skipEnigme = () => {
             <p class="text-orange-900/80 mb-4">
                 Attention, voir la solution vous fera perdre les points de cette énigme.
             </p>
-            <div class="bg-orange-50 p-4 rounded-xl border border-orange-100 italic">
-                La solution sera bientôt disponible.
+            <div v-if="enigme.solution" class="bg-orange-50 p-4 rounded-xl border border-orange-100 italic">
+                {{ enigme.solution }}
+            </div>
+            <div v-else class="bg-orange-50 p-4 rounded-xl border border-orange-100 italic">
+                La solution pour cette énigme est : <span class="font-bold">{{ enigme.reponse }}</span>
             </div>
             <template #footer>
                 <Button label="Retour" icon="pi pi-times" @click="showSolution = false" class="p-button-text" />
-                <Button label="Voir la solution" icon="pi pi-eye" @click="showSolution = false" class="p-button-orange" />
+                <Button label="OK, j'ai compris" icon="pi pi-check" @click="skipEnigme" class="p-button-orange" />
             </template>
         </Dialog>
     </div>

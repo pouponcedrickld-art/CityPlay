@@ -6,6 +6,7 @@
 */
 import SidebarLayout from '@/Layouts/SidebarLayout.vue';
 import { useForm, Head } from '@inertiajs/vue3';
+import { onMounted, ref, watch } from 'vue';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
@@ -13,6 +14,9 @@ import Textarea from 'primevue/textarea';
 import ToggleSwitch from 'primevue/toggleswitch';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
+import InputNumber from 'primevue/inputnumber';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 /*
 |--------------------------------------------------------------------------
@@ -26,15 +30,59 @@ const props = defineProps({
 
 /*
 |--------------------------------------------------------------------------
+| MAP SETUP
+|--------------------------------------------------------------------------
+*/
+const mapContainer = ref(null);
+let map = null;
+let marker = null;
+
+const initMap = () => {
+    if (!mapContainer.value) return;
+
+    map = L.map(mapContainer.value).setView([48.8566, 2.3522], 13); // Default Paris
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+};
+
+const updateMarker = (lat, lng) => {
+    if (marker) {
+        marker.setLatLng([lat, lng]);
+    } else {
+        marker = L.marker([lat, lng]).addTo(map);
+    }
+    map.setView([lat, lng], 16);
+};
+
+onMounted(() => {
+    initMap();
+});
+
+/*
+|--------------------------------------------------------------------------
 | FORMULAIRE
 |--------------------------------------------------------------------------
 */
 const form = useForm({
     lieu_id: null,
     type: 'force1',
+    titre: '',
     texte: '',
+    reponse: '',
+    solution: '',
+    points: 10,
     image_url: '',
     actif: true
+});
+
+// Quand on change de lieu, on centre la carte sur le lieu
+watch(() => form.lieu_id, (newLieuId) => {
+    const lieu = props.lieux.find(l => l.id === newLieuId);
+    if (lieu && lieu.latitude && lieu.longitude) {
+        updateMarker(lieu.latitude, lieu.longitude);
+    }
 });
 
 const submit = () => {
@@ -98,17 +146,79 @@ const submit = () => {
                         </div>
                     </div>
 
+                    <!-- Titre & Points -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="flex flex-col gap-2">
+                            <label class="text-[10px] font-bold uppercase tracking-widest text-orange-900/40 ml-1">Titre de l'énigme</label>
+                            <InputText
+                                v-model="form.titre"
+                                placeholder="Nom de l'énigme"
+                                class="w-full border-orange-50 focus:border-orange-300 rounded-xl"
+                                :class="{ 'p-invalid': form.errors.titre }"
+                            />
+                            <small class="text-red-500" v-if="form.errors.titre">{{ form.errors.titre }}</small>
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <label class="text-[10px] font-bold uppercase tracking-widest text-orange-900/40 ml-1">Points accordés</label>
+                            <InputNumber
+                                v-model="form.points"
+                                :min="0"
+                                placeholder="Nombre de points"
+                                class="w-full border-orange-50 focus:border-orange-300 rounded-xl"
+                                :class="{ 'p-invalid': form.errors.points }"
+                            />
+                            <small class="text-red-500" v-if="form.errors.points">{{ form.errors.points }}</small>
+                        </div>
+                    </div>
+
                     <!-- Texte de l'énigme -->
                     <div class="flex flex-col gap-2">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-orange-900/40 ml-1">Texte de l'énigme</label>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-orange-900/40 ml-1">Texte de l'énigme (Question)</label>
                         <Textarea
                             v-model="form.texte"
-                            rows="5"
+                            rows="4"
                             placeholder="Écrivez ici l'énigme que les joueurs devront résoudre..."
                             class="w-full border-orange-50 focus:border-orange-300 rounded-xl p-4"
                             :class="{ 'p-invalid': form.errors.texte }"
                         />
                         <small class="text-red-500" v-if="form.errors.texte">{{ form.errors.texte }}</small>
+                    </div>
+
+                    <!-- Réponse & Solution -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="flex flex-col gap-2">
+                            <label class="text-[10px] font-bold uppercase tracking-widest text-orange-900/40 ml-1">Réponse attendue (Indice court)</label>
+                            <InputText
+                                v-model="form.reponse"
+                                placeholder="Ex: La tour Eiffel"
+                                class="w-full border-orange-50 focus:border-orange-300 rounded-xl"
+                                :class="{ 'p-invalid': form.errors.reponse }"
+                            />
+                            <small class="text-red-500" v-if="form.errors.reponse">{{ form.errors.reponse }}</small>
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <label class="text-[10px] font-bold uppercase tracking-widest text-orange-900/40 ml-1">Solution détaillée</label>
+                            <Textarea
+                                v-model="form.solution"
+                                rows="2"
+                                placeholder="Explication complète de la solution..."
+                                class="w-full border-orange-50 focus:border-orange-300 rounded-xl p-4"
+                                :class="{ 'p-invalid': form.errors.solution }"
+                            />
+                            <small class="text-red-500" v-if="form.errors.solution">{{ form.errors.solution }}</small>
+                        </div>
+                    </div>
+
+                    <!-- Géolocalisation -->
+                    <div class="flex flex-col gap-4">
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-orange-900/40 ml-1">Localisation du lieu associé</label>
+                        <div ref="mapContainer" class="w-full h-64 rounded-2xl border border-orange-100 overflow-hidden z-0"></div>
+                        
+                        <p class="text-[10px] text-orange-900/60 font-medium italic">
+                            Note: La localisation est définie par le lieu sélectionné ci-dessus.
+                        </p>
                     </div>
 
                     <!-- Image URL -->

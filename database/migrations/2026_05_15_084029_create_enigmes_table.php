@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->enum('type', ['force1', 'force2', 'force3', 'enfant']);
             $table->string('titre')->nullable();
             $table->text('texte');
+            $table->string('reponse')->nullable();
             $table->integer('points')->default(0);
             $table->string('image_url')->nullable();
             $table->boolean('actif')->default(true);

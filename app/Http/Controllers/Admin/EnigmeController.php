@@ -45,6 +45,7 @@ class EnigmeController extends Controller
             'texte'     => 'required|string|min:5',
             'points'    => 'required|integer|min:0',
             'image_url' => 'nullable|url',
+            'solution'  => 'nullable|string',
             'actif'     => 'boolean',
         ]);
 
@@ -77,6 +78,7 @@ class EnigmeController extends Controller
             'texte'     => 'required|string|min:5',
             'points'    => 'required|integer|min:0',
             'image_url' => 'nullable|url',
+            'solution'  => 'nullable|string',
             'actif'     => 'boolean',
         ]);
 
