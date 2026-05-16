@@ -39,6 +39,13 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     Dashboard
                                 </NavLink>
+
+                                <NavLink
+                                    v-if="$page.props.auth.user.is_admin || $page.props.auth.user.roles.includes('admin')"
+                                    :href="route('admin.dashboard')"
+                                >
+                                    Admin Panel
+                                </NavLink>
                             </div>
                         </div>
 
@@ -132,21 +139,28 @@ const showingNavigationDropdown = ref(false);
                 </div>
 
                 <!-- Responsive Navigation Menu -->
-                <div
-                    :class="{
-                        block: showingNavigationDropdown,
-                        hidden: !showingNavigationDropdown,
-                    }"
-                    class="sm:hidden"
-                >
-                    <div class="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink
-                            :href="route('dashboard')"
-                            :active="route().current('dashboard')"
-                        >
-                            Dashboard
-                        </ResponsiveNavLink>
-                    </div>
+            <div
+                :class="{
+                    block: showingNavigationDropdown,
+                    hidden: !showingNavigationDropdown,
+                }"
+                class="sm:hidden"
+            >
+                <div class="space-y-1 pb-3 pt-2">
+                    <ResponsiveNavLink
+                        :href="route('dashboard')"
+                        :active="route().current('dashboard')"
+                    >
+                        Dashboard
+                    </ResponsiveNavLink>
+
+                    <ResponsiveNavLink
+                        v-if="$page.props.auth.user.is_admin || $page.props.auth.user.roles.includes('admin')"
+                        :href="route('admin.dashboard')"
+                    >
+                        Admin Panel
+                    </ResponsiveNavLink>
+                </div>
 
                     <!-- Responsive Settings Options -->
                     <div

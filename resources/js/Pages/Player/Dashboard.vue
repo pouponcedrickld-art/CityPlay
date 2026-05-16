@@ -6,7 +6,7 @@
 
 <template>
 
-<h1>Player Dash</h1>
+<h1>Pas mal</h1>
 
 </template>
 
