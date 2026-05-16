@@ -194,21 +194,26 @@ const submit = () => {
                 </template>
             </Dialog>
 
-            <div class="mt-4 flex items-center justify-end">
-                <Link
-                    :href="route('login')"
-                    class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                >
-                    Already registered?
-                </Link>
+            <!-- Actions : Déjà inscrit ? / Créer mon compte -->
+            <div class="mt-8 flex flex-col gap-4">
+                <div class="flex items-center justify-between">
+                    <!-- Lien vers la page de connexion -->
+                    <Link
+                        :href="route('login')"
+                        class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+                    >
+                        Déjà inscrit ?
+                    </Link>
 
-                <PrimaryButton
-                    class="ms-4"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    Register
-                </PrimaryButton>
+                    <!-- Bouton de validation de l'inscription -->
+                    <PrimaryButton
+                        class="ms-4 px-8 py-4 bg-gradient-to-r from-[#FF9500] to-[#FF7B00] border-none font-black uppercase tracking-widest text-xs shadow-lg shadow-orange-200"
+                        :class="{ 'opacity-25': form.processing }"
+                        :disabled="form.processing"
+                    >
+                        Créer mon compte
+                    </PrimaryButton>
+                </div>
             </div>
         </form>
     </GuestLayout>
