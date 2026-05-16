@@ -4,17 +4,17 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         Schema::create('environnements', function (Blueprint $table) {
-             $table->id();
+            $table->id();
             $table->foreignId('ville_id')->constrained('villes')->onDelete('cascade');
             $table->string('nom', 150);
-            $table->integer('retention_profils_jours')->default(90); // ex: 30, 90, 365
+            $table->integer('retention_profils_jours')->default(90);
             $table->text('regles')->nullable();
-            $table->unsignedInteger('duree_vie_lien_heures')->default(24); // TTL lien invitation
-            // Messages paramétrables
+            $table->unsignedInteger('duree_vie_lien_heures')->default(24);
             $table->text('message_bonne_reponse')->nullable();
             $table->text('message_mauvaise_reponse')->nullable();
             $table->text('message_fin')->nullable();

@@ -9,9 +9,10 @@ class Environnement extends Model
 {
     use HasFactory;
 
-  protected $fillable = [
+    protected $fillable = [
         'ville_id',
         'nom',
+        'actif',
         'retention_profils_jours',
         'regles',
         'duree_vie_lien_heures',
@@ -25,6 +26,7 @@ class Environnement extends Model
     ];
 
     protected $casts = [
+        'actif' => 'boolean',
         'retention_profils_jours' => 'integer',
         'duree_vie_lien_heures'   => 'integer',
     ];

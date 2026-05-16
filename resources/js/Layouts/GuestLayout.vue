@@ -16,7 +16,7 @@ import Toast from 'primevue/toast';
         </div>
 
         <div
-            class="mt-6 w-full overflow-hidden bg-white px-6 py-4 shadow-md sm:max-w-md sm:rounded-lg"
+            class="mt-6 w-full bg-white px-6 py-8 shadow-2xl shadow-orange-950/10 sm:max-w-md sm:rounded-3xl border border-orange-50"
         >
             <slot />
         </div>

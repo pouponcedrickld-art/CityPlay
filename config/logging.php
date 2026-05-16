@@ -52,6 +52,12 @@ return [
 
     'channels' => [
 
+        'cityplay' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/cityplay.log'),
+            'level' => 'info',
+        ],
+
         'stack' => [
             'driver' => 'stack',
             'channels' => explode(',', (string) env('LOG_STACK', 'single')),

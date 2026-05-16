@@ -9,6 +9,9 @@ class Partie extends Model
 {
     use HasFactory;
 
+    /**
+     * Attributs fillables pour mass assignment
+     */
     protected $fillable = [
         'environnement_id',
         'createur_id',
@@ -17,26 +20,24 @@ class Partie extends Model
         'parametres',
         'statut',
         'code_liaison',
+        'lien_partage',
         'expire_at',
+        'verrouillee',
         'started_at',
-        'ended_at'
+        'ended_at',
     ];
 
-    protected $casts = [
-        'parametres' => 'array',
-        'expire_at' => 'datetime',
-        'started_at' => 'datetime',
-        'ended_at' => 'datetime',
-    ];
+    /**
+     * Relations
+     */
+    public function createur()
+    {
+        return $this->belongsTo(User::class, 'createur_id');
+    }
 
     public function environnement()
     {
         return $this->belongsTo(Environnement::class);
-    }
-
-    public function createur()
-    {
-        return $this->belongsTo(User::class, 'createur_id');
     }
 
     public function team()
@@ -44,8 +45,19 @@ class Partie extends Model
         return $this->belongsTo(Team::class);
     }
 
-    public function progressions()
+    public function progression()
     {
-        return $this->hasMany(Progression::class);
+        return $this->hasOne(ProgressionPartie::class);
     }
+
+    /**
+     * Cast des attributs
+     */
+    protected $casts = [
+        'parametres' => 'array',
+        'verrouillee' => 'boolean',
+        'expires_at' => 'datetime',
+        'started_at' => 'datetime',
+        'ended_at' => 'datetime',
+    ];
 }
