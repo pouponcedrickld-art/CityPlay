@@ -45,9 +45,14 @@ Route::middleware('auth')->group(function () {
 
     // Progression
     Route::get('/parties/{partie}/enigme', [ProgressionController::class, 'getCurrentEnigme'])->name('progression.enigme');
+    Route::post('/parties/{partie}/reponse', [ProgressionController::class, 'submitAnswer'])->name('progression.submit');
+    Route::get('/parties/{partie}/succes', [ProgressionController::class, 'showSuccess'])->name('progression.success');
+    Route::get('/parties/{partie}/echec', [ProgressionController::class, 'showFailure'])->name('progression.failure');
+    Route::post('/parties/{partie}/suivant', [ProgressionController::class, 'nextEnigme'])->name('progression.next');
+    Route::get('/parties/{partie}/resume', [ProgressionController::class, 'showSummary'])->name('progression.summary');
     Route::post('/parties/{partie}/progression', [ProgressionController::class, 'store'])->name('progression.store');
 
-    // GPS validation
+    // Validation GPS
     Route::post('/lieux/{lieu}/valider', [GPSValidationController::class, 'validatePosition'])->name('gps.valider');
 
     // Admin énigmes
