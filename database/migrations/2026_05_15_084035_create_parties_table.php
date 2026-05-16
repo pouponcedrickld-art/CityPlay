@@ -19,7 +19,7 @@ return new class extends Migration
             $table->enum('mode', ['solo', 'team']);
             $table->json('parametres'); // durée, locomotion, difficulté, etc.
             $table->enum('statut', ['en_attente', 'en_cours', 'terminee', 'pause'])->default('en_attente');
-            $table->string('code_liaison')->unique();
+            $table->string('code_liaison')->unique()->nullable();
             $table->timestamp('expire_at')->nullable();
             $table->timestamp('started_at')->nullable();
             $table->timestamp('ended_at')->nullable();
