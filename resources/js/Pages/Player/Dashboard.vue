@@ -30,7 +30,7 @@ const getStatutColor = (statut) => {
     <Head title="Tableau de Bord" />
 
 <h1>Pas mal</h1>
-
+<div>
         <main class="p-6 max-w-4xl mx-auto space-y-8 mt-4">
             <!-- ACTIVE GAMES -->
             <section class="space-y-4">

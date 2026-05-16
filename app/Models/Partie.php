@@ -48,4 +48,12 @@ class Partie extends Model
     {
         return $this->hasMany(Progression::class);
     }
+
+    /**
+     * Retourne la progression de l'utilisateur actuel pour cette partie.
+     */
+    public function progression()
+    {
+        return $this->hasOne(Progression::class)->where('user_id', auth()->id());
+    }
 }

@@ -5,19 +5,27 @@ namespace App\Http\Controllers;
 use App\Models\Partie;
 use App\Models\Environnement;
 use App\Models\Progression;
+use App\Services\PartieService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 
 class PartieController extends Controller
 {
+    protected $partieService;
+
+    public function __construct(PartieService $partieService)
+    {
+        $this->partieService = $partieService;
+    }
+
     /**
      * Affiche la liste des parties de l'utilisateur.
      * C'est le tableau de bord principal du joueur.
      */
     public function index()
     {
-        $parties = Partie::where('user_id', auth()->id())
+        $parties = Partie::where('createur_id', auth()->id())
             ->with(['environnement', 'progression'])
             ->latest()
             ->get();
@@ -53,29 +61,15 @@ class PartieController extends Controller
             'environnement_id' => 'required|exists:environnements,id',
         ]);
 
-        $environnement = Environnement::with('lieux')->find($request->environnement_id);
-
-        // Création de la partie
-        $partie = Partie::create([
-            'user_id' => auth()->id(),
+        $data = [
             'environnement_id' => $request->environnement_id,
-            'code_partie' => strtoupper(Str::random(6)), // Code unique pour rejoindre/partager
-            'statut' => 'en_cours',
-            'score_total' => 0,
-        ]);
+            'mode' => 'solo',
+            'duree_prevue' => 60,
+            'locomotion' => 'pied',
+            'difficulte' => 2,
+        ];
 
-        // Initialisation de la progression
-        // On récupère tous les IDs des lieux de l'environnement pour définir le parcours
-        $lieuxIds = $environnement->lieux->pluck('id')->toArray();
-
-        Progression::create([
-            'partie_id' => $partie->id,
-            'user_id' => auth()->id(),
-            'lieux_restants' => $lieuxIds,
-            'lieux_decouverts' => [],
-            'nb_enigmes_resolues' => 0,
-            'temps_restant_minutes' => $environnement->duree_estimee ?? 60,
-        ]);
+        $partie = $this->partieService->creerPartie($data, auth()->id());
 
         return redirect()->route('progression.enigme', $partie->id)
             ->with('success', 'La partie a commencé ! Bonne chance.');
@@ -87,7 +81,7 @@ class PartieController extends Controller
     public function show(Partie $partie)
     {
         // On vérifie que la partie appartient bien à l'utilisateur
-        if ($partie->user_id !== auth()->id()) {
+        if ($partie->createur_id !== auth()->id()) {
             abort(403);
         }
 
