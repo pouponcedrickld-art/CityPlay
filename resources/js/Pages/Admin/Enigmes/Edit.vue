@@ -57,6 +57,7 @@ const initMap = () => {
 };
 
 const updateMarker = (lat, lng) => {
+    if (!map) return;
     if (marker) {
         marker.setLatLng([lat, lng]);
     } else {
@@ -88,6 +89,14 @@ const form = useForm({
 
 // Quand on change de lieu, on centre la carte sur le lieu
 watch(() => form.lieu_id, (newLieuId) => {
+    if (!newLieuId) {
+        if (marker && map) {
+            map.removeLayer(marker);
+            marker = null;
+        }
+        return;
+    }
+
     const lieu = props.lieux.find(l => l.id === newLieuId);
     if (lieu && lieu.latitude && lieu.longitude) {
         updateMarker(lieu.latitude, lieu.longitude);

@@ -14,6 +14,7 @@ class Enigme extends Model
         'type',
         'titre',
         'texte',
+        'reponse',
         'points',
         'image_url',
         'solution',

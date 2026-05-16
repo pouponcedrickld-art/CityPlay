@@ -12,7 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('enigmes', function (Blueprint $table) {
-            $table->dropColumn(['latitude', 'longitude']);
+            if (!Schema::hasColumn('enigmes', 'reponse')) {
+                $table->string('reponse')->nullable()->after('texte');
+            }
+            if (!Schema::hasColumn('enigmes', 'solution')) {
+                $table->text('solution')->nullable()->after('reponse');
+            }
         });
     }
 
@@ -22,8 +27,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('enigmes', function (Blueprint $table) {
-            $table->decimal('latitude', 10, 8)->nullable()->after('image_url');
-            $table->decimal('longitude', 11, 8)->nullable()->after('latitude');
+            $table->dropColumn(['reponse', 'solution']);
         });
     }
 };
