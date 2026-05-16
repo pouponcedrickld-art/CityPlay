@@ -29,23 +29,7 @@ const getStatutColor = (statut) => {
 <template>
     <Head title="Tableau de Bord" />
 
-    <div class="min-h-screen bg-gray-50 pb-20">
-        <!-- HEADER -->
-        <div class="bg-white border-b border-orange-100 p-8 shadow-sm">
-            <div class="max-w-4xl mx-auto flex justify-between items-center">
-                <div>
-                    <h1 class="text-2xl font-black text-orange-950 uppercase tracking-tight">Bonjour, Aventurier !</h1>
-                    <p class="text-orange-900/40 font-bold uppercase tracking-widest text-[10px] mt-1">Prêt pour une nouvelle énigme ?</p>
-                </div>
-                <Link :href="route('parties.create')">
-                    <Button 
-                        label="Nouvelle Partie" 
-                        icon="pi pi-plus" 
-                        class="p-button-orange rounded-xl font-black uppercase tracking-widest text-xs"
-                    />
-                </Link>
-            </div>
-        </div>
+<h1>Pas mal</h1>
 
         <main class="p-6 max-w-4xl mx-auto space-y-8 mt-4">
             <!-- ACTIVE GAMES -->
@@ -130,9 +114,8 @@ const getStatutColor = (statut) => {
     </div>
 </template>
 
-<style>
-.p-button-orange {
-    background: #FF9500 !important;
-    border: none !important;
-}
+
+<style scoped>
+
+
 </style>
