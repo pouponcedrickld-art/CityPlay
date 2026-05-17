@@ -12,10 +12,6 @@ import ConfirmationService from 'primevue/confirmationservice';
 import ToastService from 'primevue/toastservice';
 
 
-
-// PRIME ICONS
-import 'primeicons/primeicons.css';
-
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({
@@ -49,6 +45,7 @@ createInertiaApp({
     },
 
     progress: {
-        color: '#4B5563',
+        color: '#FF9500',
+        showSpinner: true,
     },
 });

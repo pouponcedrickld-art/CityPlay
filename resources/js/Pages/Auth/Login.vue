@@ -92,23 +92,44 @@ const submit = () => {
                 </label>
             </div>
 
-            <div class="mt-4 flex items-center justify-end">
-                <Link
-                    v-if="canResetPassword"
-                    :href="route('password.request')"
-                    class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                >
-                    Forgot your password?
-                </Link>
+            <!-- Section des actions (Mot de passe oublié, Inscription, Connexion) -->
+            <div class="mt-6 flex flex-col gap-4">
+                <div class="flex items-center justify-between">
+                    <!-- Lien vers la réinitialisation du mot de passe -->
+                    <Link
+                        v-if="canResetPassword"
+                        :href="route('password.request')"
+                        class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    >
+                        Mot de passe oublié ?
+                    </Link>
 
-                <PrimaryButton
-                    class="ms-4"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    Log in
-                </PrimaryButton>
+                    <!-- Bouton de soumission du formulaire -->
+                    <PrimaryButton
+                        class="ms-4"
+                        :class="{ 'opacity-25': form.processing }"
+                        :disabled="form.processing"
+                    >
+                        Se connecter
+                    </PrimaryButton>
+                </div>
             </div>
         </form>
+
+        <!-- LIEN VERS L'INSCRIPTION (OUTSIDE FORM) -->
+        <div class="mt-10 pt-8 border-t border-orange-100 text-center space-y-4">
+            <p class="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em]">Nouveau sur CityPlay ?</p>
+            
+            <Link
+                :href="route('register')"
+                class="inline-flex items-center justify-center w-full p-4 bg-white border-2 border-orange-100 rounded-2xl text-orange-600 font-black uppercase tracking-widest text-xs hover:bg-orange-50 hover:border-orange-200 transition-all shadow-sm active:scale-95"
+            >
+                Créer mon compte joueur
+            </Link>
+            
+            <p class="text-[9px] text-gray-400 font-medium italic">
+                Rejoignez l'aventure en quelques secondes !
+            </p>
+        </div>
     </GuestLayout>
 </template>
