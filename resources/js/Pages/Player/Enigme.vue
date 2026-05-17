@@ -364,6 +364,34 @@ onUnmounted(() => {
                     </div>
                 </template>
             </Dialog>
+
+            <Dialog v-model:visible="showSkipConfirm" modal header="Passer cette énigme ?" :style="{ width: '90vw', maxWidth: '400px' }" class="game-dialog">
+                <div class="p-6 space-y-4">
+                    <p class="text-white/70 font-medium leading-relaxed italic">
+                        "Voulez-vous vraiment passer ce défi ? Vous ne gagnerez aucun point pour cette étape."
+                    </p>
+                </div>
+                <template #footer>
+                    <div class="flex gap-3 w-full p-4 pt-0">
+                        <button @click="showSkipConfirm = false" class="flex-1 p-4 rounded-xl bg-white/5 text-white/60 font-black uppercase tracking-widest text-[10px]">Annuler</button>
+                        <button @click="confirmSkip" class="flex-1 p-4 rounded-xl bg-orange-600 text-white font-black uppercase tracking-widest text-[10px]">Confirmer</button>
+                    </div>
+                </template>
+            </Dialog>
+
+            <Dialog v-model:visible="showAbandonConfirm" modal header="Abandonner la mission ?" :style="{ width: '90vw', maxWidth: '400px' }" class="game-dialog">
+                <div class="p-6 space-y-4">
+                    <p class="text-white/70 font-medium leading-relaxed italic">
+                        "Êtes-vous certain de vouloir abandonner ? Votre progression actuelle sera sauvegardée mais la mission s'arrêtera ici."
+                    </p>
+                </div>
+                <template #footer>
+                    <div class="flex gap-3 w-full p-4 pt-0">
+                        <button @click="showAbandonConfirm = false" class="flex-1 p-4 rounded-xl bg-white/5 text-white/60 font-black uppercase tracking-widest text-[10px]">Non, continuer</button>
+                        <button @click="confirmAbandon" class="flex-1 p-4 rounded-xl bg-red-600 text-white font-black uppercase tracking-widest text-[10px] shadow-lg shadow-red-600/20">Oui, abandonner</button>
+                    </div>
+                </template>
+            </Dialog>
         </div>
     </AuthenticatedLayout>
 </template>
