@@ -56,7 +56,7 @@ class Partie extends Model
     protected $casts = [
         'parametres' => 'array',
         'verrouillee' => 'boolean',
-        'expires_at' => 'datetime',
+        'expire_at' => 'datetime',
         'started_at' => 'datetime',
         'ended_at' => 'datetime',
     ];

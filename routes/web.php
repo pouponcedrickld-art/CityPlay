@@ -41,18 +41,42 @@ Route::middleware('auth')->group(function () {
 
     // Routes nécessitant la vérification OTP
     Route::middleware('otp.verified')->group(function () {
+        // Test Game
+        Route::get('/test-game', function() {
+            $user = auth()->user();
+            $env = \App\Models\Environnement::where('actif', true)->first();
+            if (!$env) return "Aucun environnement actif trouvé.";
+            
+            $data = [
+                'environnement_id' => $env->id,
+                'mode' => 'solo',
+                'duree' => 60,
+                'locomotion' => 'pied',
+                'difficulte' => 2,
+                'nb_joueurs' => 1
+            ];
+            
+            try {
+                $service = app(\App\Services\PartieService::class);
+                $partie = $service->creerPartie($data, $user->id);
+                return redirect()->route('progression.enigme', $partie);
+            } catch (\Exception $e) {
+                return "Erreur : " . $e->getMessage();
+            }
+        });
+
         // Dashboard joueur
         Route::get('/dashboard', [PartieController::class, 'index'])->name('dashboard');
 
         // Parties
-        Route::get('/parties', [PartieController::class, 'index'])->name('parties.index');
-        Route::get('/parties/create', [PartieController::class, 'create'])->name('parties.create');
-        Route::post('/parties', [PartieController::class, 'store'])->name('parties.store');
-        Route::get('/parties/{partie}', [PartieController::class, 'show'])->name('parties.show');
+        Route::get('/parties', [PartieController::class, 'index'])->name('parties.web.index');
+        Route::get('/parties/create', [PartieController::class, 'create'])->name('parties.web.create');
+        Route::post('/parties', [PartieController::class, 'store'])->name('parties.web.store');
+        Route::get('/parties/{partie}', [PartieController::class, 'show'])->name('parties.web.show');
         Route::get('/parties/{partie}/team-setup', [PartieController::class, 'teamSetup'])->name('parties.team-setup');
         Route::post('/parties/{partie}/update-role', [PartieController::class, 'updateRole'])->name('parties.update-role');
-        Route::post('/parties/{partie}/pause', [PartieController::class, 'pause'])->name('parties.pause');
-        Route::post('/parties/{partie}/abandon', [PartieController::class, 'abandon'])->name('parties.abandon');
+        Route::post('/parties/{partie}/pause', [PartieController::class, 'pause'])->name('parties.web.pause');
+        Route::post('/parties/{partie}/abandon', [PartieController::class, 'abandon'])->name('parties.web.abandon');
 
         // Progression
         Route::get('/parties/{partie}/enigme', [ProgressionController::class, 'getCurrentEnigme'])->name('progression.enigme');

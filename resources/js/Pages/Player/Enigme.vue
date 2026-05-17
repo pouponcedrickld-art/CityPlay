@@ -87,22 +87,50 @@ const confirmSkip = () => {
 
 const togglePause = () => {
     showPauseConfirm.value = false;
-    router.post(route('parties.pause', props.partie.id));
+    router.post(route('parties.web.pause', props.partie.id));
 };
 
 const confirmAbandon = () => {
     showAbandonConfirm.value = false;
-    router.post(route('parties.abandon', props.partie.id));
+    router.post(route('parties.web.abandon', props.partie.id));
+};
+
+// LIVE TIMER LOGIC
+const timeLeft = ref(props.progression?.temps_restant || 3600);
+let timerInterval = null;
+
+const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+};
+
+const startTimer = () => {
+    if (timerInterval) return;
+    timerInterval = setInterval(() => {
+        if (props.progression?.statut === 'en_cours' && timeLeft.value > 0) {
+            timeLeft.value--;
+            
+            // On synchronise avec le serveur toutes les 30 secondes pour éviter les triches de rafraîchissement
+            if (timeLeft.value % 30 === 0) {
+                router.post(route('progression.store', props.partie.id), {
+                    temps_restant: timeLeft.value
+                }, { preserveScroll: true, preserveState: true });
+            }
+        }
+    }, 1000);
 };
 
 onMounted(() => {
     window.addEventListener('online', updateOnlineStatus);
     window.addEventListener('offline', updateOnlineStatus);
+    startTimer();
 });
 
 onUnmounted(() => {
     window.removeEventListener('online', updateOnlineStatus);
     window.removeEventListener('offline', updateOnlineStatus);
+    if (timerInterval) clearInterval(timerInterval);
 });
 </script>
 
@@ -110,235 +138,322 @@ onUnmounted(() => {
     <AuthenticatedLayout>
         <Head :title="'Énigme - ' + (partie?.environnement?.nom || 'En cours')" />
 
-        <div class="min-h-screen bg-gray-50 pb-24 transition-opacity duration-300" :class="{ 'opacity-50 pointer-events-none': isOffline }">
-        <!-- OFFLINE BANNER -->
-        <div v-if="isOffline" class="bg-red-500 text-white text-[10px] font-bold uppercase tracking-widest p-2 text-center sticky top-0 z-50">
-            Mode Hors-Ligne • Connexion perdue
-        </div>
-
-        <!-- HEADER -->
-        <div class="bg-white border-b border-orange-100 p-4 flex justify-between items-center sticky top-0 z-10 shadow-sm">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
-                    <i class="pi pi-box text-[#FF9500]"></i>
-                </div>
-                <div>
-                    <h1 class="text-sm font-black text-orange-950 uppercase tracking-tight">
-                        Énigme {{ progression?.nb_enigmes_resolues + 1 || 1 }}
-                    </h1>
-                    <p class="text-[10px] text-orange-900/40 font-bold uppercase tracking-widest">
-                        {{ enigme?.type || 'Type inconnu' }} • {{ enigme?.points || 0 }} pts
-                    </p>
-                </div>
-            </div>
-            
-            <div class="flex items-center gap-2">
-                <Button @click="showPauseConfirm = true" icon="pi pi-pause" class="p-button-text p-button-sm text-orange-950" />
-                <div class="px-3 py-1 bg-orange-50 rounded-lg border border-orange-100 flex items-center gap-2">
-                    <i class="pi pi-clock text-[#FF9500] text-xs"></i>
-                    <span class="text-xs font-bold text-orange-950">{{ progression?.temps_restant_minutes }} min</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- FLASH MESSAGES -->
-        <div v-if="$page.props.flash?.error" class="mx-6 mt-4 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-xs font-bold animate-bounce">
-            <i class="pi pi-exclamation-circle mr-2"></i>
-            {{ $page.props.flash.error }}
-        </div>
-
-        <main class="p-6 max-w-2xl mx-auto space-y-6">
-            <!-- IMAGES DU LIEU -->
-            <div v-if="enigme?.lieu?.photos?.length" class="relative group rounded-3xl overflow-hidden shadow-lg border-4 border-white transition-transform hover:scale-[1.02]">
-                <div class="grid grid-cols-2 gap-1 h-48">
-                    <img v-for="(photo, index) in enigme.lieu.photos.slice(0, 4)" :key="index" :src="photo.url" class="w-full h-full object-cover">
-                </div>
-                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
-                <div class="absolute bottom-3 left-3 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full text-[9px] font-black text-white uppercase tracking-widest">
-                    {{ enigme.lieu.nom }}
-                </div>
-            </div>
-            <div v-else-if="enigme?.image_url" class="relative group rounded-3xl overflow-hidden shadow-lg border-4 border-white transition-transform hover:scale-[1.02]">
-                <img :src="enigme.image_url" alt="Image de l'énigme" class="w-full h-48 object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-            </div>
-
-            <!-- QUESTION -->
-            <div class="bg-white p-8 rounded-3xl border border-orange-100 shadow-sm relative overflow-hidden">
-                <div class="absolute -right-4 -top-4 w-24 h-24 bg-orange-50 rounded-full opacity-50"></div>
-                <div class="flex justify-between items-start mb-4 relative z-10">
-                    <h2 class="text-xl font-black text-orange-950 uppercase tracking-tight">
-                        {{ enigme?.titre || 'Défi en cours' }}
-                    </h2>
-                    <span class="px-2 py-1 bg-orange-100 text-orange-700 text-[8px] font-black rounded-md uppercase">{{ enigme?.type }}</span>
-                </div>
-                <p class="text-orange-900/80 leading-relaxed text-lg italic relative z-10">
-                    "{{ enigme?.texte || 'Pas de description pour cette énigme.' }}"
-                </p>
-                <div v-if="enigme?.lieu?.description" class="mt-4 pt-4 border-t border-orange-50 text-[11px] text-orange-900/50 font-medium">
-                    {{ enigme.lieu.description }}
-                </div>
-            </div>
-
-            <!-- GEOLOCALISATION (SANS CARTE ANTI-TRICHE) -->
-            <div class="space-y-4">
-                <div class="bg-blue-50/50 p-6 rounded-3xl border border-dashed border-blue-200 text-center space-y-3">
-                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
-                        <i class="pi pi-map-marker text-blue-600 text-xl" :class="{ 'animate-bounce': isLocating }"></i>
-                    </div>
-                    <div class="space-y-1">
-                        <p class="text-xs font-black text-blue-900 uppercase tracking-tight">Vérification de proximité</p>
-                        <p class="text-[9px] text-blue-800/60 font-bold uppercase tracking-widest">Vous devez être à moins de 10m du lieu</p>
+        <!-- PAUSE OVERLAY (Original Disposition with Game Colors) -->
+        <div v-if="progression?.statut === 'pause'" class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-xl flex items-center justify-center p-6">
+            <div class="w-full max-w-md bg-[#1a1a1a] rounded-[2.5rem] overflow-hidden shadow-2xl border-2 border-[#FF9500]/20 animate-fade-in-up">
+                <div class="bg-[#1a1a1a] p-12 text-center relative border-b border-white/5">
+                    <div class="absolute inset-0 opacity-10" :style="{ backgroundImage: 'radial-gradient(circle at 2px 2px, #FF9500 1px, transparent 0)', backgroundSize: '24px 24px' }"></div>
+                    <div class="relative z-10">
+                        <div class="w-20 h-20 bg-[#FF9500]/10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[#FF9500]/30 shadow-[0_0_20px_rgba(255,149,0,0.2)]">
+                            <i class="pi pi-pause text-[#FF9500] text-3xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-black text-white uppercase tracking-tighter leading-none">Partie en pause</h2>
                     </div>
                 </div>
+                
+                <div class="p-10 space-y-4">
+                    <p class="text-center font-bold text-white/60 mb-8">Que souhaitez-vous faire ?</p>
+                    
+                    <button @click="togglePause" class="w-full p-5 bg-[#FF9500] text-black rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-4 shadow-[0_8px_0_#cc7a00] active:shadow-none active:translate-y-[8px] transition-all">
+                        <div class="w-10 h-10 bg-black/10 rounded-xl flex items-center justify-center">
+                            <i class="pi pi-play-fill"></i>
+                        </div>
+                        Reprendre la partie
+                    </button>
 
-                <Button
-                    @click="checkLocation"
-                    :label="isLocating ? 'Vérification...' : 'Confirmer ma position'"
-                    :icon="isLocating ? 'pi pi-spin pi-spinner' : 'pi pi-check-circle'"
-                    class="w-full p-5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-700 border-none font-black uppercase tracking-widest shadow-xl shadow-blue-200 active:scale-95 transition-all"
-                    :disabled="isLocating || isOffline"
-                />
+                    <button @click="router.get(route('dashboard'))" class="w-full p-5 bg-white/5 text-white/70 rounded-2xl font-bold border border-white/10 flex items-center gap-4 hover:bg-white/10 transition-all active:scale-95">
+                        <div class="w-10 h-10 bg-[#FF9500]/10 rounded-xl flex items-center justify-center">
+                            <i class="pi pi-clock text-[#FF9500]"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="text-sm font-black uppercase tracking-tight leading-none">Mettre en pause</p>
+                            <p class="text-[10px] text-white/40">Sauvegarder et revenir plus tard</p>
+                        </div>
+                    </button>
+
+                    <button @click="showAbandonConfirm = true" class="w-full p-5 bg-red-600/10 text-red-500 rounded-2xl font-bold border border-red-500/20 flex items-center gap-4 hover:bg-red-600/20 transition-all active:scale-95">
+                        <div class="w-10 h-10 bg-red-600/10 rounded-xl flex items-center justify-center">
+                            <i class="pi pi-flag-fill text-red-600"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="text-sm font-black uppercase tracking-tight leading-none">Terminer la Quest</p>
+                            <p class="text-[10px] text-red-400">Voir le résumé final</p>
+                        </div>
+                    </button>
+
+                    <div class="mt-8 p-4 bg-black/20 rounded-2xl border border-white/5 flex items-center gap-3">
+                        <i class="pi pi-exclamation-triangle text-[#FF9500]/50"></i>
+                        <p class="text-[10px] text-white/30 font-black uppercase tracking-widest leading-tight">Votre profil sera conservé pendant 30 jours</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-container min-h-screen pb-24 transition-opacity duration-300" :class="{ 'opacity-50 pointer-events-none': isOffline || progression?.statut === 'pause' }">
+            <!-- OFFLINE BANNER -->
+            <div v-if="isOffline" class="bg-red-600 text-white text-[10px] font-black uppercase tracking-[0.2em] p-2 text-center sticky top-0 z-50 shadow-lg">
+                <i class="pi pi-wifi mr-2"></i> Connexion perdue • Mode Hors-Ligne
             </div>
 
-            <!-- FORMULAIRE -->
-            <form @submit.prevent="submitTextAnswer" class="space-y-4 bg-white/40 p-4 rounded-3xl border border-dashed border-orange-200">
-                <div class="flex flex-col gap-2">
-                    <label class="text-[10px] font-black uppercase tracking-widest text-orange-900/40 ml-1">Une idée ? Saisissez votre réponse</label>
-                    <div class="relative">
+            <!-- GAME HUD (Top Bar) -->
+            <div class="hud-top bg-[#1a1a1a] text-white p-4 flex justify-between items-center sticky top-0 z-40 border-b-2 border-[#FF9500]/30 backdrop-blur-md bg-opacity-90">
+                <div class="flex items-center gap-3">
+                    <div class="step-indicator relative">
+                        <svg class="w-12 h-12 -rotate-90">
+                            <circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="4" fill="transparent" class="text-white/10" />
+                            <circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="4" fill="transparent" :stroke-dasharray="125.6" :stroke-dashoffset="125.6 * (1 - (progression?.lieux_decouverts?.length + 1) / ((progression?.lieux_restants?.length || 0) + (progression?.lieux_decouverts?.length || 0) + 1))" class="text-[#FF9500] transition-all duration-1000" />
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center text-[10px] font-black">
+                            {{ (progression?.lieux_decouverts?.length || 0) + 1 }}
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="text-[10px] font-black text-[#FF9500] uppercase tracking-[0.2em]">Mission en cours</h1>
+                        <p class="text-sm font-black text-white uppercase tracking-tighter truncate max-w-[120px]">
+                            {{ partie?.environnement?.nom }}
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <div class="timer-badge px-4 py-2 bg-white/5 rounded-2xl border border-white/10 flex items-center gap-3">
+                        <div class="flex flex-col items-end">
+                            <span class="text-[8px] font-black text-white/40 uppercase tracking-widest">Temps</span>
+                            <span class="text-sm font-black font-mono text-white leading-none" :class="{ 'text-red-500 animate-pulse': timeLeft < 300 }">{{ formatTime(timeLeft) }}</span>
+                        </div>
+                        <i class="pi pi-clock text-[#FF9500]"></i>
+                    </div>
+                    <button @click="togglePause" class="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center hover:bg-white/10 active:scale-90 transition-all border border-white/10">
+                        <i class="pi pi-pause text-white"></i>
+                    </button>
+                </div>
+            </div>
+
+            <main class="p-6 max-w-2xl mx-auto space-y-8">
+                <!-- MISSION CARD (Image & Title) -->
+                <div class="mission-card relative rounded-[2rem] overflow-hidden shadow-2xl border-2 border-white/10 bg-[#1a1a1a]">
+                    <div v-if="enigme?.lieu?.photos?.length || enigme?.image_url" class="relative h-64">
+                        <img :src="enigme?.lieu?.photos?.length ? enigme.lieu.photos[0].url : enigme.image_url" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#1a1a1a] via-[#1a1a1a]/20 to-transparent"></div>
+                    </div>
+                    
+                    <div class="p-8 relative">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="px-3 py-1 bg-[#FF9500] text-black text-[9px] font-black rounded-full uppercase tracking-widest">
+                                {{ enigme?.type }}
+                            </span>
+                            <span class="px-3 py-1 bg-white/10 text-white/60 text-[9px] font-black rounded-full uppercase tracking-widest">
+                                +{{ enigme?.points || 0 }} PTS
+                            </span>
+                        </div>
+                        <h2 class="text-3xl font-black text-white uppercase tracking-tighter mb-4 leading-none">
+                            {{ enigme?.titre || 'Défi Secret' }}
+                        </h2>
+                        <div class="bg-white/5 p-6 rounded-2xl border border-white/5 italic text-lg text-white/90 leading-relaxed shadow-inner">
+                            <i class="pi pi-info-circle text-[#FF9500] mr-2 opacity-50"></i>
+                            "{{ enigme?.texte || 'Pas de description pour cette énigme.' }}"
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RADAR / GEOLOCALISATION -->
+                <div class="radar-section space-y-4">
+                    <div class="relative bg-[#1a1a1a] p-8 rounded-[2rem] border-2 border-[#FF9500]/20 overflow-hidden group">
+                        <div class="radar-pulse absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#FF9500]/5 rounded-full" :class="{ 'animating': isLocating }"></div>
+                        
+                        <div class="relative z-10 flex flex-col items-center text-center gap-4">
+                            <div class="radar-icon-container w-20 h-20 rounded-full bg-[#FF9500]/10 border-2 border-[#FF9500]/30 flex items-center justify-center">
+                                <i class="pi pi-map-marker text-3xl text-[#FF9500]" :class="{ 'animate-ping': isLocating }"></i>
+                            </div>
+                            <div class="space-y-1">
+                                <h3 class="text-sm font-black text-white uppercase tracking-[0.2em]">Scanner de proximité</h3>
+                                <p class="text-[10px] text-white/40 font-bold uppercase tracking-widest">Portée requise : <span class="text-[#FF9500]">10 mètres</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button
+                        @click="checkLocation"
+                        class="game-btn-primary w-full p-6 rounded-[1.5rem] bg-[#FF9500] text-black font-black uppercase tracking-[0.2em] shadow-[0_8px_0_#cc7a00] active:shadow-none active:translate-y-[8px] transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                        :disabled="isLocating || isOffline"
+                    >
+                        <i :class="isLocating ? 'pi pi-spin pi-spinner' : 'pi pi-compass'" class="text-xl"></i>
+                        {{ isLocating ? 'Scan en cours...' : 'Vérifier ma position' }}
+                    </button>
+                </div>
+
+                <!-- ANSWER FORM -->
+                <div class="answer-section bg-[#1a1a1a] p-8 rounded-[2rem] border-2 border-white/5 space-y-6">
+                    <h3 class="text-[10px] font-black text-[#FF9500] uppercase tracking-[0.2em] text-center">Terminal de réponse</h3>
+                    <form @submit.prevent="submitTextAnswer" class="relative">
                         <InputText
                             v-model="form.reponse"
-                            placeholder="Votre réponse ici..."
-                            class="w-full p-4 pr-12 rounded-2xl border-orange-100 focus:border-orange-400 focus:ring-4 focus:ring-orange-50 shadow-sm transition-all"
+                            placeholder="Saisissez le code ou la réponse..."
+                            class="game-input w-full p-6 bg-black/40 border-2 border-white/10 rounded-2xl text-white font-black placeholder:text-white/20 focus:border-[#FF9500] transition-all"
                             :disabled="form.processing || isOffline"
                         />
                         <button 
                             v-if="form.reponse"
                             type="submit"
-                            class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-orange-500 text-white rounded-xl flex items-center justify-center shadow-md active:scale-90 transition-transform"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 bg-[#FF9500] text-black rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all"
                             :disabled="form.processing"
                         >
-                            <i class="pi" :class="form.processing ? 'pi-spin pi-spinner' : 'pi-send'"></i>
+                            <i class="pi text-xl" :class="form.processing ? 'pi-spin pi-spinner' : 'pi-send'"></i>
                         </button>
-                    </div>
+                    </form>
                 </div>
-            </form>
 
-            <!-- ACTIONS SECONDAIRES -->
-            <div class="grid grid-cols-3 gap-3">
-                <button 
-                    @click="showHint = true"
-                    class="group flex flex-col items-center gap-2 p-4 bg-white rounded-2xl border border-orange-100 shadow-sm hover:border-orange-300 hover:shadow-md transition-all active:scale-95"
-                >
-                    <div class="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center group-hover:bg-orange-100 transition-colors">
-                        <i class="pi pi-info-circle text-[#FF9500]"></i>
+                <!-- GAME TOOLS (Secondary Actions) -->
+                <div class="grid grid-cols-4 gap-4">
+                    <button @click="showHint = true" class="tool-btn group">
+                        <div class="icon-box"><i class="pi pi-question text-xl"></i></div>
+                        <span class="label">Indice</span>
+                    </button>
+                    <button @click="showSolution = true" class="tool-btn group">
+                        <div class="icon-box"><i class="pi pi-eye text-xl"></i></div>
+                        <span class="label">Solution</span>
+                    </button>
+                    <button @click="showSkipConfirm = true" class="tool-btn group danger">
+                        <div class="icon-box"><i class="pi pi-fast-forward text-xl"></i></div>
+                        <span class="label">Passer</span>
+                    </button>
+                    <button @click="showAbandonConfirm = true" class="tool-btn group danger">
+                        <div class="icon-box"><i class="pi pi-power-off text-xl"></i></div>
+                        <span class="label">Quitter</span>
+                    </button>
+                </div>
+            </main>
+
+            <!-- MODALS (Styled for Game) -->
+            <Dialog v-model:visible="showHint" modal header="Transmission d'indice" :style="{ width: '90vw', maxWidth: '400px' }" class="game-dialog">
+                <div class="p-6 space-y-4">
+                    <div class="flex items-center gap-3 text-[#FF9500]">
+                        <i class="pi pi-bolt text-2xl animate-pulse"></i>
+                        <span class="text-xs font-black uppercase tracking-widest">Aide de mission</span>
                     </div>
-                    <span class="text-[10px] font-black uppercase tracking-widest text-orange-900/60">Indice</span>
-                </button>
-
-                <button 
-                    @click="showSolution = true"
-                    class="group flex flex-col items-center gap-2 p-4 bg-white rounded-2xl border border-orange-100 shadow-sm hover:border-orange-300 hover:shadow-md transition-all active:scale-95"
-                >
-                    <div class="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center group-hover:bg-orange-100 transition-colors">
-                        <i class="pi pi-eye text-[#FF9500]"></i>
-                    </div>
-                    <span class="text-[10px] font-black uppercase tracking-widest text-orange-900/60">Solution</span>
-                </button>
-
-                <button 
-                    @click="showSkipConfirm = true"
-                    class="group flex flex-col items-center gap-2 p-4 bg-white rounded-2xl border border-orange-100 shadow-sm hover:border-red-200 hover:shadow-md transition-all active:scale-95"
-                >
-                    <div class="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center group-hover:bg-red-100 transition-colors">
-                        <i class="pi pi-fast-forward text-red-400"></i>
-                    </div>
-                    <span class="text-[10px] font-black uppercase tracking-widest text-red-900/60">Passer</span>
-                </button>
-
-                <button 
-                    @click="showAbandonConfirm = true"
-                    class="group flex flex-col items-center gap-2 p-4 bg-white rounded-2xl border border-orange-100 shadow-sm hover:border-red-400 hover:shadow-md transition-all active:scale-95"
-                >
-                    <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center group-hover:bg-red-200 transition-colors">
-                        <i class="pi pi-trash text-red-600"></i>
-                    </div>
-                    <span class="text-[10px] font-black uppercase tracking-widest text-red-900/60">Abandon</span>
-                </button>
-            </div>
-        </main>
-
-        <!-- MODALS -->
-        <Dialog v-model:visible="showHint" modal header="Besoin d'un indice ?" :style="{ width: '90vw', maxWidth: '400px' }" class="custom-dialog">
-            <p class="text-orange-900/80 py-4 font-medium leading-relaxed">
-                L'indice sera implémenté prochainement pour vous aider à résoudre ce mystère !
-            </p>
-            <template #footer>
-                <Button label="Compris !" icon="pi pi-check" @click="showHint = false" class="p-button-orange w-full" />
-            </template>
-        </Dialog>
-
-        <Dialog v-model:visible="showSolution" modal header="Voir la solution ?" :style="{ width: '90vw', maxWidth: '400px' }" class="custom-dialog">
-            <div class="space-y-4 py-4">
-                <div class="flex items-center gap-3 p-3 bg-red-50 rounded-xl border border-red-100">
-                    <i class="pi pi-info-circle text-red-500"></i>
-                    <p class="text-[11px] font-bold text-red-700 uppercase leading-tight">
-                        Attention : Voir la solution annulera les points de cette énigme.
+                    <p class="text-white/80 font-medium leading-relaxed italic">
+                        "L'indice sera implémenté prochainement pour vous aider à résoudre ce mystère !"
                     </p>
                 </div>
-                <div v-if="enigme?.solution" class="bg-orange-50 p-5 rounded-2xl border border-orange-100 italic text-orange-950 shadow-inner">
-                    {{ enigme.solution }}
-                </div>
-                <div v-else class="bg-orange-50 p-5 rounded-2xl border border-orange-100 italic text-orange-950 shadow-inner">
-                    La réponse est : <span class="font-black uppercase tracking-tighter">{{ enigme?.reponse || 'Non définie' }}</span>
-                </div>
-            </div>
-            <template #footer>
-                <div class="flex gap-2 w-full">
-                    <Button label="Annuler" icon="pi pi-times" @click="showSolution = false" class="p-button-text flex-1" />
-                    <Button label="J'abandonne" icon="pi pi-check" @click="confirmSkip" class="p-button-orange flex-1" />
-                </div>
-            </template>
-        </Dialog>
+                <template #footer>
+                    <button @click="showHint = false" class="game-btn-secondary w-full p-4 rounded-xl bg-white/10 text-white font-black uppercase tracking-widest border border-white/20">
+                        Fermer le canal
+                    </button>
+                </template>
+            </Dialog>
 
-        <Dialog v-model:visible="showSkipConfirm" modal header="Passer cette énigme ?" :style="{ width: '90vw', maxWidth: '400px' }" class="custom-dialog">
-            <p class="text-orange-900/80 py-4 font-medium">
-                Voulez-vous vraiment passer ce défi ? Vous ne gagnerez aucun point pour cette étape.
-            </p>
-            <template #footer>
-                <div class="flex gap-2 w-full">
-                    <Button label="Non, je continue" @click="showSkipConfirm = false" class="p-button-text flex-1" />
-                    <Button label="Oui, passer" @click="confirmSkip" class="p-button-danger p-button-outlined flex-1" />
+            <Dialog v-model:visible="showSolution" modal header="Décryptage de solution" :style="{ width: '90vw', maxWidth: '400px' }" class="game-dialog">
+                <div class="p-6 space-y-6">
+                    <div class="bg-red-500/10 border border-red-500/20 p-4 rounded-xl flex items-center gap-3">
+                        <i class="pi pi-exclamation-triangle text-red-500 text-xl"></i>
+                        <p class="text-[10px] font-black text-red-400 uppercase leading-tight">
+                            ALERTE : L'utilisation de la solution annulera vos points.
+                        </p>
+                    </div>
+                    <div v-if="enigme?.solution" class="bg-white/5 p-6 rounded-2xl border border-white/10 italic text-white shadow-inner text-center">
+                        {{ enigme.solution }}
+                    </div>
+                    <div v-else class="bg-white/5 p-6 rounded-2xl border border-white/10 italic text-white shadow-inner text-center">
+                        La réponse est : <span class="text-[#FF9500] font-black uppercase text-xl block mt-2">{{ enigme?.reponse || 'Non définie' }}</span>
+                    </div>
                 </div>
-            </template>
-        </Dialog>
-
-        <Dialog v-model:visible="showPauseConfirm" modal header="Mettre en pause ?" :style="{ width: '90vw', maxWidth: '400px' }" class="custom-dialog">
-            <p class="text-orange-900/80 py-4 font-medium">
-                Votre chrono sera arrêté. Vous pourrez reprendre la partie quand vous le souhaiterez.
-            </p>
-            <template #footer>
-                <div class="flex gap-2 w-full">
-                    <Button label="Continuer" @click="showPauseConfirm = false" class="p-button-text flex-1" />
-                    <Button label="Pause" icon="pi pi-pause" @click="togglePause" class="p-button-orange flex-1" />
-                </div>
-            </template>
-        </Dialog>
-
-        <Dialog v-model:visible="showAbandonConfirm" modal header="Abandonner la partie ?" :style="{ width: '90vw', maxWidth: '400px' }" class="custom-dialog">
-            <p class="text-orange-900/80 py-4 font-medium">
-                Êtes-vous sûr de vouloir abandonner ? Votre progression actuelle sera perdue.
-            </p>
-            <template #footer>
-                <div class="flex gap-2 w-full">
-                    <Button label="Non !" @click="showAbandonConfirm = false" class="p-button-text flex-1" />
-                    <Button label="Oui, abandonner" icon="pi pi-trash" @click="confirmAbandon" class="p-button-danger p-button-outlined flex-1" />
-                </div>
-            </template>
-        </Dialog>
-    </div>
+                <template #footer>
+                    <div class="flex gap-3 w-full p-4 pt-0">
+                        <button @click="showSolution = false" class="flex-1 p-4 rounded-xl bg-white/5 text-white/60 font-black uppercase tracking-widest text-[10px]">Annuler</button>
+                        <button @click="confirmSkip" class="flex-1 p-4 rounded-xl bg-red-600 text-white font-black uppercase tracking-widest text-[10px] shadow-lg shadow-red-600/20">Confirmer</button>
+                    </div>
+                </template>
+            </Dialog>
+        </div>
     </AuthenticatedLayout>
 </template>
+
+<style>
+/* Reset & Overrides */
+.game-container {
+    background-color: #0f0f0f;
+    font-family: 'Inter', sans-serif;
+    color: white;
+}
+
+/* Radar Animation */
+.radar-pulse.animating {
+    animation: pulse-radar 2s infinite ease-out;
+}
+
+@keyframes pulse-radar {
+    0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0.8; }
+    100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+}
+
+/* Tool Buttons */
+.tool-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.25rem 0.5rem;
+    background: #1a1a1a;
+    border-radius: 1.5rem;
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: all 0.2s;
+}
+.tool-btn .icon-box {
+    width: 3rem;
+    height: 3rem;
+    background: rgba(255, 149, 0, 0.1);
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FF9500;
+    transition: all 0.2s;
+}
+.tool-btn .label {
+    font-size: 8px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.4);
+}
+.tool-btn:active { transform: scale(0.95); }
+.tool-btn:hover .icon-box { background: rgba(255, 149, 0, 0.2); }
+.tool-btn.danger .icon-box { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+.tool-btn.danger .label { color: rgba(239, 68, 68, 0.4); }
+
+/* Dialog Styling */
+.game-dialog.p-dialog {
+    background: #1a1a1a !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    border-radius: 2rem !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+.game-dialog .p-dialog-header {
+    background: transparent !important;
+    padding: 1.5rem 1.5rem 0 1.5rem !important;
+    color: white !important;
+}
+.game-dialog .p-dialog-title {
+    font-size: 1rem !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+    letter-spacing: -0.025em !important;
+}
+.game-dialog .p-dialog-content {
+    background: transparent !important;
+    color: white !important;
+}
+.game-dialog .p-dialog-footer {
+    background: transparent !important;
+    border-top: 1px solid rgba(255,255,255,0.05) !important;
+    padding: 0 !important;
+}
+
+/* Form Styling */
+.game-input {
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3) !important;
+}
+</style>
 
 <style>
 .custom-dialog .p-dialog-header {
