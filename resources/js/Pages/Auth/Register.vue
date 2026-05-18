@@ -16,7 +16,9 @@ const showPrivacy = ref(false);
 const toast = useToast();
 
 const props = defineProps({
-    flash: Object
+    flash: Object,
+    invitation_token: String,
+    prefilled_email: String,
 });
 
 onMounted(() => {
@@ -25,6 +27,14 @@ onMounted(() => {
     }
     if (props.flash?.error) {
         toast.add({ severity: 'error', summary: 'Erreur', detail: props.flash.error, life: 3000 });
+    }
+
+    // Remplissage automatique si invitation
+    if (props.prefilled_email) {
+        form.email = props.prefilled_email;
+    }
+    if (props.invitation_token) {
+        form.invitation_token = props.invitation_token;
     }
 });
 
@@ -36,6 +46,7 @@ const form = useForm({
     password_confirmation: '',
     consent_cgu: false,
     consent_donnees: false,
+    invitation_token: props.invitation_token || '',
 });
 
 const submit = () => {
@@ -49,7 +60,20 @@ const submit = () => {
     <GuestLayout>
         <Head title="Register" />
 
-        <form @submit.prevent="submit">
+        <!-- Alerte si pas de lien d'invitation -->
+        <div v-if="!invitation_token" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+            <div class="flex items-center gap-2 mb-2 font-bold">
+                <i class="pi pi-exclamation-circle"></i>
+                <span>Accès Restreint</span>
+            </div>
+            L'inscription à CityPlay se fait uniquement sur invitation. Veuillez utiliser le lien qui vous a été envoyé par l'administrateur.
+        </div>
+
+        <form @submit.prevent="submit" :class="{ 'opacity-50 pointer-events-none': !invitation_token }">
+            <!-- Token invisible -->
+            <input type="hidden" v-model="form.invitation_token" />
+            <InputError class="mt-2" :message="form.errors.invitation_token" />
+
             <div>
                 <InputLabel for="name" value="Name" />
 
@@ -159,13 +183,13 @@ const submit = () => {
                 <div class="legal-content prose prose-sm max-w-none p-6 rounded-2xl">
                     <h3 class="text-orange-600 font-bold uppercase">1. Présentation du service</h3>
                     <p>CityPlay est une plateforme de chasses au trésor et d'énigmes urbaines permettant aux utilisateurs de découvrir des lieux d'intérêt tout en s'amusant.</p>
-                    
+
                     <h3 class="text-orange-600 font-bold uppercase">2. Utilisation du service</h3>
                     <p>L'utilisateur s'engage à utiliser le service de manière respectueuse des lieux publics et des autres utilisateurs. Toute utilisation abusive pourra entraîner la suspension du compte.</p>
-                    
+
                     <h3 class="text-orange-600 font-bold uppercase">3. Responsabilité</h3>
                     <p>CityPlay ne pourra être tenu responsable des accidents ou dommages survenant lors de la pratique des activités proposées sur la plateforme.</p>
-                    
+
                     <h3 class="text-orange-600 font-bold uppercase">4. Propriété intellectuelle</h3>
                     <p>Le contenu de CityPlay (énigmes, textes, images, logo) est protégé par le droit d'auteur.</p>
                 </div>
@@ -179,13 +203,13 @@ const submit = () => {
                 <div class="legal-content prose prose-sm max-w-none p-6 rounded-2xl">
                     <h3 class="text-orange-600 font-bold uppercase">1. Collecte des données</h3>
                     <p>Nous collectons les informations nécessaires à votre inscription (nom, pseudo, email) ainsi que vos données de progression dans les jeux.</p>
-                    
+
                     <h3 class="text-orange-600 font-bold uppercase">2. Utilisation des données</h3>
                     <p>Vos données sont utilisées pour gérer votre compte, suivre vos performances et améliorer l'expérience de jeu sur CityPlay.</p>
-                    
+
                     <h3 class="text-orange-600 font-bold uppercase">3. Géolocalisation</h3>
                     <p>Le service nécessite l'accès à votre position GPS pour valider votre présence sur les lieux des énigmes.</p>
-                    
+
                     <h3 class="text-orange-600 font-bold uppercase">4. Vos droits</h3>
                     <p>Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données personnelles.</p>
                 </div>

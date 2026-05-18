@@ -1,17 +1,17 @@
-[2026-05-18 10:58:39] local.INFO: Tentative de création de partie {"environnement_id":1,"mode":null,"duree":12,"locomotion":"voiture","difficulte":2,"nb_joueurs":1} 
-[2026-05-18 10:58:39] local.ERROR: Erreur de validation lors de la création de partie {"errors":{"mode":["The mode field is required."],"duree":["The duree field must be at least 15."]}} 
-[2026-05-18 10:58:50] local.INFO: Tentative de création de partie {"environnement_id":1,"mode":"solo","duree":12,"locomotion":"voiture","difficulte":2,"nb_joueurs":1} 
-[2026-05-18 10:58:50] local.ERROR: Erreur de validation lors de la création de partie {"errors":{"duree":["The duree field must be at least 15."]}} 
-[2026-05-18 10:59:03] local.INFO: Tentative de création de partie {"environnement_id":1,"mode":"solo","duree":60,"locomotion":"pied","difficulte":2,"nb_joueurs":1} 
-[2026-05-18 10:59:03] local.INFO: Validation réussie {"environnement_id":1,"mode":"solo","duree":60,"locomotion":"pied","difficulte":2,"nb_joueurs":1} 
-[2026-05-18 10:59:03] local.INFO: PartieService: Début création partie {"data":{"environnement_id":1,"mode":"solo","duree":60,"locomotion":"pied","difficulte":2,"nb_joueurs":1},"createurId":3} 
-[2026-05-18 10:59:03] local.INFO: PartieService: Environnement trouvé {"nom":"Bordeaux Patrimoine"} 
-[2026-05-18 10:59:03] local.INFO: PartieService: Fin création partie {"id":2} 
-[2026-05-18 10:59:03] local.INFO: Partie créée avec succès {"id":2} 
-[2026-05-18 10:59:05] local.INFO: GameplayService: Début initialisation progression {"partie_id":2} 
-[2026-05-18 10:59:05] local.INFO: GameplayService: Paramètres extraits {"duree":60,"locomotion":"pied","difficulte":2} 
-[2026-05-18 10:59:05] local.INFO: GameplayService: Nombre d'énigmes calculé {"count":6} 
-[2026-05-18 10:59:05] local.INFO: GameplayService: Lieux sélectionnés {"count":5,"ids":{"Illuminate\\Support\\Collection":[1,2,3,4,5]}} 
-[2026-05-18 10:59:05] local.INFO: GameplayService: Énigme de départ identifiée {"id":2} 
-[2026-05-18 10:59:05] local.INFO: GameplayService: Progression créée {"id":1} 
-[2026-05-18 10:59:05] local.INFO: GameplayService: Partie marquée comme en cours  
+[2026-05-18 10:58:39] local.INFO: Tentative de création de partie {"environnement_id":1,"mode":null,"duree":12,"locomotion":"voiture","difficulte":2,"nb_joueurs":1}
+[2026-05-18 10:58:39] local.ERROR: Erreur de validation lors de la création de partie {"errors":{"mode":["The mode field is required."],"duree":["The duree field must be at least 15."]}}
+[2026-05-18 10:58:50] local.INFO: Tentative de création de partie {"environnement_id":1,"mode":"solo","duree":12,"locomotion":"voiture","difficulte":2,"nb_joueurs":1}
+[2026-05-18 10:58:50] local.ERROR: Erreur de validation lors de la création de partie {"errors":{"duree":["The duree field must be at least 15."]}}
+[2026-05-18 10:59:03] local.INFO: Tentative de création de partie {"environnement_id":1,"mode":"solo","duree":60,"locomotion":"pied","difficulte":2,"nb_joueurs":1}
+[2026-05-18 10:59:03] local.INFO: Validation réussie {"environnement_id":1,"mode":"solo","duree":60,"locomotion":"pied","difficulte":2,"nb_joueurs":1}
+[2026-05-18 10:59:03] local.INFO: PartieService: Début création partie {"data":{"environnement_id":1,"mode":"solo","duree":60,"locomotion":"pied","difficulte":2,"nb_joueurs":1},"createurId":3}
+[2026-05-18 10:59:03] local.INFO: PartieService: Environnement trouvé {"nom":"Bordeaux Patrimoine"}
+[2026-05-18 10:59:03] local.INFO: PartieService: Fin création partie {"id":2}
+[2026-05-18 10:59:03] local.INFO: Partie créée avec succès {"id":2}
+[2026-05-18 10:59:05] local.INFO: GameplayService: Début initialisation progression {"partie_id":2}
+[2026-05-18 10:59:05] local.INFO: GameplayService: Paramètres extraits {"duree":60,"locomotion":"pied","difficulte":2}
+[2026-05-18 10:59:05] local.INFO: GameplayService: Nombre d'énigmes calculé {"count":6}
+[2026-05-18 10:59:05] local.INFO: GameplayService: Lieux sélectionnés {"count":5,"ids":{"Illuminate\\Support\\Collection":[1,2,3,4,5]}}
+[2026-05-18 10:59:05] local.INFO: GameplayService: Énigme de départ identifiée {"id":2}
+[2026-05-18 10:59:05] local.INFO: GameplayService: Progression créée {"id":1}
+[2026-05-18 10:59:05] local.INFO: GameplayService: Partie marquée comme en cours
