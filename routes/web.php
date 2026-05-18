@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\StatController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\PartieController as AdminPartieController;
 use App\Http\Controllers\Admin\TeamController as AdminTeamController;
+use App\Http\Controllers\Admin\AppInvitationController;
 use App\Http\Controllers\OtpController;
 use App\Http\Controllers\PartieController;
 use App\Http\Controllers\ProgressionController;
@@ -46,7 +47,7 @@ Route::middleware('auth')->group(function () {
             $user = auth()->user();
             $env = \App\Models\Environnement::where('actif', true)->first();
             if (!$env) return "Aucun environnement actif trouvé.";
-            
+
             $data = [
                 'environnement_id' => $env->id,
                 'mode' => 'solo',
@@ -55,7 +56,7 @@ Route::middleware('auth')->group(function () {
                 'difficulte' => 2,
                 'nb_joueurs' => 1
             ];
-            
+
             try {
                 $service = app(\App\Services\PartieService::class);
                 $partie = $service->creerPartie($data, $user->id);
@@ -67,6 +68,9 @@ Route::middleware('auth')->group(function () {
 
         // Dashboard joueur
         Route::get('/dashboard', [PartieController::class, 'index'])->name('dashboard');
+
+        // Rejoindre une partie via lien/code
+        Route::get('/rejoindre/{code}', [PartieController::class, 'rejoindreParLien'])->name('parties.rejoindre');
 
         // Parties
         Route::get('/parties', [PartieController::class, 'index'])->name('parties.web.index');
@@ -121,6 +125,7 @@ Route::middleware('auth')->group(function () {
             Route::resource('users', AdminUserController::class)->names('admin.users');
             Route::resource('parties', AdminPartieController::class)->names('admin.parties');
             Route::resource('teams', AdminTeamController::class)->names('admin.teams');
+            Route::resource('invitations', AppInvitationController::class)->names('admin.invitations');
         });
     });
 });

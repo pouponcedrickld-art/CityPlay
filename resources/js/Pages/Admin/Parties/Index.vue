@@ -53,11 +53,15 @@
             </template>
           </Column>
 
-          <Column header="Créateur" sortable field="createur.name">
+          <Column header="Joueur" sortable field="createur.name">
             <template #body="{ data }">
-              {{ data.createur?.name }}
+              <div class="flex flex-col">
+                <span class="font-medium">{{ data.createur?.name }}</span>
+                <span class="text-xs text-gray-400">{{ data.createur?.email }}</span>
+              </div>
             </template>
           </Column>
+
 
           <Column field="mode" header="Mode" sortable :showFilterMatchModes="false">
             <template #body="{ data }">
@@ -87,21 +91,25 @@
 
           <Column header="Actions" class="text-right">
             <template #body="{ data }">
-              <Button
-                icon="pi pi-trash"
-                text
-                rounded
-                severity="danger"
-                @click="confirmDelete(data)"
-                v-tooltip.top="'Supprimer'"
-              />
+              <div class="flex justify-end gap-2">
+                <Button
+                  icon="pi pi-trash"
+                  text
+                  rounded
+                  severity="danger"
+                  @click="confirmDelete(data)"
+                  v-tooltip.top="'Supprimer'"
+                />
+              </div>
             </template>
           </Column>
         </DataTable>
       </div>
     </div>
 
+
     <ConfirmDialog />
+    <Toast />
   </AdminLayout>
 </template>
 
@@ -115,13 +123,16 @@ import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Dropdown from 'primevue/dropdown'
 import ConfirmDialog from 'primevue/confirmdialog'
+import Toast from 'primevue/toast'
 import { useConfirm } from 'primevue/useconfirm'
+import { useToast } from 'primevue/usetoast'
 import { FilterMatchMode } from '@primevue/core/api'
 
-defineProps({
+const props = defineProps({
   parties: Array
 })
 
+const toast = useToast()
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   'environnement.nom': { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -131,7 +142,7 @@ const filters = ref({
 })
 
 const modes = ref(['solo', 'team', 'famille'])
-const statuts = ref(['en_cours', 'terminee', 'pause'])
+const statuts = ref(['en_cours', 'terminee', 'pause', 'en_attente'])
 
 const clearFilter = () => {
   filters.value = {
@@ -150,7 +161,8 @@ const getStatusClass = (statut) => {
     case 'en_cours': return 'bg-green-100 text-green-700'
     case 'terminee': return 'bg-gray-100 text-gray-700'
     case 'pause': return 'bg-yellow-100 text-yellow-700'
-    default: return 'bg-blue-100 text-blue-700'
+    case 'en_attente': return 'bg-blue-100 text-blue-700'
+    default: return 'bg-gray-100 text-gray-500'
   }
 }
 

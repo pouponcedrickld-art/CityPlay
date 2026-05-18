@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\OtpService;
+use App\Models\AppInvitation;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,9 +24,23 @@ class RegisteredUserController extends Controller
         $this->otpService = $otpService;
     }
 
-    public function create(): Response
+    public function create(Request $request): Response
     {
-        return Inertia::render('Auth/Register');
+        $invitation = null;
+        if ($request->has('invite')) {
+            $invitation = AppInvitation::where('token', $request->invite)
+                ->whereNull('used_at')
+                ->where(function($query) {
+                    $query->whereNull('expires_at')
+                          ->orWhere('expires_at', '>', now());
+                })
+                ->first();
+        }
+
+        return Inertia::render('Auth/Register', [
+            'invitation_token' => $invitation?->token,
+            'prefilled_email' => $invitation?->email,
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -37,7 +52,26 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'consent_cgu' => 'required|accepted',
             'consent_donnees' => 'required|accepted',
+            'invitation_token' => 'required|string|exists:app_invitations,token',
         ]);
+
+        // Vérifier à nouveau la validité du token
+        $invitation = AppInvitation::where('token', $request->invitation_token)
+            ->whereNull('used_at')
+            ->where(function($query) {
+                $query->whereNull('expires_at')
+                      ->orWhere('expires_at', '>', now());
+            })
+            ->first();
+
+        if (!$invitation) {
+            return back()->withErrors(['invitation_token' => 'Ce lien d\'invitation est invalide ou expiré.']);
+        }
+
+        // Si l'invitation était restreinte à un email
+        if ($invitation->email && strtolower($invitation->email) !== strtolower($request->email)) {
+            return back()->withErrors(['email' => 'Cet email ne correspond pas à celui de l\'invitation.']);
+        }
 
         $user = User::create([
             'name' => $request->name,
@@ -46,6 +80,12 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
             'consent_cgu' => true,
             'consent_donnees' => true,
+        ]);
+
+        // Marquer l'invitation comme utilisée
+        $invitation->update([
+            'used_at' => now(),
+            'used_by' => $user->id,
         ]);
 
         // Générer et logger le code OTP (mock)

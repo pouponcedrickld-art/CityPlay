@@ -10,10 +10,10 @@
     </div>
 
     <!-- Table des villes -->
-    <DataTable 
+    <DataTable
       v-model:filters="filters"
-      :value="villes" 
-      stripedRows 
+      :value="villes"
+      stripedRows
       class="crud-table"
       :paginator="true"
       :rows="10"
@@ -131,12 +131,18 @@ const submitVille = () => {
 
   if (editTarget.value) {
     form.put(route('admin.villes.update', editTarget.value.id), {
-      onSuccess: () => { dialogVisible.value = false },
+      onSuccess: () => {
+        dialogVisible.value = false
+        form.reset()
+      },
       onError: (e) => { errors.value = e },
     })
   } else {
     form.post(route('admin.villes.store'), {
-      onSuccess: () => { dialogVisible.value = false },
+      onSuccess: () => {
+        dialogVisible.value = false
+        form.reset()
+      },
       onError: (e) => { errors.value = e },
     })
   }

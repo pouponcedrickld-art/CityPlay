@@ -177,6 +177,12 @@ const submit = () => {
 .section-hint  { font-size: 0.8rem; color: #718096; margin-top: -0.5rem; }
 .field { display: flex; flex-direction: column; gap: 0.35rem; }
 .field label { font-size: 0.875rem; font-weight: 500; color: #4a5568; }
+.field input,
+.field textarea,
+.field .p-dropdown,
+.field .p-inputnumber {
+  width: 100% !important;
+}
 .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .char-count { color: #a0aec0; font-size: 0.75rem; text-align: right; }
 .required { color: #e53e3e; }
