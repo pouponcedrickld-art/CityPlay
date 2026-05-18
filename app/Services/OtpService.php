@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OtpMail;
 
 class OtpService
 {
@@ -19,8 +21,12 @@ class OtpService
             'otp_verified_at' => null, // reset
         ]);
 
-        // MOCK : en prod, on enverrait un vrai email/SMS ici
-        Log::info("OTP pour {$user->email} : {$code}");
+        try {
+            Mail::to($user->email)->send(new OtpMail($code, $user->name));
+            Log::info("OTP envoyé par mail à {$user->email}");
+        } catch (\Exception $e) {
+            Log::error("Erreur lors de l'envoi de l'OTP à {$user->email} : " . $e->getMessage());
+        }
 
         return $code;
     }
