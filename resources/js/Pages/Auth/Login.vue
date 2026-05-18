@@ -201,12 +201,12 @@ const submit = () => {
             class="login-card max-w-5xl w-full mx-auto flex flex-col md:flex-row overflow-hidden rounded-[2.5rem] border transition-all duration-500 shadow-2xl relative"
             :class="isDark 
                 ? 'bg-[#0f0e0c]/90 border-white/5 shadow-black/90 hover:border-[#FF9500]/30' 
-                : 'bg-[#faf9f6]/95 border-[#e2dfd5] shadow-stone-400/25 hover:border-[#008751]/30'"
+                : 'bg-[#faf9f6]/95 border-[#e2dfd5] shadow-stone-400/25 hover:border-[#FF9500]/30'"
         >
             <!-- TOP NEON BORDER LIGHT DECORATION -->
             <div 
                 class="neon-border-draw absolute top-0 left-0 right-0 h-[3px] z-30 origin-left"
-                :class="isDark ? 'bg-gradient-to-r from-[#FF9500] via-[#ffd699] to-transparent' : 'bg-gradient-to-r from-[#008751] via-[#85e0b7] to-transparent'"
+                :class="isDark ? 'bg-gradient-to-r from-[#FF9500] via-[#00A3FF] to-transparent' : 'bg-gradient-to-r from-[#FF9500] via-[#ffd699] to-transparent'"
             ></div>
 
             <!-- LEFT ARTWORK SIDE -->
@@ -230,7 +230,7 @@ const submit = () => {
                 <div class="absolute bottom-0 left-0 p-8 space-y-3 z-20 hidden md:block">
                     <span 
                         class="art-overlay-stagger px-3 py-1 text-[9px] font-black tracking-[0.2em] text-white rounded-full uppercase"
-                        :class="isDark ? 'bg-[#FF9500]' : 'bg-[#008751]'"
+                        :class="isDark ? 'bg-[#FF9500]' : 'bg-[#059669]'"
                     >
                         Saison 1 : Les Origines
                     </span>
@@ -257,7 +257,7 @@ const submit = () => {
                 <!-- Heading details -->
                 <div class="login-stagger mb-8 space-y-2">
                     <span 
-                        :class="isDark ? 'text-[#FF9500]' : 'text-[#008751]'" 
+                        :class="isDark ? 'text-[#FF9500]' : 'text-[#059669]'" 
                         class="text-[9px] font-black uppercase tracking-[0.3em] transition-colors duration-500"
                     >
                         Portail des Explorateurs • Bénin Quest 🇧🇯
@@ -268,7 +268,7 @@ const submit = () => {
                         :class="isDark ? 'text-white' : 'text-[#1c1917]'" 
                         class="text-4xl font-black uppercase tracking-tighter transition-colors duration-500 flex items-center gap-2 select-text"
                     >
-                        {{ headingText }} <span class="animate-pulse" :class="isDark ? 'text-[#FF9500]' : 'text-[#008751]'">.</span>
+                        {{ headingText }} <span class="animate-pulse" :class="isDark ? 'text-[#FF9500]' : 'text-[#059669]'">.</span>
                     </h3>
 
                     <p 
@@ -299,7 +299,7 @@ const submit = () => {
                                 :class="[
                                     isDark 
                                         ? 'bg-black/50 border-white/5 text-white placeholder:text-white/20 focus:border-[#FF9500]' 
-                                        : 'bg-[#faf9f6] border-[#e2dfd5] text-[#1c1917] placeholder:text-[#1c1917]/30 focus:border-[#008751]',
+                                        : 'bg-[#faf9f6] border-[#e2dfd5] text-[#1c1917] placeholder:text-[#1c1917]/30 focus:border-[#FF9500]',
                                     'w-full pl-11 pr-4 py-3.5 border-2 rounded-xl font-bold focus:ring-0 focus:outline-none transition-all shadow-inner text-sm'
                                 ]"
                                 v-model="form.email"
@@ -325,7 +325,7 @@ const submit = () => {
                                 :class="[
                                     isDark 
                                         ? 'bg-black/50 border-white/5 text-white placeholder:text-white/20 focus:border-[#FF9500]' 
-                                        : 'bg-[#faf9f6] border-[#e2dfd5] text-[#1c1917] placeholder:text-[#1c1917]/30 focus:border-[#008751]',
+                                        : 'bg-[#faf9f6] border-[#e2dfd5] text-[#1c1917] placeholder:text-[#1c1917]/30 focus:border-[#FF9500]',
                                     'w-full pl-11 pr-4 py-3.5 border-2 rounded-xl font-bold focus:ring-0 focus:outline-none transition-all shadow-inner text-sm'
                                 ]"
                                 v-model="form.password"
@@ -341,7 +341,7 @@ const submit = () => {
                     <div class="login-stagger flex items-center justify-between pt-1">
                         <label class="flex items-center cursor-pointer group select-none">
                             <Checkbox name="remember" v-model:checked="form.remember" :class="[
-                                isDark ? 'border-white/10 bg-black/40 text-[#FF9500]' : 'border-[#e2dfd5] bg-[#faf9f6] text-[#008751]',
+                                isDark ? 'border-white/10 bg-black/40 text-[#FF9500]' : 'border-[#e2dfd5] bg-[#faf9f6] text-[#FF9500]',
                                 'rounded focus:ring-0 transition-colors duration-500'
                             ]" />
                             <span :class="isDark ? 'text-white/40 group-hover:text-white/70' : 'text-[#1c1917]/40 group-hover:text-[#1c1917]/70'" class="ms-2 text-[10px] font-black uppercase tracking-wider transition-all duration-300">Rester connecté</span>
@@ -351,7 +351,7 @@ const submit = () => {
                             v-if="canResetPassword"
                             :href="route('password.request')"
                             :class="[
-                                isDark ? 'text-[#FF9500] hover:text-[#FF9500]/80' : 'text-[#008751] hover:text-[#008751]/80',
+                                isDark ? 'text-[#FF9500] hover:text-[#FF9500]/80' : 'text-[#059669] hover:text-[#059669]/80',
                                 'text-[10px] font-black uppercase tracking-widest transition-colors duration-500'
                             ]"
                         >
@@ -367,7 +367,7 @@ const submit = () => {
                             :class="[
                                 isDark 
                                     ? 'bg-[#FF9500] text-black shadow-[0_5px_0_#cc7a00] hover:bg-[#FF9500]/95 hover:shadow-[0_0_20px_rgba(255,149,0,0.4)]' 
-                                    : 'bg-[#008751] text-white shadow-[0_5px_0_#005c37] hover:bg-[#008751]/95 hover:shadow-[0_0_20px_rgba(0,135,81,0.3)]',
+                                    : 'bg-[#FF9500] text-white shadow-[0_5px_0_#cc7a00] hover:bg-[#FF9500]/95 hover:shadow-[0_0_20px_rgba(255,149,0,0.35)]',
                                 'w-full p-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 active:shadow-none active:translate-y-[5px] transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none select-none relative z-10'
                             ]"
                             :disabled="form.processing"
@@ -379,7 +379,7 @@ const submit = () => {
                 </form>
 
                 <!-- REGISTER REDIRECT LINK -->
-                <div :class="isDark ? 'border-white/5' : 'border-black/5'" class="login-stagger mt-6 pt-5 border-t text-center space-y-3 transition-colors duration-500">
+                <!-- <div :class="isDark ? 'border-white/5' : 'border-black/5'" class="login-stagger mt-6 pt-5 border-t text-center space-y-3 transition-colors duration-500">
                     <p :class="isDark ? 'text-white/30' : 'text-[#1c1917]/40'" class="text-[9px] font-black uppercase tracking-[0.2em] transition-colors duration-500">Nouveau sur CityPlay ?</p>
                     
                     <Link
@@ -387,13 +387,13 @@ const submit = () => {
                         :class="[
                             isDark 
                                 ? 'bg-white/5 border-white/10 text-white hover:bg-white/10 hover:border-[#FF9500]/40 hover:text-[#FF9500]' 
-                                : 'bg-[#008751]/5 border-[#008751]/10 text-[#008751] hover:bg-[#008751]/10 hover:border-[#008751]/40',
+                                : 'bg-[#FF9500]/5 border-[#FF9500]/10 text-[#FF9500] hover:bg-[#FF9500]/10 hover:border-[#FF9500]/40',
                             'inline-flex items-center justify-center w-full p-3.5 border rounded-xl font-black uppercase tracking-widest text-[10px] transition-all shadow-sm active:scale-95 select-none'
                         ]"
                     >
                         Créer mon Profil d'Explorateur
                     </Link>
-                </div>
+                </div> -->
             </div>
         </div>
     </GuestLayout>
@@ -417,7 +417,7 @@ input:focus {
     transform: translateY(-2px);
 }
 :deep(.light) input:focus {
-    box-shadow: 0 0 20px rgba(0, 135, 81, 0.2) !important;
+    box-shadow: 0 0 20px rgba(255, 149, 0, 0.2) !important;
 }
 
 /* 3D Depth shadows */

@@ -63,13 +63,13 @@
 
           <Column field="used_at" header="Statut">
             <template #body="{ data }">
-              <span v-if="data.used_at" class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-semibold">
+              <span v-if="data.used_at" class="bg-emerald-50 text-emerald-700 border border-emerald-100 px-2.5 py-1 rounded-full text-xs font-bold shadow-sm">
                 Utilisé le {{ new Date(data.used_at).toLocaleDateString() }}
               </span>
-              <span v-else-if="isExpired(data.expires_at)" class="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-semibold">
+              <span v-else-if="isExpired(data.expires_at)" class="bg-red-50 text-red-700 border border-red-100 px-2.5 py-1 rounded-full text-xs font-bold shadow-sm">
                 Expiré
               </span>
-              <span v-else class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-semibold">
+              <span v-else class="bg-blue-50 text-blue-700 border border-blue-100 px-2.5 py-1 rounded-full text-xs font-bold shadow-sm">
                 Valide
               </span>
             </template>
