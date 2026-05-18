@@ -32,7 +32,7 @@ class GpsValidationService
                 'message' => 'GPS indisponible. Veuillez activer la géolocalisation.',
                 'erreur' => 'gps_indisponible',
                 'distance' => null,
-                'rayon' => $lieu->rayon,
+                'rayon' => $lieu->rayon_metres,
             ];
         }
 
@@ -51,7 +51,7 @@ class GpsValidationService
                 ),
                 'erreur' => 'precision_insuffisante',
                 'distance' => null,
-                'rayon' => $lieu->rayon,
+                'rayon' => $lieu->rayon_metres,
                 'precision' => $precision,
             ];
         }
@@ -60,17 +60,17 @@ class GpsValidationService
         $distance = $this->calculerDistanceHaversine(
             $latJoueur,
             $lngJoueur,
-            $lieu->lat,
-            $lieu->lng
+            (float) $lieu->latitude,
+            (float) $lieu->longitude
         );
 
-        $estDansLeRayon = $distance <= $lieu->rayon;
+        $estDansLeRayon = $distance <= $lieu->rayon_metres;
 
         // === LOG : Résultat ===
         Log::channel('cityplay')->info('Résultat validation GPS', [
             'lieu_id' => $lieu->id,
             'distance' => round($distance, 1),
-            'rayon' => $lieu->rayon,
+            'rayon' => $lieu->rayon_metres,
             'succes' => $estDansLeRayon,
         ]);
 
@@ -79,7 +79,7 @@ class GpsValidationService
                 'succes' => true,
                 'message' => 'Position validée ! Vous êtes sur le lieu.',
                 'distance' => round($distance, 1),
-                'rayon' => $lieu->rayon,
+                'rayon' => $lieu->rayon_metres,
                 'precision' => $precision,
             ];
         }
@@ -89,11 +89,11 @@ class GpsValidationService
             'message' => sprintf(
                 'Vous êtes à %.0f mètres du lieu. Approchez-vous encore (rayon : %d m).',
                 $distance,
-                $lieu->rayon
+                $lieu->rayon_metres
             ),
             'erreur' => 'hors_rayon',
             'distance' => round($distance, 1),
-            'rayon' => $lieu->rayon,
+            'rayon' => $lieu->rayon_metres,
             'precision' => $precision,
         ];
     }

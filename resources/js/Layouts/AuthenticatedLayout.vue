@@ -1,15 +1,20 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import Dropdown from '@/Components/Dropdown.vue';
-import DropdownLink from '@/Components/DropdownLink.vue';
-import NavLink from '@/Components/NavLink.vue';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import VideoLoader from '@/Components/VideoLoader.vue';
 
+const page = usePage();
 const showingNavigationDropdown = ref(false);
 const showLoader = ref(false);
+
+// Détecte si on est en mode "Jeu immersif"
+const isGameMode = computed(() => {
+    return page.component.startsWith('Player/Enigme') || 
+           page.component.startsWith('Player/Success') || 
+           page.component.startsWith('Player/Failure') ||
+           page.component.startsWith('Player/Summary');
+});
 
 onMounted(() => {
     router.on('start', () => {
@@ -19,14 +24,13 @@ onMounted(() => {
         // On laisse le loader un peu pour que la vidéo soit visible
         setTimeout(() => {
             showLoader.value = false;
-        }, 1200); // Augmenté pour mieux voir la vidéo
+        }, 1200);
     });
     router.on('error', () => {
         showLoader.value = false;
     });
 });
 
-const page = usePage();
 const isMobile = ref(window.innerWidth < 1024);
 
 window.addEventListener('resize', () => {
@@ -35,17 +39,19 @@ window.addEventListener('resize', () => {
 
 const menuItems = [
     { label: 'Dashboard', icon: 'pi pi-home', route: 'dashboard' },
-    { label: 'Parcours', icon: 'pi pi-map', route: 'parties.create' },
+    { label: 'Parcours', icon: 'pi pi-map', route: 'parties.web.create' },
     { label: 'Mon Profil', icon: 'pi pi-user', route: 'profile.edit' },
 ];
 </script>
 
 <template>
-    <div class="min-h-screen bg-[#FDFCF0] font-sans selection:bg-orange-100 selection:text-orange-950">
+    <div class="min-h-screen font-sans selection:bg-orange-100 selection:text-orange-950" 
+         :class="isGameMode ? 'bg-[#0f0f0f]' : 'bg-[#FDFCF0]'">
+        
         <VideoLoader :show="showLoader" />
 
-        <!-- DESKTOP SIDEBAR -->
-        <aside v-if="!isMobile" class="fixed left-0 top-0 bottom-0 w-72 bg-white border-r border-orange-100 z-40 p-8 flex flex-col">
+        <!-- DESKTOP SIDEBAR (Cachée en mode jeu pour l'immersion) -->
+        <aside v-if="!isMobile && !isGameMode" class="fixed left-0 top-0 bottom-0 w-72 bg-white border-r border-orange-100 z-40 p-8 flex flex-col">
             <div class="flex items-center gap-3 mb-12">
                 <div class="w-12 h-12 bg-orange-950 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-900/20">
                     <ApplicationLogo class="w-7 h-7 fill-white" />
@@ -90,60 +96,54 @@ const menuItems = [
             </div>
         </aside>
 
-        <!-- MOBILE HEADER -->
-        <header v-if="isMobile" class="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-xl border-b border-orange-100 z-40 px-6 flex items-center justify-between">
+        <!-- MOBILE HEADER (Caché en mode jeu) -->
+        <header v-if="isMobile && !isGameMode" class="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-xl border-b border-orange-100 z-40 px-6 flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <ApplicationLogo class="w-6 h-6 fill-orange-950" />
                 <span class="text-sm font-black text-orange-950 uppercase tracking-tighter">CityPlay</span>
             </div>
             
             <div class="flex items-center gap-3">
-                <div v-if="$page.props.auth.user.is_admin" class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                    <i class="pi pi-shield text-orange-600 text-xs"></i>
-                </div>
-                <Link :href="route('profile.edit')" class="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center border border-orange-100 overflow-hidden">
-                    <img v-if="$page.props.auth.user.avatar" :src="$page.props.auth.user.avatar" class="w-full h-full object-cover">
-                    <i v-else class="pi pi-user text-orange-300"></i>
+                <Link :href="route('profile.edit')" class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
+                    <i class="pi pi-user text-orange-600 text-xs"></i>
                 </Link>
             </div>
         </header>
 
-        <!-- CONTENT AREA -->
-        <main 
-            class="transition-all duration-500"
-            :class="[
-                isMobile ? 'pt-20 pb-24 px-4' : 'pl-80 pr-8 py-8',
-            ]"
-        >
-            <div class="max-w-5xl mx-auto">
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1" :class="[!isGameMode && !isMobile ? 'pl-72' : '', !isGameMode && isMobile ? 'pt-16' : '']">
+            <!-- Global Flash Messages -->
+            <div v-if="$page.props.flash?.error" class="fixed top-20 right-6 z-[100] max-w-sm animate-fade-in">
+                <div class="bg-red-600 text-white p-4 rounded-2xl shadow-2xl border border-white/20 flex items-center gap-3">
+                    <i class="pi pi-exclamation-triangle text-xl"></i>
+                    <p class="text-xs font-bold uppercase tracking-tight">{{ $page.props.flash.error }}</p>
+                </div>
+            </div>
+            <div v-if="$page.props.flash?.success" class="fixed top-20 right-6 z-[100] max-w-sm animate-fade-in">
+                <div class="bg-green-600 text-white p-4 rounded-2xl shadow-2xl border border-white/20 flex items-center gap-3">
+                    <i class="pi pi-check-circle text-xl"></i>
+                    <p class="text-xs font-bold uppercase tracking-tight">{{ $page.props.flash.success }}</p>
+                </div>
+            </div>
+
+            <div :class="isGameMode ? '' : 'p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto'">
                 <slot />
             </div>
         </main>
 
-        <!-- MOBILE BOTTOM NAV (GAME STYLE) -->
-        <nav v-if="isMobile" class="fixed bottom-6 left-6 right-6 h-16 bg-orange-950 rounded-2xl z-40 px-4 flex items-center justify-around shadow-2xl shadow-orange-900/40 border border-white/10">
+        <!-- MOBILE NAV BAR (Uniquement hors mode jeu) -->
+        <nav v-if="isMobile && !isGameMode" class="fixed bottom-0 left-0 right-0 h-20 bg-white border-t border-orange-100 z-40 px-6 flex items-center justify-around pb-4">
             <Link 
                 v-for="item in menuItems" 
                 :key="item.route"
                 :href="route(item.route)"
-                class="flex flex-col items-center justify-center w-12 h-12 rounded-xl transition-all"
-                :class="route().current(item.route) ? 'bg-orange-500 text-white shadow-lg -translate-y-2' : 'text-white/40'"
+                class="flex flex-col items-center gap-1"
+                :class="route().current(item.route) ? 'text-orange-600' : 'text-orange-300'"
             >
-                <i :class="item.icon" class="text-lg"></i>
-                <span v-if="route().current(item.route)" class="text-[8px] font-black uppercase mt-1">OK</span>
-            </Link>
-            
-            <Link 
-                :href="route('logout')" 
-                method="post" 
-                as="button"
-                class="flex flex-col items-center justify-center w-12 h-12 rounded-xl text-white/40"
-            >
-                <i class="pi pi-power-off text-lg"></i>
+                <i :class="item.icon" class="text-xl"></i>
+                <span class="text-[8px] font-black uppercase tracking-widest">{{ item.label }}</span>
             </Link>
         </nav>
-
-        <!-- GLOBAL MODALS (TOASTS ETC) -->
     </div>
 </template>
 
