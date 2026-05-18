@@ -2,14 +2,15 @@
 
 namespace Database\Factories;
 
-use App\Models\Lieu;
+use App\Models\Partie;
 use App\Models\Environnement;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<Lieu>
+ * @extends Factory<Partie>
  */
-class LieuFactory extends Factory
+class PartieFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -20,13 +21,14 @@ class LieuFactory extends Factory
     {
         return [
             'environnement_id' => Environnement::factory(),
-            'ordre' => 1,
-            'actif' => true,
-            'latitude' => 48.8566,
-            'longitude' => 2.3522,
-            'rayon_metres' => 50,
-            'nom' => 'Lieu Default',
-            'description' => 'Description du lieu default',
+            'createur_id' => User::factory(),
+            'mode' => 'solo',
+            'parametres' => [
+                'duree' => 60,
+                'locomotion' => 'pied',
+                'difficulte' => 2,
+            ],
+            'statut' => 'en_attente',
         ];
     }
 }

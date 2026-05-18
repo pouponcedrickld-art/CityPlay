@@ -33,6 +33,14 @@
                     </div>
                 </div>
 
+                <!-- MESSAGE FIN DE PARTIE -->
+                <div v-if="partie.environnement?.message_fin" class="bg-[#1a1a1a] p-8 rounded-[2rem] border border-[#FF9500]/20 shadow-xl text-center space-y-2 animate-fade-in-up delay-100">
+                    <span class="text-[8px] font-black uppercase tracking-[0.2em] text-[#FF9500]">Message de fin</span>
+                    <p class="text-white/80 leading-relaxed italic text-lg">
+                        "{{ partie.environnement.message_fin }}"
+                    </p>
+                </div>
+
                 <!-- STATS GRID -->
                 <div class="grid grid-cols-2 gap-6 animate-fade-in-up delay-200">
                     <div class="bg-[#1a1a1a] p-8 rounded-[2rem] border border-white/5 shadow-xl text-center space-y-2">

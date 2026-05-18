@@ -42,7 +42,7 @@
 
                 <div class="p-8">
                     <p class="text-white/60 leading-relaxed italic text-lg">
-                        "{{ lieu.description || 'Vous avez percé les secrets de cet endroit. La mission continue !' }}"
+                        "{{ partie.environnement?.message_bonne_reponse || lieu.description || 'Vous avez percé les secrets de cet endroit. La mission continue !' }}"
                     </p>
                 </div>
             </div>
