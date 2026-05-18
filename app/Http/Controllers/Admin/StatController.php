@@ -33,6 +33,16 @@ class StatController extends Controller
             ->orderBy('date')
             ->get();
 
+        // Répartition des parties par statut
+        $partiesParStatut = Partie::select('statut', DB::raw('count(*) as total'))
+            ->groupBy('statut')
+            ->get();
+
+        // Répartition des parties par mode
+        $partiesParMode = Partie::select('mode', DB::raw('count(*) as total'))
+            ->groupBy('mode')
+            ->get();
+
         return Inertia::render('Admin/Dashboard', [
             'stats' => [
                 'villes' => Ville::count(),
@@ -46,6 +56,8 @@ class StatController extends Controller
             'charts' => [
                 'parties_par_ville' => $partiesParVille,
                 'inscriptions_recentes' => $inscriptionsRecentes,
+                'parties_par_statut' => $partiesParStatut,
+                'parties_par_mode' => $partiesParMode,
             ]
         ]);
     }

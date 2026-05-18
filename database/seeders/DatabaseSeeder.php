@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             EnvironnementSeeder::class,
             LieuSeeder::class,
             DemoSeeder::class,
+            UserSeeder::class,
         ]);
 
         $this->command->info('');

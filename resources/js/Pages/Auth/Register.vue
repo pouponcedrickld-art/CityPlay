@@ -19,7 +19,9 @@ const toast = useToast();
 const isDark = inject('isDark'); // Injecter le thème dynamique
 
 const props = defineProps({
-    flash: Object
+    flash: Object,
+    invitation_token: String,
+    prefilled_email: String,
 });
 
 const registerCard = ref(null);
@@ -55,6 +57,13 @@ onMounted(() => {
 
     glitchTextEffect();
     window.addEventListener('mousemove', onGlobalMouseMove);
+    // Remplissage automatique si invitation
+    if (props.prefilled_email) {
+        form.email = props.prefilled_email;
+    }
+    if (props.invitation_token) {
+        form.invitation_token = props.invitation_token;
+    }
 });
 
 onUnmounted(() => {
@@ -173,6 +182,7 @@ const form = useForm({
     password_confirmation: '',
     consent_cgu: false,
     consent_donnees: false,
+    invitation_token: props.invitation_token || '',
 });
 
 const submit = () => {
@@ -188,7 +198,6 @@ const submit = () => {
 
         <!-- 3D PERSPECTIVE CARD WRAPPER -->
         <div 
-            ref="registerCard"
             class="register-card max-w-5xl w-full mx-auto flex flex-col md:flex-row overflow-hidden rounded-[2.5rem] border transition-all duration-500 shadow-2xl relative"
             :class="isDark 
                 ? 'bg-[#0f0e0c]/90 border-white/5 shadow-black/90 hover:border-[#FF9500]/30' 
@@ -199,9 +208,22 @@ const submit = () => {
                 class="neon-border-draw absolute top-0 left-0 right-0 h-[3px] z-30 origin-left"
                 :class="isDark ? 'bg-gradient-to-r from-[#FF9500] via-[#ffd699] to-transparent' : 'bg-gradient-to-r from-[#008751] via-[#85e0b7] to-transparent'"
             ></div>
+        <!-- Alerte si pas de lien d'invitation -->
+        <div v-if="!invitation_token" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+                <i class="pi pi-exclamation-circle"></i>
+                <span>Accès Restreint</span>
+            </div>
+            L'inscription à CityPlay se fait uniquement sur invitation. Veuillez utiliser le lien qui vous a été envoyé par l'administrateur.
+        </div>
 
+        <form @submit.prevent="submit" :class="{ 'opacity-50 pointer-events-none': !invitation_token }">
+            <!-- Token invisible -->
+            <input type="hidden" v-model="form.invitation_token" />
+            <InputError class="mt-2" :message="form.errors.invitation_token" />
+
+            <div>
+                <InputLabel for="name" value="Name" />
             <!-- LEFT ARTWORK SIDE -->
-            <div class="register-art-panel relative w-full md:w-1/2 min-h-[350px] md:min-h-[600px] overflow-hidden select-none">
                 <div 
                     ref="artImage"
                     class="absolute inset-0 bg-cover bg-center scale-[1.1]"
@@ -215,16 +237,151 @@ const submit = () => {
                         : 'bg-gradient-to-t md:bg-gradient-to-r from-[#faf9f5]/90 via-transparent to-transparent'"
                 ></div>
 
+
                 <div class="absolute bottom-0 left-0 p-8 space-y-3 z-20 hidden md:block">
                     <span 
                         class="art-overlay-stagger px-3 py-1 text-[9px] font-black tracking-[0.2em] text-white rounded-full uppercase"
                         :class="isDark ? 'bg-[#FF9500]' : 'bg-[#008751]'"
+
+                <InputLabel for="pseudo" value="Pseudo" />
+
+                <TextInput
+                    id="pseudo"
+                    class="mt-1 block w-full"
+                    v-model="form.pseudo"
+                    required
+                    autocomplete="nickname"
+                />
+
+                <InputError class="mt-2" :message="form.errors.pseudo" />
+            </div>
+
+            <div class="mt-4">
+                <InputLabel for="email" value="Email" />
+
+                <TextInput
+                    id="email"
+                    type="email"
+                    class="mt-1 block w-full"
+                    v-model="form.email"
+                    required
+                    autocomplete="username"
+                />
+
+                <InputError class="mt-2" :message="form.errors.email" />
+            </div>
+
+            <div class="mt-4">
+                <InputLabel for="password" value="Password" />
+
+                <TextInput
+                    id="password"
+                    type="password"
+                    class="mt-1 block w-full"
+                    v-model="form.password"
+                    required
+                    autocomplete="new-password"
+                />
+
+                <InputError class="mt-2" :message="form.errors.password" />
+            </div>
+
+            <div class="mt-4">
+                <InputLabel
+                    for="password_confirmation"
+                    value="Confirm Password"
+                />
+
+                <TextInput
+                    id="password_confirmation"
+                    type="password"
+                    class="mt-1 block w-full"
+                    v-model="form.password_confirmation"
+                    required
+                    autocomplete="new-password"
+                />
+
+                <InputError
+                    class="mt-2"
+                    :message="form.errors.password_confirmation"
+                />
+            </div>
+
+            <!-- Accept CGU -->
+            <div class="mt-4">
+                <label class="flex items-center">
+                    <Checkbox name="consent_cgu" v-model:checked="form.consent_cgu" required />
+                    <span class="ms-2 text-sm text-gray-600">
+                        J'accepte les <button type="button" @click="showCGU = true" class="underline hover:text-gray-900">Conditions Générales d'Utilisation</button>
+                    </span>
+                </label>
+                <InputError class="mt-2" :message="form.errors.consent_cgu" />
+            </div>
+
+            <!-- Accept Privacy Policy -->
+            <div class="mt-4">
+                <label class="flex items-center">
+                    <Checkbox name="consent_donnees" v-model:checked="form.consent_donnees" required />
+                    <span class="ms-2 text-sm text-gray-600">
+                        J'accepte la <button type="button" @click="showPrivacy = true" class="underline hover:text-gray-900">Politique de Confidentialité</button> et le traitement de mes données
+                    </span>
+                </label>
+                <InputError class="mt-2" :message="form.errors.consent_donnees" />
+            </div>
+
+            <!-- Modal CGU -->
+            <Dialog v-model:visible="showCGU" modal header="Conditions Générales d'Utilisation" :style="{ width: '50vw' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" class="legal-dialog">
+                <div class="legal-content prose prose-sm max-w-none p-6 rounded-2xl">
+                    <h3 class="text-orange-600 font-bold uppercase">1. Présentation du service</h3>
+                    <p>CityPlay est une plateforme de chasses au trésor et d'énigmes urbaines permettant aux utilisateurs de découvrir des lieux d'intérêt tout en s'amusant.</p>
+
+                    <h3 class="text-orange-600 font-bold uppercase">2. Utilisation du service</h3>
+                    <p>L'utilisateur s'engage à utiliser le service de manière respectueuse des lieux publics et des autres utilisateurs. Toute utilisation abusive pourra entraîner la suspension du compte.</p>
+
+                    <h3 class="text-orange-600 font-bold uppercase">3. Responsabilité</h3>
+                    <p>CityPlay ne pourra être tenu responsable des accidents ou dommages survenant lors de la pratique des activités proposées sur la plateforme.</p>
+
+                    <h3 class="text-orange-600 font-bold uppercase">4. Propriété intellectuelle</h3>
+                    <p>Le contenu de CityPlay (énigmes, textes, images, logo) est protégé par le droit d'auteur.</p>
+                </div>
+                <template #footer>
+                    <Button label="J'ai compris" icon="pi pi-check" @click="showCGU = false" class="p-button-orange" autofocus />
+                </template>
+            </Dialog>
+
+            <!-- Modal Privacy -->
+            <Dialog v-model:visible="showPrivacy" modal header="Politique de Confidentialité" :style="{ width: '50vw' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" class="legal-dialog">
+                <div class="legal-content prose prose-sm max-w-none p-6 rounded-2xl">
+                    <h3 class="text-orange-600 font-bold uppercase">1. Collecte des données</h3>
+                    <p>Nous collectons les informations nécessaires à votre inscription (nom, pseudo, email) ainsi que vos données de progression dans les jeux.</p>
+
+                    <h3 class="text-orange-600 font-bold uppercase">2. Utilisation des données</h3>
+                    <p>Vos données sont utilisées pour gérer votre compte, suivre vos performances et améliorer l'expérience de jeu sur CityPlay.</p>
+
+                    <h3 class="text-orange-600 font-bold uppercase">3. Géolocalisation</h3>
+                    <p>Le service nécessite l'accès à votre position GPS pour valider votre présence sur les lieux des énigmes.</p>
+
+                    <h3 class="text-orange-600 font-bold uppercase">4. Vos droits</h3>
+                    <p>Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données personnelles.</p>
+                </div>
+                <template #footer>
+                    <Button label="J'ai compris" icon="pi pi-check" @click="showPrivacy = false" class="p-button-orange" autofocus />
+                </template>
+            </Dialog>
+
+            <!-- Actions : Déjà inscrit ? / Créer mon compte -->
+            <div class="mt-8 flex flex-col gap-4">
+                <div class="flex items-center justify-between">
+                    <!-- Lien vers la page de connexion -->
+                    <Link
+                        :href="route('login')"
+                        class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+>>>>>>> abc09753f03081c350f1349fdf3e2a8a365c6452
                     >
                         Nouvelle Amazone / Guerrier
                     </span>
                     <h4 class="art-overlay-stagger text-xl font-black text-white uppercase tracking-tight drop-shadow-lg">
                         Prenez les Armes
-                    </h4>
                     <p class="art-overlay-stagger text-[10px] text-white/60 font-semibold tracking-wider flex items-center gap-1.5 drop-shadow-md">
                         <i class="pi pi-compass animate-spin-slow"></i> Créez votre profil et gagnez de l'XP !
                     </p>

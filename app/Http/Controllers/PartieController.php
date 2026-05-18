@@ -39,6 +39,45 @@ class PartieController extends Controller
     }
 
     /**
+     * Rejoindre une partie via un lien direct ou un code
+     */
+    public function rejoindreParLien(string $code)
+    {
+        $partie = Partie::where('code_liaison', $code)->first();
+
+        if (!$partie) {
+            return redirect()->route('dashboard')->with('error', 'Lien ou code d\'invitation invalide.');
+        }
+
+        // Si la partie appartient à quelqu'un d'autre et est en solo, erreur
+        if ($partie->mode === 'solo' && $partie->createur_id !== auth()->id()) {
+            return redirect()->route('dashboard')->with('error', 'Cette partie est privée.');
+        }
+
+        // Si la partie a expiré
+        if ($partie->expire_at && $partie->expire_at->isPast()) {
+            return redirect()->route('dashboard')->with('error', 'Ce lien d\'invitation a expiré.');
+        }
+
+        // Si c'est une partie en équipe, on l'ajoute à l'équipe si pas déjà fait
+        if ($partie->mode === 'team' && $partie->createur_id !== auth()->id()) {
+            if ($partie->team) {
+                $dejaMembre = $partie->team->users()->where('user_id', auth()->id())->exists();
+                if (!$dejaMembre) {
+                    $nbJoueursMax = $partie->parametres['nb_joueurs'] ?? 10;
+                    if ($partie->team->users()->count() >= $nbJoueursMax) {
+                        return redirect()->route('dashboard')->with('error', 'L\'équipe est déjà complète.');
+                    }
+                    $partie->team->users()->attach(auth()->id(), ['role' => 'challenger']);
+                }
+            }
+        }
+
+        // Redirection vers le jeu
+        return redirect()->route('progression.enigme', $partie);
+    }
+
+    /**
      * Affiche le formulaire de création
      */
     public function create()

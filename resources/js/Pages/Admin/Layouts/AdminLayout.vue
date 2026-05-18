@@ -37,6 +37,11 @@
           <span>Parties</span>
         </Link>
 
+        <Link :href="route('admin.invitations.index')" class="nav-item" :class="{ active: isActive('admin.invitations') }">
+          <i class="pi pi-link" />
+          <span>Invitations App</span>
+        </Link>
+
         <div class="nav-section-title">Navigation</div>
 
         <Link :href="route('dashboard')" class="nav-item">
