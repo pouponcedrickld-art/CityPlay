@@ -18,8 +18,10 @@ onMounted(() => {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'light') {
         isDark.value = false;
+        document.documentElement.classList.add('light-theme');
     } else {
         isDark.value = true;
+        document.documentElement.classList.remove('light-theme');
     }
 
     // 2. Initialiser le Canvas de Braises Interactif (GSAP Powered)
@@ -151,6 +153,11 @@ const onMouseLeave = () => {
 const toggleTheme = () => {
     isDark.value = !isDark.value;
     localStorage.setItem('theme', isDark.value ? 'dark' : 'light');
+    if (isDark.value) {
+        document.documentElement.classList.remove('light-theme');
+    } else {
+        document.documentElement.classList.add('light-theme');
+    }
     
     // Smooth transition flash effect on change
     gsap.fromTo('.vignette-overlay', 

@@ -26,6 +26,28 @@ defineProps({
 
 const introVideo = ref(null);
 
+const isDark = ref(true);
+
+const initTheme = () => {
+  isDark.value = localStorage.getItem('theme') !== 'light';
+  if (isDark.value) {
+    document.documentElement.classList.remove('light-theme');
+  } else {
+    document.documentElement.classList.add('light-theme');
+  }
+};
+
+const toggleTheme = () => {
+  isDark.value = !isDark.value;
+  if (isDark.value) {
+    localStorage.setItem('theme', 'dark');
+    document.documentElement.classList.remove('light-theme');
+  } else {
+    localStorage.setItem('theme', 'light');
+    document.documentElement.classList.add('light-theme');
+  }
+};
+
 const handleTimeUpdate = () => {
   if (introVideo.value && introVideo.value.currentTime >= 6.5) {
     introVideo.value.currentTime = 0;
@@ -39,12 +61,15 @@ const onCardMove = (event) => {
   const x = event.clientX - rect.left - rect.width / 2;
   const y = event.clientY - rect.top - rect.height / 2;
   
+  const borderCol = isDark.value ? 'rgba(0, 229, 255, 0.45)' : 'rgba(0, 180, 216, 0.45)';
+  const shadowCol = isDark.value ? '0 20px 40px rgba(0, 229, 255, 0.15)' : '0 15px 30px rgba(0, 180, 216, 0.12)';
+  
   gsap.to(card, {
     rotateX: -y / 12,
     rotateY: x / 12,
     scale: 1.03,
-    borderColor: 'rgba(255, 149, 0, 0.45)',
-    boxShadow: '0 20px 40px rgba(255, 149, 0, 0.12)',
+    borderColor: borderCol,
+    boxShadow: shadowCol,
     duration: 0.35,
     ease: 'power2.out'
   });
@@ -52,12 +77,15 @@ const onCardMove = (event) => {
 
 const onCardLeave = (event) => {
   const card = event.currentTarget;
+  const borderCol = isDark.value ? 'rgba(255, 149, 0, 0.12)' : 'rgba(0, 135, 81, 0.15)';
+  const shadowCol = isDark.value ? '0 10px 30px rgba(0, 0, 0, 0.5)' : '0 10px 30px rgba(0, 0, 0, 0.05)';
+  
   gsap.to(card, {
     rotateX: 0,
     rotateY: 0,
     scale: 1,
-    borderColor: 'rgba(255, 149, 0, 0.12)',
-    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.5)',
+    borderColor: borderCol,
+    boxShadow: shadowCol,
     duration: 0.5,
     ease: 'power3.out'
   });
@@ -138,6 +166,8 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.08 });
 
 onMounted(() => {
+  initTheme();
+
   // 1. Mouse Tracking Glowing Pointer Follower
   window.addEventListener('mousemove', (e) => {
     gsap.to('.cursor-glow', {
@@ -556,6 +586,16 @@ onMounted(() => {
         <span>v{{ laravelVersion }} (PHP v{{ phpVersion }})</span>
       </div>
     </footer>
+
+    <!-- Floating Theme Toggle Switch -->
+    <button 
+      class="theme-switch-float" 
+      @click="toggleTheme" 
+      aria-label="Toggle Theme"
+      title="Changer de Thème"
+    >
+      <i :class="isDark ? 'pi pi-sun' : 'pi pi-moon'" />
+    </button>
   </div>
 </template>
 

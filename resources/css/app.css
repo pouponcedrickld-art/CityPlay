@@ -1,3 +1,1199 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cinzel:wght@700;900&family=Outfit:wght@400;600;800;900&family=Share+Tech+Mono&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Premium Global Theme CSS Variables */
+:root {
+  --bg-main: #040508;
+  --bg-card: rgba(16, 18, 27, 0.85);
+  --text-main: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.65);
+  --border-glow: rgba(255, 149, 0, 0.15);
+  --glow-shadow: 0 10px 30px rgba(255, 149, 0, 0.05);
+
+  /* Dual-accent palette for Dark Mode (Land & Water Adventure) */
+  --accent-primary: #FF9500; /* Cyber-Orange (Sun, Dahomey Royalty) */
+  --accent-secondary: #00E5FF; /* Electric Cyan (Water, Ganvié, Modern Exploration) */
+  --accent-glow-primary: rgba(255, 149, 0, 0.25);
+  --accent-glow-secondary: rgba(0, 229, 255, 0.25);
+  --accent-gradient: linear-gradient(135deg, #FF9500 0%, #00E5FF 100%);
+  --accent-gradient-hover: linear-gradient(135deg, #FFB800 0%, #00F5FF 100%);
+
+  /* PrimeVue Theme Variable Overrides for Dark Mode */
+  --primary-color: #FF9500 !important;
+  --primary-color-text: #040508 !important;
+  --highlight-bg: rgba(255, 149, 0, 0.1) !important;
+  --highlight-color: #FF9500 !important;
+  --content-background: rgba(16, 18, 27, 0.85) !important;
+  --content-border: rgba(255, 149, 0, 0.15) !important;
+  --text-color: #ffffff !important;
+  --text-muted-color: rgba(255, 255, 255, 0.65) !important;
+  --border-color: rgba(255, 149, 0, 0.15) !important;
+  --mask-background: rgba(4, 5, 8, 0.8) !important;
+  --surface-ground: #040508 !important;
+  --surface-section: rgba(16, 18, 27, 0.85) !important;
+  --surface-card: rgba(16, 18, 27, 0.95) !important;
+  --surface-border: rgba(255, 255, 255, 0.05) !important;
+  --surface-hover: rgba(255, 149, 0, 0.05) !important;
+}
+
+:root.light-theme {
+  --bg-main: #f1f3f7;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --text-main: #111827;
+  --text-muted: #4b5563;
+  --border-glow: rgba(0, 135, 81, 0.25);
+  --glow-shadow: 0 10px 30px rgba(0, 135, 81, 0.08);
+
+  /* Dual-accent palette for Light Mode (Forest & Lagoon) */
+  --accent-primary: #008751; /* Emerald Green (Flora, Vegetation) */
+  --accent-secondary: #00B4D8; /* Lagoon Blue (Sky, Crystal Water) */
+  --accent-glow-primary: rgba(0, 135, 81, 0.25);
+  --accent-glow-secondary: rgba(0, 180, 216, 0.25);
+  --accent-gradient: linear-gradient(135deg, #008751 0%, #00B4D8 100%);
+  --accent-gradient-hover: linear-gradient(135deg, #006b3f 0%, #0077b6 100%);
+
+  /* PrimeVue Theme Variable Overrides for Light Mode */
+  --primary-color: #008751 !important;
+  --primary-color-text: #ffffff !important;
+  --highlight-bg: rgba(0, 135, 81, 0.08) !important;
+  --highlight-color: #008751 !important;
+  --content-background: #ffffff !important;
+  --content-border: rgba(0, 0, 0, 0.06) !important;
+  --text-color: #111827 !important;
+  --text-muted-color: #4b5563 !important;
+  --border-color: rgba(0, 0, 0, 0.08) !important;
+  --mask-background: rgba(0, 0, 0, 0.4) !important;
+  --surface-ground: #f8fafc !important;
+  --surface-section: #ffffff !important;
+  --surface-card: #ffffff !important;
+  --surface-border: rgba(0, 0, 0, 0.06) !important;
+  --surface-hover: rgba(0, 135, 81, 0.04) !important;
+}
+
+/* ==========================================
+   TYPOGRAPHY SYSTEM (Video Game Inspired)
+   ========================================== */
+
+body, .admin-layout-wrapper, .p-component {
+  font-family: 'Outfit', sans-serif !important;
+}
+
+/* 1. Futuristic Header (GTA & Watch Dogs vibe) */
+.page-title, 
+.form-page .page-title,
+.section-title,
+.dashboard-title,
+.topbar-title,
+.hud-title,
+.brand-title,
+h1, h2 {
+  font-family: 'Orbitron', sans-serif !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+}
+
+/* 2. Historic & Ancient Exploration (Tomb Raider / Uncharted vibe) */
+.city-info h3, 
+.adventure-title, 
+.ancient-title, 
+.city-name,
+h3 {
+  font-family: 'Cinzel', serif !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.08em !important;
+}
+
+/* 3. Tech widgets & Terminal numbers (Watch Dogs hacker code vibe) */
+.order-badge, 
+.row-score, 
+.row-rank, 
+.metric-val, 
+.char-count,
+.section-badge,
+.player-score,
+.drag-handle,
+.gps-coords,
+.badge-custom {
+  font-family: 'Share Tech Mono', monospace !important;
+  font-weight: 700 !important;
+}
+
+/* Base body background & text transitions */
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+/* ==========================================
+   INTERACTIVE MOUNTED CRT VIDEO GAME MONITOR FILTER
+   ========================================== */
+
+html:not(.light-theme) .admin-layout {
+  background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03)) !important;
+  background-size: 100% 4px, 6px 100% !important;
+  background-color: #040508 !important;
+}
+
+:root.light-theme .admin-layout {
+  background-image: none !important;
+  background-color: #f1f3f7 !important;
+}
+
+/* Light Theme overrides for Welcome Page */
+:root.light-theme .welcome-container {
+  background: #f3f4f6 !important;
+  color: #111827 !important;
+}
+
+:root.light-theme .welcome-container::before {
+  background-image: radial-gradient(rgba(0, 135, 81, 0.04) 1px, transparent 1px) !important;
+}
+
+:root.light-theme .bg-video {
+  opacity: 0.12 !important;
+}
+
+:root.light-theme .video-overlay {
+  background: radial-gradient(circle at center, rgba(243, 244, 246, 0.2) 0%, rgba(243, 244, 246, 0.98) 95%) !important;
+}
+
+:root.light-theme .brand-title {
+  color: #111827 !important;
+}
+
+:root.light-theme .nav-bar {
+  background: linear-gradient(180deg, rgba(243, 244, 246, 0.85) 0%, transparent 100%) !important;
+  border-bottom-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+.nav-logo {
+  border: 1px solid var(--accent-primary) !important;
+  box-shadow: 0 0 15px var(--accent-glow-primary) !important;
+}
+
+.brand-tag {
+  color: var(--accent-primary) !important;
+}
+
+:root.light-theme .nav-link {
+  color: rgba(17, 24, 39, 0.7) !important;
+}
+.nav-link:hover {
+  color: var(--accent-primary) !important;
+}
+
+.btn-dashboard {
+  background: rgba(255, 149, 0, 0.1) !important;
+  border: 1px solid rgba(255, 149, 0, 0.3) !important;
+  color: #FF9500 !important;
+}
+.btn-dashboard:hover {
+  background: var(--accent-gradient) !important;
+  color: #040508 !important;
+  border-color: transparent !important;
+  box-shadow: 0 0 20px var(--accent-glow-primary) !important;
+}
+
+:root.light-theme .btn-dashboard {
+  background: rgba(0, 135, 81, 0.1) !important;
+  border-color: rgba(0, 135, 81, 0.3) !important;
+  color: #008751 !important;
+}
+:root.light-theme .btn-dashboard:hover {
+  background: var(--accent-gradient) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 20px var(--accent-glow-primary) !important;
+}
+
+:root.light-theme .btn-login {
+  color: rgba(17, 24, 39, 0.8) !important;
+}
+.btn-login:hover {
+  color: var(--accent-primary) !important;
+}
+
+/* ==========================================
+   BUTTONS STYLING SYSTEM (Gaming & SaaS Roles)
+   ========================================== */
+
+/* 1. Bouton Principal (Primary CTA / Success / Validation) */
+.btn-primary, .primary-cta, .btn-register {
+  background: var(--accent-gradient) !important;
+  color: #040508 !important; /* Perfect high-contrast black in Dark Mode */
+  font-weight: 900 !important;
+  border: none !important;
+  box-shadow: 0 4px 15px var(--accent-glow-primary), 0 4px 20px var(--accent-glow-secondary) !important;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+.btn-primary:hover, .primary-cta:hover, .btn-register:hover {
+  background: var(--accent-gradient-hover) !important;
+  color: #040508 !important;
+  box-shadow: 0 6px 20px var(--accent-glow-primary), 0 6px 25px var(--accent-glow-secondary) !important;
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* Light mode primary text contrast adjustment */
+:root.light-theme .btn-primary, :root.light-theme .primary-cta, :root.light-theme .btn-register {
+  color: #ffffff !important; /* Clean white text in Light Mode */
+}
+
+/* 2. Bouton Secondaire (Ghost / Filters / Cancel) */
+.btn-secondary, .secondary-cta {
+  background: transparent !important;
+  border: 2px solid var(--accent-secondary) !important;
+  color: var(--accent-secondary) !important;
+  font-weight: 800 !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.btn-secondary:hover, .secondary-cta:hover {
+  background: rgba(0, 229, 255, 0.1) !important; /* Cyber Cyan slight opacity */
+  box-shadow: 0 0 20px var(--accent-glow-secondary) !important;
+  transform: translateY(-2px);
+}
+
+:root.light-theme .btn-secondary, :root.light-theme .secondary-cta {
+  background: #ffffff !important;
+  border: 2px solid var(--accent-secondary) !important;
+  color: var(--accent-secondary) !important;
+}
+
+:root.light-theme .btn-secondary:hover, :root.light-theme .secondary-cta:hover {
+  background: rgba(0, 180, 216, 0.08) !important; /* Lagoon Blue slight opacity */
+  box-shadow: 0 4px 12px var(--accent-glow-secondary) !important;
+}
+
+/* 3. Bouton Danger / Déconnexion (Pure destructive red, avoiding theme mix) */
+.btn-danger, .btn-logout {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  border: none !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.25) !important;
+  transition: all 0.3s ease !important;
+}
+
+.btn-danger:hover, .btn-logout:hover {
+  background: #dc2626 !important;
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.45) !important;
+  transform: translateY(-2px);
+}
+
+
+/* ==========================================
+   ALERTS STYLING SYSTEM (Gaming & SaaS Roles)
+   ========================================== */
+
+/* 1. Success Toast / Banner */
+.alert-success {
+  background: rgba(16, 18, 27, 0.9) !important;
+  border: 1px solid rgba(0, 229, 255, 0.2) !important;
+  border-left: 4px solid var(--accent-secondary) !important; /* Thick Cyan indicator */
+  color: #ffffff !important;
+  box-shadow: 0 10px 30px rgba(0, 229, 255, 0.05) !important;
+}
+
+:root.light-theme .alert-success {
+  background: #f0fdf4 !important; /* Mint green ultra-light background */
+  border: 1px solid rgba(0, 135, 81, 0.15) !important;
+  border-left: 4px solid var(--accent-primary) !important; /* Emerald green left border */
+  color: #166534 !important; /* Forest green text */
+  box-shadow: 0 4px 15px rgba(0, 135, 81, 0.03) !important;
+}
+
+/* 2. Error Toast / Banner */
+.alert-error, .alert-danger {
+  background: rgba(16, 18, 27, 0.9) !important;
+  border: 1px solid rgba(239, 68, 68, 0.2) !important;
+  border-left: 4px solid #ef4444 !important;
+  color: #f87171 !important;
+}
+
+:root.light-theme .alert-error, :root.light-theme .alert-danger {
+  background: #fef2f2 !important; /* Soft red background */
+  border: 1px solid rgba(239, 68, 68, 0.15) !important;
+  border-left: 4px solid #ef4444 !important;
+  color: #991b1b !important; /* Deep dark red text */
+}
+
+/* 3. Info Toast / Banner */
+.alert-info {
+  background: rgba(16, 18, 27, 0.9) !important;
+  border: 1px solid rgba(0, 229, 255, 0.2) !important;
+  border-left: 4px solid var(--accent-secondary) !important;
+  color: #ffffff !important;
+}
+
+:root.light-theme .alert-info {
+  background: #e0f2fe !important; /* Soft sky blue background */
+  border: 1px solid rgba(0, 180, 216, 0.15) !important;
+  border-left: 4px solid var(--accent-secondary) !important; /* Lagoon Blue left border */
+  color: #0369a1 !important; /* Deep blue text */
+}
+
+
+/* ==========================================
+   BADGES & INTERACTIVE DECORATIVE COMPONENT ROLES
+   ========================================== */
+
+/* Badges / Mini Stats */
+.badge-custom {
+  background: rgba(255, 149, 0, 0.1) !important;
+  color: #FF9500 !important;
+  border: 1px solid rgba(255, 149, 0, 0.2) !important;
+  padding: 0.25rem 0.6rem !important;
+  border-radius: 9999px !important;
+  font-size: 0.65rem !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+}
+
+:root.light-theme .badge-custom {
+  background: rgba(0, 135, 81, 0.1) !important;
+  color: #008751 !important;
+  border: 1px solid rgba(0, 135, 81, 0.2) !important;
+}
+
+
+/* ==========================================
+   VUE PLAYER (HUD) VISUAL EXCESSIVE INTENSITY
+   ========================================== */
+
+.scroll-indicator:hover {
+  color: var(--accent-primary) !important;
+}
+
+:root.light-theme .section-gameplay {
+  background: linear-gradient(180deg, #f3f4f6 0%, #e5e7eb 100%) !important;
+}
+
+.timeline-line {
+  background: linear-gradient(180deg, var(--accent-primary) 0%, var(--accent-secondary) 100%) !important;
+  box-shadow: 0 0 15px var(--accent-glow-primary) !important;
+}
+
+.step-card {
+  background: rgba(16, 18, 27, 0.85);
+  border: 1px solid rgba(255, 149, 0, 0.12);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px var(--accent-glow-secondary) !important; /* Glowing player shadows */
+}
+
+.step-card:hover {
+  border-color: var(--accent-secondary) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 25px var(--accent-glow-secondary) !important;
+}
+
+:root.light-theme .step-card {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border-color: rgba(0, 135, 81, 0.15) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04) !important;
+}
+
+:root.light-theme .step-card h3 {
+  color: #111827 !important;
+}
+
+:root.light-theme .step-card p {
+  color: rgba(17, 24, 39, 0.6) !important;
+}
+
+.step-badge {
+  background: #000000 !important;
+  border: 2px solid var(--accent-primary) !important;
+  color: var(--accent-primary) !important;
+  box-shadow: 0 0 10px var(--accent-glow-primary) !important;
+}
+
+:root.light-theme .step-badge {
+  background: #ffffff !important;
+  border-color: var(--accent-primary) !important;
+  color: var(--accent-primary) !important;
+}
+
+:root.light-theme .section-cites {
+  background: linear-gradient(180deg, #e5e7eb 0%, #f3f4f6 100%) !important;
+}
+
+.city-card {
+  background: rgba(16, 18, 27, 0.85) !important;
+  border: 1px solid rgba(255, 149, 0, 0.12) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px var(--accent-glow-secondary) !important;
+}
+.city-card:hover {
+  border-color: var(--accent-secondary) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 25px var(--accent-glow-secondary) !important;
+}
+
+:root.light-theme .city-card {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border-color: rgba(0, 135, 81, 0.15) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04) !important;
+}
+
+.city-region {
+  color: var(--accent-primary) !important;
+}
+
+:root.light-theme .city-info h3 {
+  color: #111827 !important;
+}
+
+:root.light-theme .city-info p {
+  color: rgba(17, 24, 39, 0.6) !important;
+}
+
+.city-stats {
+  color: var(--accent-primary) !important;
+}
+
+:root.light-theme .city-img-overlay {
+  background: linear-gradient(360deg, rgba(255, 255, 255, 1) 0%, transparent 100%) !important;
+}
+
+:root.light-theme .section-leaderboard {
+  background: linear-gradient(180deg, #f3f4f6 0%, #e5e7eb 100%) !important;
+}
+
+.leaderboard-container {
+  background: rgba(16, 18, 27, 0.85) !important;
+  border: 1px solid rgba(255, 149, 0, 0.15) !important;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 15px var(--accent-glow-secondary) !important;
+}
+
+.leaderboard-container:hover {
+  border-color: var(--accent-secondary) !important;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 25px var(--accent-glow-secondary) !important;
+}
+
+:root.light-theme .leaderboard-container {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border-color: rgba(0, 135, 81, 0.25) !important;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06) !important;
+}
+
+.tab-btn {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+.tab-btn:hover {
+  color: var(--accent-primary) !important;
+  background: rgba(255, 149, 0, 0.05) !important;
+}
+.tab-btn.active {
+  color: #ffffff !important;
+  background: var(--accent-gradient) !important;
+}
+
+:root.light-theme .tab-btn {
+  color: rgba(17, 24, 39, 0.6) !important;
+}
+:root.light-theme .tab-btn:hover {
+  color: var(--accent-primary) !important;
+  background: rgba(0, 135, 81, 0.05) !important;
+}
+:root.light-theme .tab-btn.active {
+  color: #ffffff !important;
+  background: var(--accent-gradient) !important;
+}
+
+.leaderboard-row:hover {
+  background: rgba(255, 149, 0, 0.05) !important;
+  border-color: var(--accent-secondary) !important;
+}
+
+:root.light-theme .leaderboard-row {
+  background: rgba(0, 0, 0, 0.02) !important;
+  border-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+:root.light-theme .leaderboard-row:hover {
+  background: rgba(0, 135, 81, 0.05) !important;
+  border-color: var(--accent-secondary) !important;
+}
+
+.row-rank.rank-1 {
+  color: var(--accent-primary) !important;
+  text-shadow: 0 0 10px var(--accent-glow-primary) !important;
+}
+
+:root.light-theme .row-rank.rank-1 {
+  color: var(--accent-secondary) !important; /* Soft Lagoon Blue Rank 1 in Light mode */
+  text-shadow: none !important;
+}
+
+:root.light-theme .row-name {
+  color: #111827 !important;
+}
+
+:root.light-theme .row-city {
+  color: rgba(17, 24, 39, 0.6) !important;
+}
+
+.row-score {
+  color: var(--accent-secondary) !important;
+  text-shadow: 0 0 10px var(--accent-glow-secondary) !important; /* Cyan glow score */
+}
+
+:root.light-theme .row-score {
+  color: var(--accent-secondary) !important; /* Soft Lagoon Blue Score in Light mode */
+  text-shadow: none !important;
+}
+
+:root.light-theme .section-faq {
+  background: linear-gradient(180deg, #e5e7eb 0%, #f3f4f6 100%) !important;
+}
+
+.faq-item {
+  background: rgba(16, 18, 27, 0.85) !important;
+  border: 1px solid rgba(255, 149, 0, 0.12) !important;
+}
+.faq-item:hover {
+  border-color: var(--accent-secondary) !important;
+}
+.faq-item.open {
+  border-color: var(--accent-primary) !important;
+  box-shadow: 0 0 20px var(--accent-glow-primary) !important;
+}
+
+:root.light-theme .faq-item {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-color: rgba(0, 135, 81, 0.2) !important;
+}
+:root.light-theme .faq-item:hover {
+  background: rgba(0, 135, 81, 0.03) !important;
+  border-color: var(--accent-secondary) !important;
+}
+:root.light-theme .faq-item.open {
+  border-color: var(--accent-primary) !important;
+  box-shadow: 0 10px 25px var(--accent-glow-primary) !important;
+}
+
+:root.light-theme .faq-question h3 {
+  color: #111827 !important;
+}
+
+:root.light-theme .faq-arrow {
+  color: rgba(17, 24, 39, 0.5) !important;
+}
+
+.faq-item.open .faq-arrow {
+  color: var(--accent-primary) !important;
+}
+
+:root.light-theme .answer-content {
+  color: rgba(17, 24, 39, 0.6) !important;
+  border-top-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+:root.light-theme .hud-footer {
+  background: #ffffff !important;
+  border-top-color: rgba(0, 0, 0, 0.06) !important;
+  color: rgba(17, 24, 39, 0.5) !important;
+}
+
+
+/* ==========================================
+   VUE ADMIN (HUD / SOBRIETE CONTROLE PANEL)
+   ========================================== */
+
+/* Dark Mode Admin Layout */
+.admin-sidebar {
+  background: #10121b !important; /* Premium dark background to prevent eye strain */
+  border-right: 1px solid rgba(255, 255, 255, 0.04) !important;
+  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.15) !important;
+}
+
+.sidebar-link {
+  color: rgba(255, 255, 255, 0.6) !important;
+  border-left: 3px solid transparent !important;
+  transition: all 0.3s ease !important;
+}
+
+.sidebar-link:hover {
+  background: rgba(255, 149, 0, 0.04) !important;
+  color: var(--accent-primary) !important;
+}
+
+.sidebar-link.active {
+  border-left: 3px solid var(--accent-primary) !important;
+  background: rgba(255, 149, 0, 0.08) !important;
+  color: var(--accent-primary) !important;
+}
+
+/* Light Mode Admin Layout */
+:root.light-theme .admin-sidebar {
+  background: #ffffff !important;
+  border-right-color: rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.02) !important;
+}
+
+:root.light-theme .admin-layout-wrapper {
+  background: #f8fafc !important;
+}
+
+:root.light-theme .admin-content-main {
+  background: #f8fafc !important;
+}
+
+:root.light-theme .admin-topbar {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-bottom-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+:root.light-theme .topbar-title {
+  color: #0f172a !important;
+}
+
+:root.light-theme .dashboard-title {
+  color: #0f172a !important;
+}
+
+:root.light-theme .dashboard-desc {
+  color: #475569 !important;
+}
+
+/* Interactive corner bracket overlays for game aesthetics */
+.admin-layout .stat-card,
+.admin-layout .chart-card,
+.admin-layout .lieu-card,
+.admin-layout .form-card {
+  position: relative !important;
+  border: 2px solid var(--border-glow) !important;
+  border-radius: 12px !important;
+  background: linear-gradient(135deg, rgba(16, 18, 27, 0.9) 0%, rgba(20, 24, 38, 0.95) 100%) !important;
+  overflow: hidden !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.admin-layout .stat-card::before,
+.admin-layout .chart-card::before,
+.admin-layout .lieu-card::before,
+.admin-layout .form-card::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 14px !important;
+  height: 14px !important;
+  border-top: 3px solid var(--accent-primary) !important;
+  border-left: 3px solid var(--accent-primary) !important;
+  z-index: 2 !important;
+  pointer-events: none !important;
+}
+
+.admin-layout .stat-card::after,
+.admin-layout .chart-card::after,
+.admin-layout .lieu-card::after,
+.admin-layout .form-card::after {
+  content: '' !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  right: 0 !important;
+  width: 14px !important;
+  height: 14px !important;
+  border-bottom: 3px solid var(--accent-secondary) !important;
+  border-right: 3px solid var(--accent-secondary) !important;
+  z-index: 2 !important;
+  pointer-events: none !important;
+}
+
+/* Light mode bracket overrides */
+:root.light-theme .admin-layout .stat-card,
+:root.light-theme .admin-layout .chart-card,
+:root.light-theme .admin-layout .lieu-card,
+:root.light-theme .admin-layout .form-card {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02) !important;
+}
+
+:root.light-theme .admin-layout .stat-card::before,
+:root.light-theme .admin-layout .chart-card::before,
+:root.light-theme .admin-layout .lieu-card::before,
+:root.light-theme .admin-layout .form-card::before {
+  border-top-color: var(--accent-primary) !important;
+  border-left-color: var(--accent-primary) !important;
+}
+
+:root.light-theme .admin-layout .stat-card::after,
+:root.light-theme .admin-layout .chart-card::after,
+:root.light-theme .admin-layout .lieu-card::after,
+:root.light-theme .admin-layout .form-card::after {
+  border-bottom-color: var(--accent-secondary) !important;
+  border-right-color: var(--accent-secondary) !important;
+}
+
+:root.light-theme .metric-card {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.02) !important;
+}
+
+:root.light-theme .metric-card::after {
+  display: none !important;
+}
+
+:root.light-theme .metric-card h3 {
+  color: #475569 !important;
+}
+
+:root.light-theme .metric-card .metric-val {
+  color: #0f172a !important;
+}
+
+:root.light-theme .hud-card {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02) !important;
+}
+
+:root.light-theme .hud-card h3 {
+  color: #0f172a !important;
+}
+
+:root.light-theme .sidebar-link {
+  color: #475569 !important;
+  border-left: 3px solid transparent !important;
+}
+
+:root.light-theme .sidebar-link:hover {
+  background: rgba(0, 135, 81, 0.04) !important;
+  color: var(--accent-primary) !important;
+}
+
+:root.light-theme .sidebar-link.active {
+  border-left: 3px solid var(--accent-primary) !important;
+  background: rgba(0, 135, 81, 0.08) !important;
+  color: var(--accent-primary) !important;
+}
+
+/* Float Switch Theme Toggle Button Styles */
+.theme-switch-float {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 99999;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: rgba(16, 18, 27, 0.85);
+  border: 1px solid rgba(255, 149, 0, 0.35);
+  color: #FF9500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(255, 149, 0, 0.25);
+  backdrop-filter: blur(8px);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.theme-switch-float:hover {
+  transform: scale(1.1) rotate(15deg);
+  background: var(--accent-gradient);
+  color: #040508;
+  border-color: transparent !important;
+  box-shadow: 0 0 25px var(--accent-glow-primary), 0 0 25px var(--accent-glow-secondary);
+}
+
+:root.light-theme .theme-switch-float {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(0, 135, 81, 0.4);
+  color: #008751;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+:root.light-theme .theme-switch-float:hover {
+  background: var(--accent-gradient);
+  color: #ffffff;
+  border-color: transparent !important;
+  box-shadow: 0 0 25px var(--accent-glow-primary), 0 0 25px var(--accent-glow-secondary);
+}
+
+
+/* ==========================================
+   GLOBAL SCOPED OVERRIDES FOR ADMIN PAGES (pages/Admin)
+   ========================================== */
+
+/* Page titles and header texts */
+.page-title, .form-page .page-title {
+  color: var(--text-main) !important;
+}
+.page-subtitle, .lieu-meta, .lieu-description, .hint, .char-count, .section-badge {
+  color: var(--text-muted) !important;
+}
+
+/* Cards & Layout panels */
+.stat-card, .chart-card, .lieu-card, .empty-state, .form-card, .map-wrapper {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-glow) !important;
+  color: var(--text-main) !important;
+}
+
+.stat-card:hover, .chart-card:hover, .lieu-card:hover {
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4), 0 0 15px var(--accent-glow-secondary) !important;
+}
+
+:root.light-theme .stat-card:hover, :root.light-theme .chart-card:hover, :root.light-theme .lieu-card:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Section titles inside forms */
+.section-title {
+  color: var(--text-main) !important;
+  border-bottom: 1px solid var(--border-glow) !important;
+}
+
+.lieu-name {
+  color: var(--text-main) !important;
+}
+
+/* Fields & Labels */
+.field label {
+  color: var(--text-main) !important;
+  font-weight: 700 !important;
+}
+
+/* Upload zone */
+.upload-zone {
+  border: 2px dashed var(--border-glow) !important;
+  background: rgba(16, 18, 27, 0.4) !important;
+  color: var(--text-muted) !important;
+  transition: all 0.3s ease !important;
+}
+.upload-zone:hover {
+  border-color: var(--accent-secondary) !important;
+  color: var(--accent-secondary) !important;
+  background: rgba(0, 229, 255, 0.05) !important;
+}
+
+:root.light-theme .upload-zone {
+  background: #ffffff !important;
+}
+:root.light-theme .upload-zone:hover {
+  border-color: var(--accent-secondary) !important;
+  color: var(--accent-secondary) !important;
+  background: rgba(0, 180, 216, 0.04) !important;
+}
+
+/* Map items */
+.map-toolbar {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-glow) !important;
+}
+
+/* Form actions border */
+.form-actions {
+  border-top: 1px solid var(--border-glow) !important;
+}
+
+/* Badges */
+.order-badge {
+  background: rgba(255, 149, 0, 0.1) !important;
+  color: #FF9500 !important;
+}
+:root.light-theme .order-badge {
+  background: rgba(0, 135, 81, 0.1) !important;
+  color: #008751 !important;
+}
+
+.section-badge {
+  background: rgba(255, 149, 0, 0.1) !important;
+  color: #FF9500 !important;
+}
+:root.light-theme .section-badge {
+  background: rgba(0, 135, 81, 0.1) !important;
+  color: #008751 !important;
+}
+
+
+/* ==========================================
+   DARK MODE TAILWIND UTILITIES OVERRIDES FOR ADMIN VUES
+   ========================================== */
+
+/* Automatically styles any Tailwind hardcoded bg/text/border classes inside Admin pages */
+html:not(.light-theme) .admin-layout .bg-white {
+  background-color: var(--bg-card) !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-main) !important;
+}
+
+html:not(.light-theme) .admin-layout .text-gray-800,
+html:not(.light-theme) .admin-layout .text-gray-900,
+html:not(.light-theme) .admin-layout .text-gray-700,
+html:not(.light-theme) .admin-layout h1,
+html:not(.light-theme) .admin-layout h2,
+html:not(.light-theme) .admin-layout h3 {
+  color: var(--text-main) !important;
+}
+
+html:not(.light-theme) .admin-layout .text-gray-600,
+html:not(.light-theme) .admin-layout .text-gray-500 {
+  color: var(--text-muted) !important;
+}
+
+html:not(.light-theme) .admin-layout .border-gray-100,
+html:not(.light-theme) .admin-layout .border-gray-200 {
+  border-color: var(--border-glow) !important;
+}
+
+html:not(.light-theme) .admin-layout .bg-gray-50,
+html:not(.light-theme) .admin-layout .bg-gray-100 {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+  color: var(--text-main) !important;
+}
+
+html:not(.light-theme) .admin-layout .dashboard-content {
+  background-color: var(--bg-main) !important;
+}
+
+
+/* ==========================================
+   HIGH SPECIFICITY PRIMEVUE COMPONENTS CUSTOMIZATION
+   ========================================== */
+
+/* Absolute Overrides: Force PrimeVue elements to NEVER have a hardcoded white background in dark mode */
+html:not(.light-theme) body .p-component,
+html:not(.light-theme) body .p-inputtext,
+html:not(.light-theme) body .p-inputnumber-input,
+html:not(.light-theme) body .p-textarea,
+html:not(.light-theme) body .p-dropdown,
+html:not(.light-theme) body .p-dropdown-label,
+html:not(.light-theme) body .p-multiselect,
+html:not(.light-theme) body .p-multiselect-label,
+html:not(.light-theme) body .p-chips,
+html:not(.light-theme) body .p-chips-multiple-container,
+html:not(.light-theme) body .p-calendar input,
+html:not(.light-theme) body .p-datatable,
+html:not(.light-theme) body .p-datatable-tbody > tr,
+html:not(.light-theme) body .p-datatable-thead > tr > th,
+html:not(.light-theme) body .p-card,
+html:not(.light-theme) body .p-dialog,
+html:not(.light-theme) body .p-dialog-header,
+html:not(.light-theme) body .p-dialog-content,
+html:not(.light-theme) body .p-dialog-footer,
+html:not(.light-theme) body .p-breadcrumb {
+  background-color: rgba(16, 18, 27, 0.92) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 149, 0, 0.2) !important;
+}
+
+/* 1. PrimeVue Card Override */
+body .p-card {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-glow) !important;
+  color: var(--text-main) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--glow-shadow) !important;
+}
+:root.light-theme body .p-card {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02) !important;
+}
+
+/* 2. PrimeVue Button Overrides to fit custom roles */
+body .p-button {
+  font-family: inherit !important;
+  font-weight: 800 !important;
+  border-radius: 10px !important;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+/* Primary Button (Normal) */
+body .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-secondary):not(.p-button-danger):not(.p-button-success):not(.p-button-link) {
+  background: var(--accent-gradient) !important;
+  border: none !important;
+  color: #040508 !important;
+  box-shadow: 0 4px 15px var(--accent-glow-primary) !important;
+}
+body .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-secondary):not(.p-button-danger):not(.p-button-success):not(.p-button-link):hover {
+  background: var(--accent-gradient-hover) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--accent-glow-primary), 0 6px 25px var(--accent-glow-secondary) !important;
+}
+:root.light-theme body .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-secondary):not(.p-button-danger):not(.p-button-success):not(.p-button-link) {
+  color: #ffffff !important;
+}
+
+/* Outlined / Secondary Button */
+body .p-button.p-button-outlined, body .p-button.p-button-secondary {
+  background: transparent !important;
+  border: 2px solid var(--accent-secondary) !important;
+  color: var(--accent-secondary) !important;
+}
+body .p-button.p-button-outlined:hover, body .p-button.p-button-secondary:hover {
+  background: rgba(0, 229, 255, 0.1) !important;
+  box-shadow: 0 0 15px var(--accent-glow-secondary) !important;
+  color: var(--accent-secondary) !important;
+}
+:root.light-theme body .p-button.p-button-outlined, :root.light-theme body .p-button.p-button-secondary {
+  border-color: var(--accent-secondary) !important;
+  color: var(--accent-secondary) !important;
+}
+:root.light-theme body .p-button.p-button-outlined:hover, :root.light-theme body .p-button.p-button-secondary:hover {
+  background: rgba(0, 180, 216, 0.08) !important;
+  box-shadow: 0 4px 12px var(--accent-glow-secondary) !important;
+  color: var(--accent-secondary) !important;
+}
+
+/* Text / Flat buttons */
+body .p-button.p-button-text {
+  color: var(--accent-primary) !important;
+  background: transparent !important;
+  border: none !important;
+}
+body .p-button.p-button-text:hover {
+  background: rgba(255, 149, 0, 0.08) !important;
+  color: var(--accent-primary) !important;
+}
+:root.light-theme body .p-button.p-button-text:hover {
+  background: rgba(0, 135, 81, 0.08) !important;
+}
+
+/* Danger Button */
+body .p-button.p-button-danger {
+  background: #ef4444 !important;
+  border: none !important;
+  color: #ffffff !important;
+}
+body .p-button.p-button-danger:hover {
+  background: #dc2626 !important;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4) !important;
+}
+
+/* 3. PrimeVue Table (DataTable) Override */
+body .p-datatable {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-glow) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+body .p-datatable .p-datatable-thead > tr > th {
+  background: rgba(255, 255, 255, 0.02) !important;
+  color: var(--text-main) !important;
+  border-bottom: 1px solid var(--border-glow) !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.05em !important;
+}
+body .p-datatable .p-datatable-tbody > tr {
+  background: transparent !important;
+  color: var(--text-muted) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+  transition: all 0.2s ease !important;
+}
+body .p-datatable .p-datatable-tbody > tr:hover {
+  background: rgba(255, 149, 0, 0.03) !important;
+  color: var(--text-main) !important;
+}
+:root.light-theme body .p-datatable {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
+}
+:root.light-theme body .p-datatable .p-datatable-thead > tr > th {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  border-bottom-color: rgba(0, 0, 0, 0.06) !important;
+}
+:root.light-theme body .p-datatable .p-datatable-tbody > tr {
+  color: #475569 !important;
+  border-bottom-color: rgba(0, 0, 0, 0.04) !important;
+}
+:root.light-theme body .p-datatable .p-datatable-tbody > tr:hover {
+  background: rgba(0, 135, 81, 0.04) !important;
+}
+
+/* 4. PrimeVue Tag Overrides */
+body .p-tag {
+  font-weight: 800 !important;
+  font-size: 0.7rem !important;
+  border-radius: 6px !important;
+  padding: 0.25rem 0.5rem !important;
+}
+body .p-tag-success {
+  background: rgba(16, 185, 129, 0.1) !important;
+  color: #10b981 !important;
+  border: 1px solid rgba(16, 185, 129, 0.2) !important;
+}
+body .p-tag-warning, body .p-tag-warn {
+  background: rgba(255, 149, 0, 0.1) !important;
+  color: #FF9500 !important;
+  border: 1px solid rgba(255, 149, 0, 0.2) !important;
+}
+
+/* 5. PrimeVue Popup/Dropdown/Calendar panel overrides */
+.p-dropdown-panel, .p-multiselect-panel, .p-datepicker {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-glow) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+}
+.p-dropdown-items-wrapper .p-dropdown-item, .p-multiselect-items-wrapper .p-multiselect-item {
+  color: var(--text-main) !important;
+  transition: background 0.2s !important;
+}
+.p-dropdown-items-wrapper .p-dropdown-item:hover, 
+.p-dropdown-items-wrapper .p-dropdown-item.p-highlight,
+.p-multiselect-items-wrapper .p-multiselect-item:hover,
+.p-multiselect-items-wrapper .p-multiselect-item.p-highlight {
+  background: rgba(255, 149, 0, 0.08) !important;
+  color: var(--accent-primary) !important;
+}
+:root.light-theme .p-dropdown-panel, :root.light-theme .p-multiselect-panel, :root.light-theme .p-datepicker {
+  background: #ffffff !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+:root.light-theme .p-dropdown-items-wrapper .p-dropdown-item:hover, 
+:root.light-theme .p-dropdown-items-wrapper .p-dropdown-item.p-highlight,
+:root.light-theme .p-multiselect-items-wrapper .p-multiselect-item:hover,
+:root.light-theme .p-multiselect-items-wrapper .p-multiselect-item.p-highlight {
+  background: rgba(0, 135, 81, 0.08) !important;
+  color: var(--accent-primary) !important;
+}
+
+/* Leaflet maps standard theme fits dark better with low contrast */
+.map-container {
+  border-radius: 8px !important;
+  border: 1px solid var(--border-glow) !important;
+}
+
+/* Highly Aggressive overrides for Vue Scoped Admin styling */
+body .admin-layout .page-title,
+body .page-title {
+  color: var(--text-main) !important;
+  font-family: 'Orbitron', sans-serif !important;
+}
+
+body .admin-layout .crud-table,
+body .crud-table {
+  background: var(--bg-card) !important;
+  border-color: var(--border-glow) !important;
+  box-shadow: var(--glow-shadow) !important;
+}
+
+:root.light-theme body .admin-layout .crud-table,
+:root.light-theme body .crud-table {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02) !important;
+}
+
+body .admin-layout .field label,
+body .field label {
+  color: var(--text-main) !important;
+}
+
+body .admin-layout .char-count,
+body .char-count {
+  color: var(--text-muted) !important;
+}

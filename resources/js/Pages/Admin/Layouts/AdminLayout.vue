@@ -80,12 +80,49 @@
         <slot />
       </div>
     </main>
+
+    <!-- Floating Theme Toggle Switch -->
+    <button 
+      class="theme-switch-float" 
+      @click="toggleTheme" 
+      aria-label="Toggle Theme"
+      title="Changer de Thème"
+    >
+      <i :class="isDark ? 'pi pi-sun' : 'pi pi-moon'" />
+    </button>
   </div>
 </template>
 
 <script setup>
 import { Link, router, usePage } from '@inertiajs/vue3'
 import Button from 'primevue/button'
+import { ref, onMounted } from 'vue'
+
+const isDark = ref(true)
+
+const initTheme = () => {
+  isDark.value = localStorage.getItem('theme') !== 'light'
+  if (isDark.value) {
+    document.documentElement.classList.remove('light-theme')
+  } else {
+    document.documentElement.classList.add('light-theme')
+  }
+}
+
+const toggleTheme = () => {
+  isDark.value = !isDark.value
+  if (isDark.value) {
+    localStorage.setItem('theme', 'dark')
+    document.documentElement.classList.remove('light-theme')
+  } else {
+    localStorage.setItem('theme', 'light')
+    document.documentElement.classList.add('light-theme')
+  }
+}
+
+onMounted(() => {
+  initTheme()
+})
 
 const page = usePage()
 
@@ -105,20 +142,27 @@ const logout = () => {
 .admin-layout {
   display: flex;
   min-height: 100vh;
-  background: #f8f9fb;
-  font-family: 'Inter', sans-serif;
+  background: var(--bg-main);
+  color: var(--text-main);
+  transition: all 0.3s ease;
 }
 
 .sidebar {
   width: 240px;
   min-height: 100vh;
-  background: #1e2535;
-  color: #fff;
+  background: #10121b;
+  color: var(--text-main);
   display: flex;
   flex-direction: column;
   position: fixed;
   left: 0; top: 0;
   z-index: 100;
+  border-right: 1px solid var(--border-glow);
+}
+
+:root.light-theme .sidebar {
+  background: #ffffff;
+  border-right-color: rgba(0, 0, 0, 0.06);
 }
 
 .sidebar-logo {
@@ -126,11 +170,17 @@ const logout = () => {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid var(--border-glow);
 }
 
 .logo-icon { font-size: 1.5rem; }
-.logo-text  { font-size: 1rem; font-weight: 700; letter-spacing: 0.02em; }
+.logo-text  { 
+  font-family: 'Orbitron', sans-serif !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  color: var(--accent-primary);
+}
 
 .sidebar-nav {
   padding: 1rem 0;
@@ -138,11 +188,12 @@ const logout = () => {
 }
 
 .nav-section-title {
+  font-family: 'Orbitron', sans-serif !important;
   font-size: 0.65rem;
-  font-weight: 600;
+  font-weight: 900;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.35);
+  color: var(--text-muted);
   padding: 1rem 1.25rem 0.4rem;
 }
 
@@ -151,22 +202,32 @@ const logout = () => {
   align-items: center;
   gap: 0.75rem;
   padding: 0.65rem 1.25rem;
-  color: rgba(255,255,255,0.65);
+  color: var(--text-muted);
   text-decoration: none;
   font-size: 0.9rem;
-  transition: all 0.15s;
+  transition: all 0.2s ease;
   border-left: 3px solid transparent;
+  font-weight: 600;
 }
 
 .nav-item:hover {
-  color: #fff;
-  background: rgba(255,255,255,0.06);
+  color: var(--accent-primary);
+  background: rgba(255, 149, 0, 0.04);
+}
+
+:root.light-theme .nav-item:hover {
+  background: rgba(0, 135, 81, 0.04);
 }
 
 .nav-item.active {
-  color: #fff;
-  background: rgba(99, 179, 237, 0.12);
-  border-left-color: #63b3ed;
+  color: var(--accent-primary);
+  background: rgba(255, 149, 0, 0.08);
+  border-left-color: var(--accent-primary);
+}
+
+:root.light-theme .nav-item.active {
+  background: rgba(0, 135, 81, 0.08);
+  border-left-color: var(--accent-primary);
 }
 
 .main-content {
@@ -178,8 +239,8 @@ const logout = () => {
 
 .topbar {
   height: 60px;
-  background: #fff;
-  border-bottom: 1px solid #e5e9f0;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-glow);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -189,6 +250,11 @@ const logout = () => {
   z-index: 50;
 }
 
+:root.light-theme .topbar {
+  background: #ffffff;
+  border-bottom-color: rgba(0, 0, 0, 0.06);
+}
+
 .topbar-right {
   display: flex;
   align-items: center;
@@ -196,12 +262,20 @@ const logout = () => {
 }
 
 .admin-badge {
-  background: #ebf8ff;
-  color: #2b6cb0;
+  background: rgba(255, 149, 0, 0.1);
+  color: #FF9500;
+  font-family: 'Share Tech Mono', monospace !important;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   padding: 0.2rem 0.6rem;
   border-radius: 99px;
+  border: 1px solid rgba(255, 149, 0, 0.2);
+}
+
+:root.light-theme .admin-badge {
+  background: rgba(0, 135, 81, 0.1);
+  color: #008751;
+  border-color: rgba(0, 135, 81, 0.2);
 }
 
 .flash-success, .flash-error {
@@ -214,15 +288,31 @@ const logout = () => {
 }
 
 .flash-success {
-  background: #f0fff4;
-  color: #276749;
-  border-bottom: 1px solid #c6f6d5;
+  background: rgba(16, 18, 27, 0.9);
+  border-bottom: 1px solid rgba(0, 229, 255, 0.2);
+  border-left: 4px solid var(--accent-secondary);
+  color: #ffffff;
+}
+
+:root.light-theme .flash-success {
+  background: #f0fdf4;
+  border-bottom-color: rgba(0, 135, 81, 0.15);
+  border-left-color: var(--accent-primary);
+  color: #166534;
 }
 
 .flash-error {
-  background: #fff5f5;
-  color: #c53030;
-  border-bottom: 1px solid #fed7d7;
+  background: rgba(16, 18, 27, 0.9);
+  border-bottom: 1px solid rgba(239, 68, 68, 0.2);
+  border-left: 4px solid #ef4444;
+  color: #f87171;
+}
+
+:root.light-theme .flash-error {
+  background: #fef2f2;
+  border-bottom-color: rgba(239, 68, 68, 0.15);
+  border-left-color: #ef4444;
+  color: #991b1b;
 }
 
 .page-content {

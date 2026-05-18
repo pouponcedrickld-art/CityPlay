@@ -268,7 +268,7 @@ const submit = () => {
                         :class="isDark ? 'text-white' : 'text-[#1c1917]'" 
                         class="text-4xl font-black uppercase tracking-tighter transition-colors duration-500 flex items-center gap-2 select-text"
                     >
-                        {{ headingText }} <span class="animate-pulse" :class="isDark ? 'text-[#FF9500]' : 'text-[#059669]'">.</span>
+                        {{ headingText }} <span class="animate-pulse" :class="isDark ? 'text-[#FF9500]' : 'text-[#008751]'">.</span>
                     </h3>
 
                     <p 
@@ -299,7 +299,7 @@ const submit = () => {
                                 :class="[
                                     isDark 
                                         ? 'bg-black/50 border-white/5 text-white placeholder:text-white/20 focus:border-[#FF9500]' 
-                                        : 'bg-[#faf9f6] border-[#e2dfd5] text-[#1c1917] placeholder:text-[#1c1917]/30 focus:border-[#FF9500]',
+                                        : 'bg-[#faf9f6] border-[#e2dfd5] text-[#1c1917] placeholder:text-[#1c1917]/30 focus:border-[#008751]',
                                     'w-full pl-11 pr-4 py-3.5 border-2 rounded-xl font-bold focus:ring-0 focus:outline-none transition-all shadow-inner text-sm'
                                 ]"
                                 v-model="form.email"
@@ -325,7 +325,7 @@ const submit = () => {
                                 :class="[
                                     isDark 
                                         ? 'bg-black/50 border-white/5 text-white placeholder:text-white/20 focus:border-[#FF9500]' 
-                                        : 'bg-[#faf9f6] border-[#e2dfd5] text-[#1c1917] placeholder:text-[#1c1917]/30 focus:border-[#FF9500]',
+                                        : 'bg-[#faf9f6] border-[#e2dfd5] text-[#1c1917] placeholder:text-[#1c1917]/30 focus:border-[#008751]',
                                     'w-full pl-11 pr-4 py-3.5 border-2 rounded-xl font-bold focus:ring-0 focus:outline-none transition-all shadow-inner text-sm'
                                 ]"
                                 v-model="form.password"
@@ -341,7 +341,7 @@ const submit = () => {
                     <div class="login-stagger flex items-center justify-between pt-1">
                         <label class="flex items-center cursor-pointer group select-none">
                             <Checkbox name="remember" v-model:checked="form.remember" :class="[
-                                isDark ? 'border-white/10 bg-black/40 text-[#FF9500]' : 'border-[#e2dfd5] bg-[#faf9f6] text-[#FF9500]',
+                                isDark ? 'border-white/10 bg-black/40 text-[#FF9500]' : 'border-[#e2dfd5] bg-[#faf9f6] text-[#008751]',
                                 'rounded focus:ring-0 transition-colors duration-500'
                             ]" />
                             <span :class="isDark ? 'text-white/40 group-hover:text-white/70' : 'text-[#1c1917]/40 group-hover:text-[#1c1917]/70'" class="ms-2 text-[10px] font-black uppercase tracking-wider transition-all duration-300">Rester connecté</span>
@@ -351,7 +351,7 @@ const submit = () => {
                             v-if="canResetPassword"
                             :href="route('password.request')"
                             :class="[
-                                isDark ? 'text-[#FF9500] hover:text-[#FF9500]/80' : 'text-[#059669] hover:text-[#059669]/80',
+                                isDark ? 'text-[#FF9500] hover:text-[#FF9500]/80' : 'text-[#008751] hover:text-[#008751]/80',
                                 'text-[10px] font-black uppercase tracking-widest transition-colors duration-500'
                             ]"
                         >
@@ -367,7 +367,7 @@ const submit = () => {
                             :class="[
                                 isDark 
                                     ? 'bg-[#FF9500] text-black shadow-[0_5px_0_#cc7a00] hover:bg-[#FF9500]/95 hover:shadow-[0_0_20px_rgba(255,149,0,0.4)]' 
-                                    : 'bg-[#FF9500] text-white shadow-[0_5px_0_#cc7a00] hover:bg-[#FF9500]/95 hover:shadow-[0_0_20px_rgba(255,149,0,0.35)]',
+                                    : 'bg-[#008751] text-white shadow-[0_5px_0_#005f38] hover:bg-[#008751]/95 hover:shadow-[0_0_20px_rgba(0,135,81,0.35)]',
                                 'w-full p-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 active:shadow-none active:translate-y-[5px] transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none select-none relative z-10'
                             ]"
                             :disabled="form.processing"
