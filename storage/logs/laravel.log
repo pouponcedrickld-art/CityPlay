@@ -885,3 +885,17 @@
 535 5.7.8  https://support.google.com/mail/?p=BadCredentials ffacd0b85a97d-45da15a562dsm37142876f8f.33 - gsmtp".". Authenticator "XOAUTH2" returned "Expected response code "235" but got code "334", with message "334 eyJzdGF0dXMiOiI0MDAiLCJzY2hlbWVzIjoiQmVhcmVyIiwic2NvcGUiOiJodHRwczovL21haWwuZ29vZ2xlLmNvbS8ifQ==".".  
 [2026-05-18 12:19:13] local.INFO: OTP envoyé par mail à treatrea@gmail.com  
 [2026-05-18 12:21:17] local.INFO: OTP envoyé par mail à treatrea@gmail.com  
+[2026-05-18 13:00:36] local.INFO: OTP envoyé par mail à wilsonred98@gmail.com  
+[2026-05-18 13:08:22] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-18 13:08:37] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-18 13:08:42] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-18 13:08:47] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-18 13:09:30] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-18 13:09:36] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-18 13:09:42] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-18 13:13:03] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-18 13:13:22] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-18 13:13:47] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-18 13:15:46] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-18 13:33:54] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-18 13:38:14] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
