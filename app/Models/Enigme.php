@@ -16,7 +16,7 @@ class Enigme extends Model
         'force1' => 'Facile (Force 1)',
         'enfant' => 'Enfant',
     ];
-    protected $fillable = ['lieu_id', 'type', 'texte', 'image_url', 'actif'];
+    protected $fillable = ['lieu_id', 'type', 'titre', 'texte', 'reponse', 'points', 'image_url', 'actif'];
 
     protected $casts = [
         'actif' => 'boolean',
