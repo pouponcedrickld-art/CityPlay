@@ -38,6 +38,18 @@
         <section class="form-section">
           <h2 class="section-title">Géolocalisation</h2>
 
+          <!-- Carte Interactive -->
+          <div class="map-wrapper mb-4">
+            <div class="map-toolbar">
+              <Button type="button" icon="pi pi-map-marker" label="Me localiser"
+                size="small" outlined @click="locateUser" />
+            </div>
+            <div ref="mapContainer" class="map-container"></div>
+            <small class="hint mt-2 block">
+              <i class="pi pi-info-circle" /> Cliquez sur la carte pour définir les coordonnées du lieu.
+            </small>
+          </div>
+
           <div class="field-row">
             <div class="field">
               <label>Latitude <span class="required">*</span></label>
@@ -115,7 +127,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useForm, Link } from '@inertiajs/vue3'
 import AdminLayout from '@/Pages/Admin/Layouts/AdminLayout.vue'
 import InputText from 'primevue/inputtext'
@@ -123,11 +135,106 @@ import InputNumber from 'primevue/inputnumber'
 import Textarea from 'primevue/textarea'
 import Button from 'primevue/button'
 import Breadcrumb from 'primevue/breadcrumb'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 
 const props = defineProps({
   environnement: Object,
   lieu: Object, // null = création
 })
+
+// Fix pour les icônes Leaflet par défaut
+onMounted(() => {
+  delete L.Icon.Default.prototype._getIconUrl;
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  });
+})
+
+const mapContainer = ref(null)
+const map = ref(null)
+const marker = ref(null)
+
+onMounted(() => {
+  const initialLat = props.lieu?.latitude ? parseFloat(props.lieu.latitude) : 44.841389
+  const initialLng = props.lieu?.longitude ? parseFloat(props.lieu.longitude) : -0.569722
+
+  map.value = L.map(mapContainer.value).setView([initialLat, initialLng], 13)
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map.value)
+
+  // Si on a déjà un lieu, on place le marqueur
+  if (props.lieu) {
+    marker.value = L.marker([initialLat, initialLng], { draggable: true }).addTo(map.value)
+
+    marker.value.on('dragend', (e) => {
+      const { lat, lng } = e.target.getLatLng()
+      form.latitude = parseFloat(lat.toFixed(7))
+      form.longitude = parseFloat(lng.toFixed(7))
+    })
+  }
+
+  // Clic sur la carte pour définir la position
+  map.value.on('click', (e) => {
+    const { lat, lng } = e.latlng
+
+    form.latitude = parseFloat(lat.toFixed(7))
+    form.longitude = parseFloat(lng.toFixed(7))
+
+    if (marker.value) {
+      marker.value.setLatLng(e.latlng)
+    } else {
+      marker.value = L.marker(e.latlng, { draggable: true }).addTo(map.value)
+
+      marker.value.on('dragend', (ev) => {
+        const pos = ev.target.getLatLng()
+        form.latitude = parseFloat(pos.lat.toFixed(7))
+        form.longitude = parseFloat(pos.lng.toFixed(7))
+      })
+    }
+  })
+})
+
+const locateUser = () => {
+  if (!navigator.geolocation) {
+    alert("La géolocalisation n'est pas supportée par votre navigateur.")
+    return
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const { latitude, longitude } = position.coords
+      const latlng = [latitude, longitude]
+
+      // Centrer la carte
+      map.value.setView(latlng, 16)
+
+      // Mettre à jour le formulaire
+      form.latitude = parseFloat(latitude.toFixed(7))
+      form.longitude = parseFloat(longitude.toFixed(7))
+
+      // Mettre à jour le marqueur
+      if (marker.value) {
+        marker.value.setLatLng(latlng)
+      } else {
+        marker.value = L.marker(latlng, { draggable: true }).addTo(map.value)
+
+        marker.value.on('dragend', (ev) => {
+          const pos = ev.target.getLatLng()
+          form.latitude = parseFloat(pos.lat.toFixed(7))
+          form.longitude = parseFloat(pos.lng.toFixed(7))
+        })
+      }
+    },
+    (error) => {
+      alert("Impossible de récupérer votre position. Vérifiez vos autorisations.")
+    }
+  )
+}
 
 // Photos existantes (édition)
 const existingPhotos = ref(props.lieu?.photos ?? [])
@@ -180,8 +287,16 @@ const submit = () => {
     ? route('admin.lieux.update', [props.environnement.id, props.lieu.id])
     : route('admin.lieux.store', props.environnement.id)
 
-  // POST car multipart/form-data (Laravel ne lit pas PUT avec fichiers)
-  form.post(url, { forceFormData: true })
+  if (props.lieu) {
+    // Mode édition : on ajoute le spoofing de méthode PUT pour Laravel
+    form.transform((data) => ({
+      ...data,
+      _method: 'PUT'
+    })).post(url, { forceFormData: true })
+  } else {
+    // Mode création
+    form.post(url, { forceFormData: true })
+  }
 }
 
 const breadcrumbs = computed(() => [
@@ -252,6 +367,29 @@ const breadcrumbs = computed(() => [
 .upload-zone p    { margin: 0 0 0.25rem; font-size: 0.875rem; }
 .upload-zone small { font-size: 0.75rem; }
 .hidden-input { display: none; }
+
+.map-wrapper {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e5e9f0;
+  position: relative;
+}
+.map-toolbar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  background: white;
+  padding: 4px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.map-container {
+  height: 300px;
+  width: 100%;
+  z-index: 1;
+}
 
 .form-actions { display: flex; justify-content: flex-end; gap: 0.75rem; padding-top: 0.5rem; border-top: 1px solid #e5e9f0; }
 </style>

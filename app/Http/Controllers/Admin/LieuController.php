@@ -23,7 +23,7 @@ class LieuController extends Controller
     public function create(Environnement $environnement): Response
     {
         return Inertia::render('Admin/Lieux/Form', [
-            'environnement' => $environnement,
+            'environnement' => $environnement->load('ville'),
             'lieu'          => null,
         ]);
     }
@@ -60,7 +60,7 @@ class LieuController extends Controller
     public function edit(Environnement $environnement, Lieu $lieu): Response
     {
         return Inertia::render('Admin/Lieux/Form', [
-            'environnement' => $environnement,
+            'environnement' => $environnement->load('ville'),
             'lieu'          => $lieu,
         ]);
     }
