@@ -40,49 +40,125 @@ class GameplayService
      */
     public function initialiserPartie(Partie $partie): ProgressionPartie
     {
+        \Log::info('GameplayService: Début initialisation progression', ['partie_id' => $partie->id]);
+
         // Récupère les paramètres de la partie
         $parametres = $partie->parametres;
-        $dureeMinutes = $parametres['duree'] ?? 60;
+        $dureeMinutes = (int)($parametres['duree'] ?? 60);
         $locomotion = $parametres['locomotion'] ?? 'pied';
-        $difficulte = $parametres['difficulte'] ?? 2;
+        $difficulte = (int)($parametres['difficulte'] ?? 2);
+
+        \Log::info('GameplayService: Paramètres extraits', [
+            'duree' => $dureeMinutes,
+            'locomotion' => $locomotion,
+            'difficulte' => $difficulte
+        ]);
 
         // === ÉTAPE 1 : Calcul du nombre d'énigmes ===
         $nbEnigmes = $this->calculerNombreEnigmes($dureeMinutes, $locomotion);
+        \Log::info('GameplayService: Nombre d\'énigmes calculé', ['count' => $nbEnigmes]);
 
         // === ÉTAPE 2 : Sélection des lieux ===
         $lieux = $this->selectionnerLieux($partie->environnement_id, $nbEnigmes, $difficulte);
+        \Log::info('GameplayService: Lieux sélectionnés', ['count' => $lieux->count(), 'ids' => $lieux->pluck('id')]);
 
-        // === ÉTAPE 3 : Création de la progression ===
+        if ($lieux->isEmpty()) {
+            \Log::error('GameplayService: Aucun lieu trouvé pour cet environnement');
+            throw new \Exception("Aucun lieu avec énigme n'a été trouvé pour cet environnement.");
+        }
+
+        // === ÉTAPE 3 : Déterminer l'énigme de départ ===
+        $premierLieu = $lieux->first();
+        $typeEnigme = match ($difficulte) {
+            1 => 'force1',
+            2 => 'force2',
+            3 => 'force3',
+            default => 'force2',
+        };
+
+        $enigmeDepart = $premierLieu->enigmes()->where('type', $typeEnigme)->where('actif', true)->first() 
+                        ?? $premierLieu->enigmes()->where('actif', true)->first();
+
+        if (!$enigmeDepart) {
+            \Log::error('GameplayService: Aucune énigme active trouvée pour le premier lieu', ['lieu_id' => $premierLieu->id]);
+            throw new \Exception("Le premier lieu de ce parcours ne contient aucune énigme active.");
+        }
+
+        \Log::info('GameplayService: Énigme de départ identifiée', ['id' => $enigmeDepart->id]);
+
+        // === ÉTAPE 4 : Création de la progression ===
+        $lieuxIds = $lieux->pluck('id')->toArray();
+        $lieuxRestants = $lieuxIds;
+        array_shift($lieuxRestants); // Le premier est déjà en cours
+
         $progression = ProgressionPartie::create([
             'partie_id' => $partie->id,
-            'lieux_a_visiter' => $lieux->pluck('id')->toArray(),
+            'lieux_a_visiter' => $lieuxIds,
             'lieux_decouverts' => [],
-            'lieux_restants' => $lieux->pluck('id')->toArray(),
-            'enigme_courante_id' => $lieux->first()?->enigmes->first()?->id,
-            'temps_restant' => $dureeMinutes * 60, // Conversion en secondes
+            'lieux_restants' => $lieuxRestants,
+            'enigme_courante_id' => $enigmeDepart->id,
+            'temps_restant' => $dureeMinutes * 60,
             'score' => 0,
             'statut' => 'en_cours',
         ]);
 
+        \Log::info('GameplayService: Progression créée', ['id' => $progression->id]);
+
         // Démarre la partie
-        $partie->statut = 'en_cours';
-        $partie->started_at = now();
-        $partie->save();
+        $partie->update([
+            'statut' => 'en_cours',
+            'started_at' => now(),
+        ]);
+
+        \Log::info('GameplayService: Partie marquée comme en cours');
 
         return $progression;
     }
 
     /**
+     * Sélectionne les lieux pour une partie
+     */
+    private function selectionnerLieux(int $environnementId, int $nbEnigmes, int $difficulte)
+    {
+        // On cherche d'abord les lieux qui ont l'énigme de la difficulté demandée
+        $typeEnigme = match ($difficulte) {
+            1 => 'force1',
+            2 => 'force2',
+            3 => 'force3',
+            default => 'force2',
+        };
+
+        $lieux = Lieu::where('environnement_id', $environnementId)
+            ->where('actif', true)
+            ->whereHas('enigmes', function ($query) use ($typeEnigme) {
+                $query->where('type', $typeEnigme)->where('actif', true);
+            })
+            ->orderBy('ordre', 'asc')
+            ->limit($nbEnigmes)
+            ->get();
+
+        // Si on n'en a pas assez, on complète avec n'importe quel lieu ayant au moins une énigme active
+        if ($lieux->count() < $nbEnigmes) {
+            $idsExistants = $lieux->pluck('id')->toArray();
+            
+            $lieuxComplementaires = Lieu::where('environnement_id', $environnementId)
+                ->where('actif', true)
+                ->whereNotIn('id', $idsExistants)
+                ->whereHas('enigmes', function ($query) {
+                    $query->where('actif', true);
+                })
+                ->orderBy('ordre', 'asc')
+                ->limit($nbEnigmes - $lieux->count())
+                ->get();
+
+            $lieux = $lieux->concat($lieuxComplementaires)->sortBy('ordre');
+        }
+
+        return $lieux;
+    }
+
+    /**
      * Calcule le nombre d'énigmes selon durée et locomotion
-     * 
-     * Logique : 
-     * - À pied : ~10 min par énigme (déplacement + résolution)
-     * - Vélo : ~7 min par énigme
-     * - Voiture : ~5 min par énigme (mais limité à 15 max)
-     * 
-     * @param int $dureeMinutes Durée totale souhaitée
-     * @param string $locomotion 'pied', 'velo', 'voiture'
-     * @return int Nombre d'énigmes à proposer
      */
     private function calculerNombreEnigmes(int $dureeMinutes, string $locomotion): int
     {
@@ -100,44 +176,11 @@ class GameplayService
         // Limites de sécurité
         $minEnigmes = 3;   // Minimum pour une partie intéressante
         $maxEnigmes = match ($locomotion) {
-            'voiture', 'moto' => 15, // Trop de lieux en voiture = galère
+            'voiture', 'moto' => 15,
             default => 10,
         };
 
         return max($minEnigmes, min($nbEnigmes, $maxEnigmes));
-    }
-
-    /**
-     * Sélectionne les lieux pour une partie
-     * 
-     * Critères :
-     * 1. Ordre défini par la mairie (champ 'ordre')
-     * 2. Difficulté demandée (énigmes disponibles)
-     * 3. Pas de doublon
-     * 
-     * @param int $environnementId ID de l'environnement
-     * @param int $nbEnigmes Nombre de lieux à sélectionner
-     * @param int $difficulte Difficulté demandée (1, 2, 3)
-     * @return \Illuminate\Database\Eloquent\Collection Lieux sélectionnés
-     */
-    private function selectionnerLieux(int $environnementId, int $nbEnigmes, int $difficulte)
-    {
-        // Récupère les lieux de l'environnement, ordonnés par la mairie
-        // Vérifie qu'ils ont au moins une énigme de la difficulté demandée
-        return Lieu::where('environnement_id', $environnementId)
-            ->whereHas('enigmes', function ($query) use ($difficulte) {
-                // Sélectionne selon la convention : 3 = dur, 1 = facile
-                $typeEnigme = match ($difficulte) {
-                    1 => 'force1',
-                    2 => 'force2',
-                    3 => 'force3',
-                    default => 'force2',
-                };
-                $query->where('type', $typeEnigme);
-            })
-            ->orderBy('ordre', 'asc') // Ordre défini par la mairie
-            ->limit($nbEnigmes)
-            ->get();
     }
 
     /**

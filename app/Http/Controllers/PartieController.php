@@ -19,16 +19,22 @@ class PartieController extends Controller
     }
 
     /**
-     * Liste les parties du joueur
+     * Liste les parties du joueur (Dashboard Joueur)
      */
     public function index()
     {
         $parties = Partie::where('createur_id', auth()->id())
-            ->with('environnement')
+            ->with(['environnement', 'progression.enigmeCourante.lieu'])
+            ->orderBy('created_at', 'desc')
             ->get();
 
-        return Inertia::render('Player/Parties', [
+        $environnements = Environnement::where('actif', true)
+            ->withCount('lieux')
+            ->get();
+
+        return Inertia::render('Player/Dashboard', [
             'parties' => $parties,
+            'environnements' => $environnements
         ]);
     }
 
@@ -37,7 +43,9 @@ class PartieController extends Controller
      */
     public function create()
     {
-        $environnements = Environnement::all();
+        $environnements = Environnement::where('actif', true)
+            ->withCount('lieux')
+            ->get();
 
         return Inertia::render('Player/CreatePartie', [
             'environnements' => $environnements,
@@ -61,20 +69,51 @@ class PartieController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'environnement_id' => 'required|exists:environnements,id',
-            'mode' => 'required|in:solo,team',
-            'parametres' => 'required|array',
-            'parametres.duree' => 'required|integer|min:15|max:300',
-            'parametres.locomotion' => 'required|in:pied,velo,voiture,moto',
-            'parametres.difficulte' => 'required|integer|between:1,3',
-            'parametres.nb_joueurs' => 'required|integer|between:1,9',
-        ]);
+        \Log::info('Tentative de création de partie', $request->all());
 
-        $partie = $this->partieService->creerPartie($validated);
+        try {
+            $validated = $request->validate([
+                'environnement_id' => 'required|exists:environnements,id',
+                'mode' => 'required|in:solo,team',
+                'duree' => 'required|integer|min:15|max:300',
+                'locomotion' => 'required|in:pied,velo,voiture,moto',
+                'difficulte' => 'required|integer|between:1,3',
+                'nb_joueurs' => 'required|integer|between:1,10',
+            ]);
 
-        return redirect()->route('parties.show', $partie)
-            ->with('success', 'Partie créée avec succès !');
+            \Log::info('Validation réussie', $validated);
+
+            $data = [
+                'environnement_id' => $validated['environnement_id'],
+                'mode' => $validated['mode'],
+                'duree' => $validated['duree'],
+                'locomotion' => $validated['locomotion'],
+                'difficulte' => $validated['difficulte'],
+                'nb_joueurs' => $validated['nb_joueurs'],
+            ];
+
+            $partie = $this->partieService->creerPartie($data, auth()->id());
+            
+            \Log::info('Partie créée avec succès', ['id' => $partie->id]);
+
+            if ($partie->mode === 'solo') {
+                return redirect()->route('progression.enigme', $partie)
+                    ->with('success', 'Votre mission commence !');
+            }
+
+            return redirect()->route('parties.web.show', $partie)
+                ->with('success', 'Partie créée avec succès ! Invitez vos coéquipiers.');
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Erreur de validation lors de la création de partie', ['errors' => $e->errors()]);
+            throw $e;
+        } catch (\Exception $e) {
+            \Log::error('Erreur inattendue lors de la création de partie', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->with('error', 'Impossible de créer la partie : ' . $e->getMessage());
+        }
     }
 
     /**
@@ -95,5 +134,35 @@ class PartieController extends Controller
         ]);
 
         return back()->with('success', "Code généré : $code");
+    }
+
+    /**
+     * Met la partie en pause ou la reprend
+     */
+    public function pause(Partie $partie)
+    {
+        $progression = $partie->progression;
+        if (!$progression) return back();
+
+        $nouveauStatut = $progression->statut === 'pause' ? 'en_cours' : 'pause';
+        $progression->update(['statut' => $nouveauStatut]);
+
+        $message = $nouveauStatut === 'pause' ? 'Mission suspendue.' : 'Mission reprise !';
+        return back()->with('success', $message);
+    }
+
+    /**
+     * Abandonne la partie
+     */
+    public function abandon(Partie $partie)
+    {
+        $progression = $partie->progression;
+        if ($progression) {
+            $progression->update(['statut' => 'terminee']);
+        }
+        
+        $partie->update(['statut' => 'terminee', 'ended_at' => now()]);
+
+        return redirect()->route('dashboard')->with('success', 'Mission abandonnée.');
     }
 }

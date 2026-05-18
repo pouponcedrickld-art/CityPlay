@@ -18,14 +18,21 @@ const selectedEnv = ref(null);
 const form = useForm({
     environnement_id: null,
     mode: 'solo',
-    duree_prevue: 60,
+    duree: 60,
     locomotion: 'pied',
+    difficulte: 2,
     nb_joueurs: 1
 });
 
 const modes = [
     { label: 'Solo', value: 'solo', icon: 'pi pi-user' },
     { label: 'Multi', value: 'team', icon: 'pi pi-users' }
+];
+
+const difficulties = [
+    { label: 'Facile', value: 1 },
+    { label: 'Normal', value: 2 },
+    { label: 'Expert', value: 3 }
 ];
 
 const locomotions = [
@@ -37,6 +44,7 @@ const locomotions = [
 const openConfig = (env) => {
     selectedEnv.value = env;
     form.environnement_id = env.id;
+    form.difficulte = env.difficulte || 2;
     showConfig.value = true;
 };
 
@@ -50,12 +58,21 @@ const estimatedTime = computed(() => {
 
 // Quand la locomotion change, on suggère une durée
 watch(() => form.locomotion, (newLoc) => {
-    form.duree_prevue = estimatedTime.value;
+    form.duree = estimatedTime.value;
 });
 
 const submit = () => {
-    form.post(route('parties.store'), {
-        onSuccess: () => showConfig.value = false
+    console.log("Formulaire soumis avec les données:", form.data());
+    form.post(route('parties.web.store'), {
+        onStart: () => console.log("Début de l'envoi Inertia..."),
+        onSuccess: () => {
+            console.log("Création réussie !");
+            showConfig.value = false;
+        },
+        onError: (errors) => {
+            console.error("Erreurs retournées par le serveur:", errors);
+        },
+        onFinish: () => console.log("Envoi terminé.")
     });
 };
 </script>
@@ -65,6 +82,11 @@ const submit = () => {
         <Head title="Nouvelle Partie" />
 
         <div class="p-6 max-w-7xl mx-auto space-y-6">
+            <!-- FLASH ERRORS -->
+            <div v-if="form.errors.environnement_id" class="p-4 bg-red-50 border border-red-200 rounded-2xl text-red-600 text-xs font-bold animate-pulse">
+                <i class="pi pi-exclamation-circle mr-2"></i>
+                Veuillez sélectionner un parcours valide.
+            </div>
             <main class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div 
                 v-for="env in environnements" 
@@ -80,7 +102,7 @@ const submit = () => {
                     <div class="absolute bottom-4 left-4 right-4 text-white">
                         <div class="flex items-center gap-2 mb-1">
                             <i class="pi pi-map-marker text-xs"></i>
-                            <span class="text-[10px] font-black uppercase tracking-widest">{{ env.lieux?.length || 0 }} étapes</span>
+                            <span class="text-[10px] font-black uppercase tracking-widest">{{ env.lieux_count || 0 }} étapes</span>
                         </div>
                         <h3 class="text-lg font-black uppercase tracking-tight">{{ env.nom }}</h3>
                     </div>
@@ -165,11 +187,17 @@ const submit = () => {
                             <p class="text-[9px] text-orange-900/30 font-bold uppercase italic">Basé sur votre transport</p>
                         </div>
                         <div class="flex items-baseline gap-1">
-                            <span class="text-2xl font-black text-orange-950">{{ form.duree_prevue }}</span>
+                            <span class="text-2xl font-black text-orange-950">{{ form.duree }}</span>
                             <span class="text-[10px] font-black text-orange-900/40 uppercase">min</span>
                         </div>
                     </div>
-                    <Slider v-model="form.duree_prevue" :min="15" :max="180" :step="5" class="custom-slider" />
+                    <Slider v-model="form.duree" :min="15" :max="180" :step="5" class="custom-slider" />
+                </div>
+
+                <!-- DIFFICULTY -->
+                <div class="space-y-3">
+                    <label class="text-[10px] font-black uppercase tracking-[0.2em] text-orange-900/40 ml-1">Niveau de difficulté</label>
+                    <SelectButton v-model="form.difficulte" :options="difficulties" optionLabel="label" optionValue="value" class="w-full custom-select-button" />
                 </div>
             </div>
 

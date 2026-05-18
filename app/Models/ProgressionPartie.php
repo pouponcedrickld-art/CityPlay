@@ -101,15 +101,43 @@ class ProgressionPartie extends Model
             $this->statut = 'terminee';
             $this->enigme_courante_id = null;
             $this->save();
+
+            // Mettre à jour la partie aussi
+            $this->partie->update([
+                'statut' => 'terminee',
+                'ended_at' => now()
+            ]);
+            
             return false;
         }
 
         // Prend le premier lieu restant
         $prochainLieuId = array_shift($lieuxRestants);
+        $lieu = Lieu::find($prochainLieuId);
 
-        // Récupère l'énigme correspondant à la difficulté demandée
-        // (logique déléguée au GameplayService)
-        $this->enigme_courante_id = $prochainLieuId;
+        if (!$lieu) {
+            return $this->passerEnigmeSuivante(); // Sécurité si lieu supprimé
+        }
+
+        // On récupère l'énigme de la difficulté choisie pour cette partie
+        $difficulte = $this->partie->parametres['difficulte'] ?? 2;
+        $typeEnigme = match ((int)$difficulte) {
+            1 => 'force1',
+            2 => 'force2',
+            3 => 'force3',
+            default => 'force2',
+        };
+
+        $enigme = $lieu->enigmes()->where('type', $typeEnigme)->first() 
+                  ?? $lieu->enigmes()->first(); // Fallback sur n'importe quelle énigme si le type manque
+
+        if (!$enigme) {
+            $this->lieux_restants = $lieuxRestants; // On ignore ce lieu sans énigme
+            $this->save();
+            return $this->passerEnigmeSuivante();
+        }
+
+        $this->enigme_courante_id = $enigme->id;
         $this->lieux_restants = $lieuxRestants;
         $this->save();
 
@@ -122,15 +150,21 @@ class ProgressionPartie extends Model
      */
     public function resoudreEnigmeCourante(): void
     {
-        $lieuId = $this->enigmeCourante->lieu_id ?? null;
+        $enigme = $this->enigmeCourante;
+        if (!$enigme) return;
+
+        $lieuId = $enigme->lieu_id;
 
         if ($lieuId) {
             $decouverts = $this->lieux_decouverts ?? [];
-            $decouverts[] = $lieuId;
-            $this->lieux_decouverts = array_unique($decouverts);
+            if (!in_array($lieuId, $decouverts)) {
+                $decouverts[] = $lieuId;
+                $this->lieux_decouverts = $decouverts;
+            }
         }
 
-        $this->score++;
+        // On ajoute les points de l'énigme au score
+        $this->score += ($enigme->points > 0 ? $enigme->points : 10);
         $this->save();
     }
 
