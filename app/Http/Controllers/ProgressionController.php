@@ -105,7 +105,7 @@ class ProgressionController extends Controller
         $lieu = Lieu::with('photos')->find($request->lieu);
         
         return Inertia::render('Player/Success', [
-            'partie' => $partie,
+            'partie' => $partie->load('environnement'),
             'lieu' => $lieu
         ]);
     }
@@ -113,7 +113,7 @@ class ProgressionController extends Controller
     public function showFailure(Partie $partie)
     {
         return Inertia::render('Player/Failure', [
-            'partie' => $partie
+            'partie' => $partie->load('environnement')
         ]);
     }
 

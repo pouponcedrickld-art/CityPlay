@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Enigme;
+use App\Models\Lieu;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,7 +19,13 @@ class EnigmeFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'lieu_id' => Lieu::factory(),
+            'type' => 'force1',
+            'titre' => 'Enigme Default',
+            'texte' => 'Trouvez la réponse à cette énigme.',
+            'reponse' => 'reponse',
+            'points' => 10,
+            'actif' => true,
         ];
     }
 }
