@@ -61,15 +61,24 @@ class Partie extends Model
         'ended_at' => 'datetime',
     ];
 
-    protected $appends = ['lien_invitation'];
-
-    public function getLienInvitationAttribute(): string
+    /**
+     * Lien d'invitation pour rejoindre la partie (null si pas de code)
+     */
+    public function getLienInvitation(): ?string
     {
-        return $this->lien_partage ?? $this->genererLienPartage();
+        if (!empty($this->lien_partage)) {
+            return $this->lien_partage;
+        }
+
+        return $this->genererLienPartage();
     }
 
-    public function genererLienPartage(): string
+    public function genererLienPartage(): ?string
     {
+        if (blank($this->code_liaison)) {
+            return null;
+        }
+
         return route('parties.rejoindre', $this->code_liaison);
     }
 

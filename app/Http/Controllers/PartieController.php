@@ -201,8 +201,11 @@ class PartieController extends Controller
             $partie->update(['lien_partage' => $partie->genererLienPartage()]);
         }
 
+        $partie = $partie->fresh()->load('environnement', 'team');
+        $partie->setAttribute('lien_invitation', $partie->getLienInvitation());
+
         return Inertia::render('Player/JoinPartie', [
-            'partie' => $partie->fresh()->load('environnement', 'team'),
+            'partie' => $partie,
         ]);
     }
 
