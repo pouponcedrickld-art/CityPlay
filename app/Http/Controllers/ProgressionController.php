@@ -24,7 +24,6 @@ class ProgressionController extends Controller
             $progression = $partie->progression;
 
             if (!$progression) {
-                // Initialiser la partie si elle n'a pas encore de progression
                 $progression = $this->gameplayService->initialiserPartie($partie);
             }
 
@@ -32,10 +31,9 @@ class ProgressionController extends Controller
                 return redirect()->route('progression.summary', $partie);
             }
 
-            $enigme = Enigme::with('lieu.photos')->find($progression->enigme_courante_id);
+            $enigme = Enigme::with('lieu')->find($progression->enigme_courante_id);
 
             if (!$enigme) {
-                // Si l'énigme n'existe plus ou n'est pas trouvée, on essaie de passer à la suivante
                 if ($progression->passerEnigmeSuivante()) {
                     return redirect()->route('progression.enigme', $partie);
                 }
@@ -44,8 +42,8 @@ class ProgressionController extends Controller
 
             return Inertia::render('Player/Enigme', [
                 'partie' => $partie->load('environnement'),
-                'enigme' => $enigme,
-                'progression' => $progression,
+                'enigme' => $this->enigmePourJoueur($enigme),
+                'progression' => $progression->fresh(),
             ]);
         } catch (\Exception $e) {
             return redirect()->route('dashboard')
@@ -66,35 +64,61 @@ class ProgressionController extends Controller
 
         // Cas 1 : Soumission GPS
         if ($request->has('latitude') && $request->has('longitude')) {
+            $precision = $request->filled('precision')
+                ? (float) $request->input('precision')
+                : null;
+
             $resultat = $this->gameplayService->validerGps(
                 $partie,
                 (float) $request->latitude,
                 (float) $request->longitude,
-                (float) $request->precision
+                $precision
             );
 
             if ($resultat['succes']) {
-                $lieu = $progression->enigmeCourante->lieu;
-                return redirect()->route('progression.success', ['partie' => $partie, 'lieu' => $lieu->id]);
+                return redirect()->route('progression.success', [
+                    'partie' => $partie,
+                    'lieu' => $resultat['lieu_id'],
+                ])->with([
+                    'points_gagnes' => $resultat['points_gagnes'] ?? 0,
+                    'score_total' => $resultat['score_total'] ?? 0,
+                ]);
             }
 
-            return back()->with('error', $resultat['message']);
+            return back()->with([
+                'error' => $resultat['message'],
+                'gps_validation' => [
+                    'distance' => $resultat['distance'] ?? null,
+                    'precision' => $resultat['precision'] ?? $precision,
+                    'erreur' => $resultat['erreur'] ?? null,
+                ],
+            ]);
         }
 
         // Cas 2 : Soumission texte
         $request->validate(['reponse' => 'required|string']);
         $enigme = $progression->enigmeCourante;
 
-        // Comparaison simple (ignorer casse et espaces)
+        if (!$enigme) {
+            return back()->with('error', 'Aucune énigme en cours.');
+        }
+
         $reponseJoueur = trim(mb_strtolower($request->reponse));
         $reponseAttendue = trim(mb_strtolower($enigme->reponse));
 
         if ($reponseJoueur === $reponseAttendue) {
-            $progression->resoudreEnigmeCourante();
-            $aSuivante = $progression->passerEnigmeSuivante();
-            
-            $lieu = $enigme->lieu;
-            return redirect()->route('progression.success', ['partie' => $partie, 'lieu' => $lieu->id]);
+            $lieuId = $enigme->lieu_id;
+            $pointsGagnes = $progression->resoudreEnigmeCourante();
+            $progression->refresh();
+            $progression->passerEnigmeSuivante();
+
+            return redirect()->route('progression.success', [
+                'partie' => $partie,
+                'lieu' => $lieuId,
+            ])->with([
+                'points_gagnes' => $pointsGagnes,
+                'score_total' => $progression->score,
+            ]);
         }
 
         return redirect()->route('progression.failure', $partie);
@@ -103,25 +127,52 @@ class ProgressionController extends Controller
     public function showSuccess(Partie $partie, Request $request)
     {
         $lieu = Lieu::with('photos')->find($request->lieu);
-        
+
         return Inertia::render('Player/Success', [
             'partie' => $partie->load('environnement'),
-            'lieu' => $lieu
+            'lieu' => $lieu,
+            'progression' => $partie->progression,
+            'points_gagnes' => (int) session('points_gagnes', 0),
+            'score_total' => (int) session('score_total', $partie->progression?->score ?? 0),
         ]);
     }
 
     public function showFailure(Partie $partie)
     {
         return Inertia::render('Player/Failure', [
-            'partie' => $partie->load('environnement')
+            'partie' => $partie->load('environnement'),
+            'progression' => $partie->progression,
         ]);
     }
 
+    /**
+     * Affiche la solution de l'énigme courante (sans avancer la progression).
+     */
+    public function showSolution(Partie $partie)
+    {
+        $resultat = $this->gameplayService->solutionEnigmeCourante($partie);
+
+        if (!$resultat['succes']) {
+            return back()->with('error', $resultat['message']);
+        }
+
+        return back()->with('solution_revelee', $resultat['solution']);
+    }
+
+    /**
+     * Passer l'énigme courante sans gagner de points (bouton Passer / solution).
+     */
     public function nextEnigme(Partie $partie)
     {
         $progression = $partie->progression;
-        
-        if ($progression->estTerminee()) {
+
+        if (!$progression || $progression->estTerminee()) {
+            return redirect()->route('progression.summary', $partie);
+        }
+
+        $resultat = $this->gameplayService->passerEnigme($partie);
+
+        if ($resultat['partie_terminee'] ?? false) {
             return redirect()->route('progression.summary', $partie);
         }
 
@@ -130,8 +181,14 @@ class ProgressionController extends Controller
 
     public function showSummary(Partie $partie)
     {
+        $partie->load('environnement', 'progression');
+
+        if ($partie->progression && $partie->score_total !== $partie->progression->score) {
+            $partie->update(['score_total' => $partie->progression->score]);
+        }
+
         return Inertia::render('Player/Summary', [
-            'partie' => $partie->load('environnement', 'progression'),
+            'partie' => $partie,
         ]);
     }
 
@@ -154,5 +211,73 @@ class ProgressionController extends Controller
         return $request->header('X-Inertia')
             ? back()
             : response()->json(['success' => true]);
+    }
+
+    /**
+     * Données énigme exposées au joueur (sans nom ni coordonnées du lieu).
+     */
+    private function enigmePourJoueur(Enigme $enigme): array
+    {
+        $lieu = $enigme->lieu;
+        $gpsDisponible = $lieu
+            && $lieu->latitude !== null
+            && $lieu->longitude !== null;
+
+        return [
+            'id' => $enigme->id,
+            'type' => $enigme->type,
+            'titre' => $enigme->titre,
+            'texte' => $enigme->texte,
+            'points' => $enigme->points,
+            'image_url' => $enigme->image_url,
+            'lieu' => [
+                'gps_disponible' => $gpsDisponible,
+                'photos' => $this->lieuPhotosPourJoueur($lieu),
+            ],
+        ];
+    }
+
+    /**
+     * Photos du lieu pour le joueur (relation photo_lieus ou colonne JSON legacy).
+     *
+     * @return array<int, array{url: string}>
+     */
+    private function lieuPhotosPourJoueur(?Lieu $lieu): array
+    {
+        if (!$lieu) {
+            return [];
+        }
+
+        $fromTable = $lieu->photos()
+            ->orderBy('ordre')
+            ->get()
+            ->map(fn ($photo) => ['url' => $photo->url])
+            ->all();
+
+        if ($fromTable !== []) {
+            return $fromTable;
+        }
+
+        $legacy = $lieu->getAttributes()['photos'] ?? null;
+        if ($legacy === null) {
+            return [];
+        }
+
+        $decoded = is_string($legacy) ? json_decode($legacy, true) : $legacy;
+        if (!is_array($decoded)) {
+            return [];
+        }
+
+        return collect($decoded)
+            ->map(function ($item) {
+                if (is_string($item)) {
+                    return ['url' => $item];
+                }
+
+                return ['url' => $item['url'] ?? ''];
+            })
+            ->filter(fn (array $photo) => $photo['url'] !== '')
+            ->values()
+            ->all();
     }
 }

@@ -25,6 +25,7 @@ class Partie extends Model
         'verrouillee',
         'started_at',
         'ended_at',
+        'score_total',
     ];
 
     /**

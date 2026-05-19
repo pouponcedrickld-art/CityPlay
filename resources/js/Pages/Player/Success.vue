@@ -12,11 +12,11 @@
 
         <h1 class="cave-result-title relative z-10">Excellent !</h1>
         <p class="cave-result-sub relative z-10">
-            Objectif atteint · +{{ lieu.enigmes_count * 10 || 100 }} pts
+            +{{ points_gagnes }} pts · Total : {{ score_total }} pts
         </p>
 
         <article class="cave-discovery-card relative z-10">
-            <div v-if="lieu.photos?.length" class="relative h-56">
+            <div v-if="lieu?.photos?.length" class="relative h-56">
                 <img :src="lieu.photos[0].url" class="w-full h-full object-cover" :alt="lieu.nom">
             </div>
             <div v-else class="h-40 flex items-center justify-center bg-[var(--cave-rock)]">
@@ -24,9 +24,9 @@
             </div>
             <div class="p-6">
                 <span class="cave-badge cave-badge--gold mb-2">Lieu découvert</span>
-                <h2 class="cave-panel__title">{{ lieu.nom }}</h2>
+                <h2 class="cave-panel__title">{{ lieu?.nom || 'Lieu secret' }}</h2>
                 <p class="cave-panel__text" style="margin:0">
-                    "{{ partie.environnement?.message_bonne_reponse || lieu.description || 'Vous avez percé les secrets de cet endroit. La mission continue !' }}"
+                    "{{ partie.environnement?.message_bonne_reponse || lieu?.description || 'Vous avez percé les secrets de cet endroit. La mission continue !' }}"
                 </p>
             </div>
         </article>
@@ -45,9 +45,16 @@ import { Head, router } from '@inertiajs/vue3';
 const props = defineProps({
     partie: Object,
     lieu: Object,
+    progression: Object,
+    points_gagnes: { type: Number, default: 0 },
+    score_total: { type: Number, default: 0 },
 });
 
 const nextStep = () => {
-    router.post(route('progression.next', props.partie.id));
+    if (props.progression?.statut === 'terminee' || !props.progression?.enigme_courante_id) {
+        router.get(route('progression.summary', props.partie.id));
+        return;
+    }
+    router.get(route('progression.enigme', props.partie.id));
 };
 </script>
