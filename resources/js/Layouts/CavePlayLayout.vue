@@ -1,0 +1,104 @@
+<script setup>
+import { Link, router, usePage } from '@inertiajs/vue3';
+import { computed, onMounted, ref } from 'vue';
+import VideoLoader from '@/Components/VideoLoader.vue';
+
+const props = defineProps({
+    immersive: { type: Boolean, default: false },
+    hideLogo: { type: Boolean, default: false },
+    wide: { type: Boolean, default: false },
+});
+
+const page = usePage();
+const showLoader = ref(false);
+
+const navItems = [
+    { icon: 'pi pi-home', route: 'dashboard', label: 'Accueil' },
+    { icon: 'pi pi-play', route: 'parties.web.create', label: 'Jouer' },
+    { icon: 'pi pi-users', route: 'parties.web.create', query: { tab: 'join' }, label: 'Rejoindre' },
+    { icon: 'pi pi-map', route: 'parties.web.create', label: 'Parcours' },
+    { icon: 'pi pi-cog', route: 'profile.edit', label: 'Réglages' },
+];
+
+const navHref = (item) => {
+    const base = route(item.route);
+    if (!item.query) return base;
+    const q = new URLSearchParams(item.query).toString();
+    return `${base}?${q}`;
+};
+
+const isActive = (item) => {
+    if (item.query?.tab === 'join') {
+        return route().current('parties.web.create') && page.url.includes('tab=join');
+    }
+    return route().current(item.route) && !page.url.includes('tab=join');
+};
+
+onMounted(() => {
+    router.on('start', () => { showLoader.value = true; });
+    router.on('finish', () => { setTimeout(() => { showLoader.value = false; }, 800); });
+    router.on('error', () => { showLoader.value = false; });
+});
+
+const innerClass = computed(() => [
+    'cave-play-inner',
+    props.immersive && 'cave-play-inner--immersive',
+    props.wide && 'cave-play-inner--wide',
+]);
+</script>
+
+<template>
+    <div class="cave-play-hub cave-play-hub--standard">
+        <VideoLoader :show="showLoader" />
+
+        <div class="cave-leaves" aria-hidden="true">
+            <span v-for="n in 6" :key="n" class="cave-leaf" />
+        </div>
+
+        <!-- Sidebar desktop -->
+        <aside v-if="!immersive" class="cave-desktop-sidebar">
+            <header class="cave-logo-wrap">
+                <div class="cave-logo-icon">🗿</div>
+                <h1 class="cave-logo-title">CityPlay</h1>
+                <p class="cave-logo-sub">Aventure urbaine</p>
+            </header>
+            <nav class="cave-desktop-nav-list">
+                <Link
+                    v-for="item in navItems"
+                    :key="item.label"
+                    :href="navHref(item)"
+                    class="cave-desktop-nav-link"
+                    :class="{ 'cave-desktop-nav-link--active': isActive(item) }"
+                >
+                    <i :class="item.icon" />
+                    <span>{{ item.label }}</span>
+                </Link>
+            </nav>
+        </aside>
+
+        <div class="cave-play-main">
+            <div :class="innerClass">
+                <header v-if="!hideLogo && !immersive" class="cave-logo-wrap lg:hidden">
+                    <div class="cave-logo-icon">🗿</div>
+                    <h1 class="cave-logo-title">CityPlay</h1>
+                    <p class="cave-logo-sub">Aventure urbaine</p>
+                </header>
+                <slot />
+            </div>
+        </div>
+
+        <!-- Nav mobile -->
+        <nav v-if="!immersive" class="cave-bottom-nav lg:hidden" aria-label="Navigation jeu">
+            <Link
+                v-for="item in navItems.slice(0, 5)"
+                :key="'m-' + item.label"
+                :href="navHref(item)"
+                class="cave-nav-stone"
+                :class="{ 'cave-nav-stone--active': isActive(item) }"
+                :title="item.label"
+            >
+                <i :class="item.icon" />
+            </Link>
+        </nav>
+    </div>
+</template>

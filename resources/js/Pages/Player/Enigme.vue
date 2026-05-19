@@ -1,7 +1,7 @@
 <script setup>
 import { Head, Link, useForm, router } from '@inertiajs/vue3';
 import { onMounted, onUnmounted, ref, computed } from 'vue';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import CaveGameLayout from '@/Layouts/CaveGameLayout.vue';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Dialog from 'primevue/dialog';
@@ -135,7 +135,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <AuthenticatedLayout>
+    <CaveGameLayout>
         <Head :title="'Énigme - ' + (partie?.environnement?.nom || 'En cours')" />
 
         <!-- PAUSE OVERLAY (Original Disposition with Game Colors) -->
@@ -191,49 +191,40 @@ onUnmounted(() => {
             </div>
         </div>
 
-        <div class="game-container min-h-screen pb-24 transition-opacity duration-300" :class="{ 'opacity-50 pointer-events-none': isOffline || progression?.statut === 'pause' }">
+        <div class="transition-opacity duration-300" :class="{ 'opacity-50 pointer-events-none': isOffline || progression?.statut === 'pause' }">
             <!-- OFFLINE BANNER -->
-            <div v-if="isOffline" class="bg-red-600 text-white text-[10px] font-black uppercase tracking-[0.2em] p-2 text-center sticky top-0 z-50 shadow-lg">
-                <i class="pi pi-wifi mr-2"></i> Connexion perdue • Mode Hors-Ligne
+            <motion.div v-if="isOffline" class="cave-offline-banner sticky top-0 z-50">
+                <i class="pi pi-wifi mr-2" /> Connexion perdue
             </div>
 
-            <!-- GAME HUD (Top Bar) -->
-            <div class="hud-top bg-[#1a1a1a] text-white p-4 flex justify-between items-center sticky top-0 z-40 border-b-2 border-[#FF9500]/30 backdrop-blur-md bg-opacity-90">
+            <div class="cave-hud">
                 <div class="flex items-center gap-3">
                     <div class="step-indicator relative">
                         <svg class="w-12 h-12 -rotate-90">
                             <circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="4" fill="transparent" class="text-white/10" />
                             <circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="4" fill="transparent" :stroke-dasharray="125.6" :stroke-dashoffset="125.6 * (1 - (progression?.lieux_decouverts?.length + 1) / ((progression?.lieux_restants?.length || 0) + (progression?.lieux_decouverts?.length || 0) + 1))" class="text-[#FF9500] transition-all duration-1000" />
                         </svg>
-                        <div class="absolute inset-0 flex items-center justify-center text-[10px] font-black">
-                            {{ (progression?.lieux_decouverts?.length || 0) + 1 }}
-                        </div>
+                        <span class="cave-step-ring__label">{{ (progression?.lieux_decouverts?.length || 0) + 1 }}</span>
                     </div>
                     <div>
-                        <h1 class="text-[10px] font-black text-[#FF9500] uppercase tracking-[0.2em]">Mission en cours</h1>
-                        <p class="text-sm font-black text-white uppercase tracking-tighter truncate max-w-[120px]">
-                            {{ partie?.environnement?.nom }}
-                        </p>
+                        <p class="cave-hud__mission">Mission</p>
+                        <p class="cave-hud__title truncate max-w-[140px] lg:max-w-none">{{ partie?.environnement?.nom }}</p>
                     </div>
                 </div>
                 
                 <div class="flex items-center gap-2">
-                    <div class="timer-badge px-4 py-2 bg-white/5 rounded-2xl border border-white/10 flex items-center gap-3">
-                        <div class="flex flex-col items-end">
-                            <span class="text-[8px] font-black text-white/40 uppercase tracking-widest">Temps</span>
-                            <span class="text-sm font-black font-mono text-white leading-none" :class="{ 'text-red-500 animate-pulse': timeLeft < 300 }">{{ formatTime(timeLeft) }}</span>
-                        </div>
-                        <i class="pi pi-clock text-[#FF9500]"></i>
+                    <div class="cave-hud__timer" :class="{ 'cave-hud__timer--urgent': timeLeft < 300 }">
+                        <span>{{ formatTime(timeLeft) }}</span>
+                        <i class="pi pi-clock" />
                     </div>
-                    <button @click="togglePause" class="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center hover:bg-white/10 active:scale-90 transition-all border border-white/10">
-                        <i class="pi pi-pause text-white"></i>
+                    <button type="button" class="cave-hud__btn" @click="showPauseConfirm = true">
+                        <i class="pi pi-pause" />
                     </button>
                 </div>
             </div>
 
-            <main class="p-6 max-w-2xl mx-auto space-y-8">
-                <!-- MISSION CARD (Image & Title) -->
-                <div class="mission-card relative rounded-[2rem] overflow-hidden shadow-2xl border-2 border-white/10 bg-[#1a1a1a]">
+            <main class="cave-game-content cave-game-content--split space-y-6 lg:space-y-0">
+                <div class="cave-panel space-y-0">
                     <div v-if="enigme?.lieu?.photos?.length || enigme?.image_url" class="relative h-64">
                         <img :src="enigme?.lieu?.photos?.length ? enigme.lieu.photos[0].url : enigme.image_url" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-t from-[#1a1a1a] via-[#1a1a1a]/20 to-transparent"></div>
@@ -276,7 +267,7 @@ onUnmounted(() => {
 
                     <button
                         @click="checkLocation"
-                        class="game-btn-primary w-full p-6 rounded-[1.5rem] bg-[#FF9500] text-black font-black uppercase tracking-[0.2em] shadow-[0_8px_0_#cc7a00] active:shadow-none active:translate-y-[8px] transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="cave-btn w-full p-6 rounded-[1.5rem] bg-[#FF9500] text-black font-black uppercase tracking-[0.2em] shadow-[0_8px_0_#cc7a00] active:shadow-none active:translate-y-[8px] transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
                         :disabled="isLocating || isOffline"
                     >
                         <i :class="isLocating ? 'pi pi-spin pi-spinner' : 'pi pi-compass'" class="text-xl"></i>
@@ -291,7 +282,7 @@ onUnmounted(() => {
                         <InputText
                             v-model="form.reponse"
                             placeholder="Saisissez le code ou la réponse..."
-                            class="game-input w-full p-6 bg-black/40 border-2 border-white/10 rounded-2xl text-white font-black placeholder:text-white/20 focus:border-[#FF9500] transition-all"
+                            class="cave-game-input w-full p-6 bg-black/40 border-2 border-white/10 rounded-2xl text-white font-black placeholder:text-white/20 focus:border-[#FF9500] transition-all"
                             :disabled="form.processing || isOffline"
                         />
                         <button 
@@ -307,19 +298,19 @@ onUnmounted(() => {
 
                 <!-- GAME TOOLS (Secondary Actions) -->
                 <div class="grid grid-cols-4 gap-4">
-                    <button @click="showHint = true" class="tool-btn group">
+                    <button @click="showHint = true" class="cave-tool-btn group">
                         <div class="icon-box"><i class="pi pi-question text-xl"></i></div>
                         <span class="label">Indice</span>
                     </button>
-                    <button @click="showSolution = true" class="tool-btn group">
+                    <button @click="showSolution = true" class="cave-tool-btn group">
                         <div class="icon-box"><i class="pi pi-eye text-xl"></i></div>
                         <span class="label">Solution</span>
                     </button>
-                    <button @click="showSkipConfirm = true" class="tool-btn group danger">
+                    <button @click="showSkipConfirm = true" class="cave-tool-btn group danger">
                         <div class="icon-box"><i class="pi pi-fast-forward text-xl"></i></div>
                         <span class="label">Passer</span>
                     </button>
-                    <button @click="showAbandonConfirm = true" class="tool-btn group danger">
+                    <button @click="showAbandonConfirm = true" class="cave-tool-btn group danger">
                         <div class="icon-box"><i class="pi pi-power-off text-xl"></i></div>
                         <span class="label">Quitter</span>
                     </button>
@@ -327,7 +318,7 @@ onUnmounted(() => {
             </main>
 
             <!-- MODALS (Styled for Game) -->
-            <Dialog v-model:visible="showHint" modal header="Transmission d'indice" :style="{ width: '90vw', maxWidth: '400px' }" class="game-dialog">
+            <Dialog v-model:visible="showHint" modal header="Transmission d'indice" :style="{ width: '90vw', maxWidth: '400px' }" class="cave-game-dialog">
                 <div class="p-6 space-y-4">
                     <div class="flex items-center gap-3 text-[#FF9500]">
                         <i class="pi pi-bolt text-2xl animate-pulse"></i>
@@ -344,7 +335,7 @@ onUnmounted(() => {
                 </template>
             </Dialog>
 
-            <Dialog v-model:visible="showSolution" modal header="Décryptage de solution" :style="{ width: '90vw', maxWidth: '400px' }" class="game-dialog">
+            <Dialog v-model:visible="showSolution" modal header="Décryptage de solution" :style="{ width: '90vw', maxWidth: '400px' }" class="cave-game-dialog">
                 <div class="p-6 space-y-6">
                     <div class="bg-red-500/10 border border-red-500/20 p-4 rounded-xl flex items-center gap-3">
                         <i class="pi pi-exclamation-triangle text-red-500 text-xl"></i>
@@ -367,7 +358,7 @@ onUnmounted(() => {
                 </template>
             </Dialog>
 
-            <Dialog v-model:visible="showSkipConfirm" modal header="Passer cette énigme ?" :style="{ width: '90vw', maxWidth: '400px' }" class="game-dialog">
+            <Dialog v-model:visible="showSkipConfirm" modal header="Passer cette énigme ?" :style="{ width: '90vw', maxWidth: '400px' }" class="cave-game-dialog">
                 <div class="p-6 space-y-4">
                     <p class="text-white/70 font-medium leading-relaxed italic">
                         "Voulez-vous vraiment passer ce défi ? Vous ne gagnerez aucun point pour cette étape."
@@ -381,7 +372,7 @@ onUnmounted(() => {
                 </template>
             </Dialog>
 
-            <Dialog v-model:visible="showAbandonConfirm" modal header="Abandonner la mission ?" :style="{ width: '90vw', maxWidth: '400px' }" class="game-dialog">
+            <Dialog v-model:visible="showAbandonConfirm" modal header="Abandonner la mission ?" :style="{ width: '90vw', maxWidth: '400px' }" class="cave-game-dialog">
                 <div class="p-6 space-y-4">
                     <p class="text-white/70 font-medium leading-relaxed italic">
                         "Êtes-vous certain de vouloir abandonner ? Votre progression actuelle sera sauvegardée mais la mission s'arrêtera ici."
@@ -395,7 +386,7 @@ onUnmounted(() => {
                 </template>
             </Dialog>
         </div>
-    </AuthenticatedLayout>
+    </CaveGameLayout>
 </template>
 
 <style>

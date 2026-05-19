@@ -30,9 +30,17 @@ class PartieController extends Controller
         ]);
 
         $parties = Partie::where('createur_id', auth()->id())
-            ->with(['environnement', 'progression.enigmeCourante.lieu'])
+            ->with(['environnement', 'progression.enigmeCourante.lieu', 'team.users'])
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->get()
+            ->map(function (Partie $partie) {
+                if ($partie->mode === 'team' && $partie->code_liaison) {
+                    $partie->setAttribute('lien_invitation', $partie->getLienInvitation());
+                    $partie->setAttribute('nb_membres', $partie->team?->users->count() ?? 0);
+                }
+
+                return $partie;
+            });
 
         $userLat = $request->filled('latitude') ? (float) $request->latitude : null;
         $userLng = $request->filled('longitude') ? (float) $request->longitude : null;
@@ -74,18 +82,23 @@ class PartieController extends Controller
     }
 
     /**
-     * Rejoindre une partie via un lien collé dans le formulaire
+     * Rejoindre une partie via le code d'invitation (compte existant)
      */
     public function rejoindre(Request $request)
     {
         $request->validate([
-            'lien' => 'required|string|max:500',
+            'code' => 'required|string|max:20',
         ]);
 
-        $code = $this->extraireCodeDepuisLien($request->lien);
+        $input = trim($request->code);
+        $code = str_contains($input, '/rejoindre/')
+            ? $this->extraireCodeDepuisLien($input)
+            : strtoupper(preg_replace('/\s+/', '', $input));
 
-        if (!$code) {
-            return back()->with('error', 'Lien d\'invitation invalide. Vérifiez l\'URL reçue.');
+        if (!$code || !preg_match('/^[A-Z0-9\-]{6,12}$/i', $code)) {
+            return back()->withErrors([
+                'code' => 'Code d\'invitation invalide. Vérifiez le code reçu de l\'organisateur.',
+            ]);
         }
 
         return redirect()->route('parties.rejoindre', $code);
@@ -275,6 +288,8 @@ class PartieController extends Controller
 
         $partie = $partie->fresh()->load('environnement', 'team');
         $partie->setAttribute('lien_invitation', $partie->getLienInvitation());
+        $partie->setAttribute('code_invitation', $partie->code_liaison);
+        $partie->setAttribute('nb_membres', $partie->team?->users()->count() ?? 1);
 
         return Inertia::render('Player/JoinPartie', [
             'partie' => $partie,

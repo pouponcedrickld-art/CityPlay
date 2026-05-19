@@ -2557,3 +2557,15 @@
 [2026-05-19 13:13:17] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
 [2026-05-19 13:13:23] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
 [2026-05-19 13:23:22] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 14:25:59] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 14:26:10] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 14:26:30] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 15:03:51] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 15:13:19] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 15:18:46] local.INFO: GameplayService: Début initialisation progression {"partie_id":6} 
+[2026-05-19 15:18:46] local.INFO: GameplayService: Paramètres extraits {"duree":24,"locomotion":"velo","difficulte":2} 
+[2026-05-19 15:18:46] local.INFO: GameplayService: Nombre d'énigmes calculé {"count":3} 
+[2026-05-19 15:18:46] local.INFO: GameplayService: Lieux sélectionnés {"count":1,"ids":{"Illuminate\\Support\\Collection":[6]}} 
+[2026-05-19 15:18:46] local.INFO: GameplayService: Énigme de départ identifiée {"id":22} 
+[2026-05-19 15:18:46] local.INFO: GameplayService: Progression créée {"id":4} 
+[2026-05-19 15:18:46] local.INFO: GameplayService: Partie marquée comme en cours  
