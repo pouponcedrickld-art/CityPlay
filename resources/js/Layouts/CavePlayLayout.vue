@@ -78,7 +78,7 @@ const innerClass = computed(() => [
 
         <div class="cave-play-main">
             <div :class="innerClass">
-                <header v-if="!hideLogo && !immersive" class="cave-logo-wrap lg:hidden">
+                <header v-if="!hideLogo && !immersive" class="cave-logo-wrap cave-logo-wrap--mobile-only">
                     <div class="cave-logo-icon">🗿</div>
                     <h1 class="cave-logo-title">CityPlay</h1>
                     <p class="cave-logo-sub">Aventure urbaine</p>
