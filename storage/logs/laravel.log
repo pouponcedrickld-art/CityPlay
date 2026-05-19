@@ -1752,3 +1752,14 @@
 [2026-05-19 09:56:54] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
 [2026-05-19 09:56:55] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
 [2026-05-19 09:57:50] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 13:36:58] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 13:38:10] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 13:38:15] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 13:38:35] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 13:39:48] local.INFO: Tentative de création de partie {"environnement_id":1,"mode":"team","duree":60,"locomotion":"pied","difficulte":2,"nb_joueurs":4} 
+[2026-05-19 13:39:48] local.INFO: Validation réussie {"environnement_id":1,"mode":"team","duree":60,"locomotion":"pied","difficulte":2,"nb_joueurs":4} 
+[2026-05-19 13:39:48] local.INFO: PartieService: Début création partie {"data":{"environnement_id":1,"mode":"team","duree":60,"locomotion":"pied","difficulte":2,"nb_joueurs":4},"createurId":3} 
+[2026-05-19 13:39:48] local.INFO: PartieService: Environnement trouvé {"nom":"Bordeaux Patrimoine"} 
+[2026-05-19 13:39:48] local.INFO: PartieService: Création équipe  
+[2026-05-19 13:39:48] local.INFO: PartieService: Fin création partie {"id":2} 
+[2026-05-19 13:39:48] local.INFO: Partie créée avec succès {"id":2} 
