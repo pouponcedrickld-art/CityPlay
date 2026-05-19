@@ -286,11 +286,13 @@
   pointer-events: none;
 }
 
-.cave-btn:hover:not(:disabled) {
-  transform: translateY(-3px);
-  box-shadow:
-    0 9px 0 var(--cave-border-darker),
-    0 12px 24px var(--cave-shadow-lg);
+@media (hover: hover) {
+  .cave-btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow:
+      0 9px 0 var(--cave-border-darker),
+      0 12px 24px var(--cave-shadow-lg);
+  }
 }
 
 .cave-btn:active:not(:disabled) {
@@ -414,9 +416,11 @@
 .cave-level-card:nth-child(3) { animation-delay: 0.3s; }
 .cave-level-card:nth-child(4) { animation-delay: 0.4s; }
 
-.cave-level-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 9px 0 var(--cave-border-darker), 0 14px 28px var(--cave-shadow-lg);
+@media (hover: hover) {
+  .cave-level-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 9px 0 var(--cave-border-darker), 0 14px 28px var(--cave-shadow-lg);
+  }
 }
 
 .cave-level-card:active {
@@ -566,9 +570,11 @@
   animation: caveSlideInUp 0.5s ease backwards;
 }
 
-.cave-mission-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 0 var(--cave-border-darker);
+@media (hover: hover) {
+  .cave-mission-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 0 var(--cave-border-darker);
+  }
 }
 
 .cave-mission-card__status {
@@ -707,9 +713,11 @@
   cursor: pointer;
 }
 
-.cave-nav-stone:hover {
-  transform: rotate(-4deg) scale(1.1);
-  color: var(--cave-btn-survival);
+@media (hover: hover) {
+  .cave-nav-stone:hover {
+    transform: rotate(-4deg) scale(1.1);
+    color: var(--cave-btn-survival);
+  }
 }
 
 .cave-nav-stone--active {

@@ -1,9 +1,11 @@
 <script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { ref, computed, watch } from 'vue';
 import Dialog from 'primevue/dialog';
 import Slider from 'primevue/slider';
 import InputNumber from 'primevue/inputnumber';
+import Button from 'primevue/button';
+import SelectButton from 'primevue/selectbutton';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 const props = defineProps({

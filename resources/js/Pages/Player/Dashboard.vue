@@ -169,6 +169,7 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';
 import CavePlayLayout from '@/Layouts/CavePlayLayout.vue';
+import gsap from 'gsap';
 
 const props = defineProps({
     parties: { type: Array, default: () => [] },
