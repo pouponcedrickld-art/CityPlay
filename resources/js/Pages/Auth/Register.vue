@@ -214,7 +214,7 @@ const submit = () => {
                             class="art-overlay-stagger px-3 py-1 text-[9px] font-black tracking-[0.2em] text-white rounded-full uppercase"
                             :class="isDark ? 'bg-[#FF9500]' : 'bg-[#059669]'"
                         >
-                            Nouvelle Amazone / Guerrier
+                            Bienvenue chez les Guepard
                         </span>
                         <h4 class="art-overlay-stagger text-xl font-black text-white uppercase tracking-tight drop-shadow-lg">
                             Prenez les Armes

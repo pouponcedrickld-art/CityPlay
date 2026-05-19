@@ -287,7 +287,7 @@ onMounted(() => {
 
             <Link
               v-if="canRegister"
-              :href="route('register')"
+              :href="route('login')"
               class="btn-register"
             >
               <span>Commencer</span>
