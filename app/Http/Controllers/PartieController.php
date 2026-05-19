@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Partie;
 use App\Models\Environnement;
 use App\Services\PartieService;
+use App\Services\GeoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -21,20 +22,54 @@ class PartieController extends Controller
     /**
      * Liste les parties du joueur (Dashboard Joueur)
      */
-    public function index()
+    public function index(Request $request)
     {
+        $request->validate([
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
+        ]);
+
         $parties = Partie::where('createur_id', auth()->id())
             ->with(['environnement', 'progression.enigmeCourante.lieu'])
             ->orderBy('created_at', 'desc')
             ->get();
 
+        $userLat = $request->filled('latitude') ? (float) $request->latitude : null;
+        $userLng = $request->filled('longitude') ? (float) $request->longitude : null;
+
         $environnements = Environnement::where('actif', true)
             ->withCount('lieux')
-            ->get();
+            ->with(['lieux' => fn ($q) => $q->where('actif', true)->select('id', 'environnement_id', 'latitude', 'longitude')])
+            ->get()
+            ->map(function (Environnement $env) use ($userLat, $userLng) {
+                $centroid = GeoService::centroidFromLieux($env->lieux);
+                $env->unsetRelation('lieux');
+
+                $env->latitude = $centroid['latitude'] ?? null;
+                $env->longitude = $centroid['longitude'] ?? null;
+
+                if ($userLat !== null && $userLng !== null && $env->latitude && $env->longitude) {
+                    $env->distance_km = round(
+                        GeoService::distanceKm($userLat, $userLng, $env->latitude, $env->longitude),
+                        1
+                    );
+                }
+
+                return $env;
+            });
+
+        $geolocalise = $userLat !== null && $userLng !== null;
+
+        if ($geolocalise) {
+            $environnements = $environnements
+                ->sortBy(fn ($env) => $env->distance_km ?? PHP_FLOAT_MAX)
+                ->values();
+        }
 
         return Inertia::render('Player/Dashboard', [
             'parties' => $parties,
-            'environnements' => $environnements
+            'environnements' => $environnements->take(4)->values(),
+            'geolocalise' => $geolocalise,
         ]);
     }
 
