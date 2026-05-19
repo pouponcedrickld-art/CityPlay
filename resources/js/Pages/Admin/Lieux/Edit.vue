@@ -28,7 +28,7 @@ const submit = () => {
 
         <div class="max-w-4xl mx-auto p-8">
             <h1 class="text-3xl font-bold mb-8 text-white font-gaming uppercase tracking-wider">Modifier l' <span class="text-primary-500">Étape</span></h1>
-
+            
             <form @submit.prevent="submit" class="bg-dark-surface p-10 rounded-2xl border border-dark-border shadow-2xl space-y-8">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div class="flex flex-col gap-2">

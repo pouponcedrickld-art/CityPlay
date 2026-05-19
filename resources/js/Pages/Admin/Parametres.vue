@@ -7,7 +7,7 @@ defineProps({ parametres: Object });
 
 <template>
     <Head title="Paramètres" />
-
+    
     <AdminLayout>
         <template #breadcrumb>
             <span class="text-sm text-white font-gaming uppercase tracking-widest">Gestion / Paramètres</span>
