@@ -158,11 +158,11 @@ const confirm = useConfirm()
 
 const getStatusClass = (statut) => {
   switch (statut) {
-    case 'en_cours': return 'bg-green-100 text-green-700'
-    case 'terminee': return 'bg-gray-100 text-gray-700'
-    case 'pause': return 'bg-yellow-100 text-yellow-700'
-    case 'en_attente': return 'bg-blue-100 text-blue-700'
-    default: return 'bg-gray-100 text-gray-500'
+    case 'en_cours': return 'bg-blue-50 text-blue-700 border border-blue-100' // Info (Bleu vif)
+    case 'terminee': return 'bg-emerald-50 text-emerald-700 border border-emerald-100' // Succès (Vert émeraude)
+    case 'pause': return 'bg-orange-50 text-orange-700 border border-orange-100' // Avertissement (Orange #FF9500)
+    case 'en_attente': return 'bg-orange-50 text-orange-700 border border-orange-100' // Avertissement (Orange #FF9500)
+    default: return 'bg-gray-50 text-gray-600 border border-gray-200'
   }
 }
 

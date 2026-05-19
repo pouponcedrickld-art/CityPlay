@@ -30,7 +30,7 @@ const submit = () => {
                 <div><label>Longitude</label><input v-model="form.longitude" type="number" step="any" class="w-full border rounded p-2"/></div>
                 <div><label>Rayon (mètres)</label><input v-model="form.rayon_metres" type="number" class="w-full border rounded p-2"/></div>
                 <div><label>Description</label><textarea v-model="form.description" class="w-full border rounded p-2"></textarea></div>
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Créer</button>
+                <button type="submit" class="bg-[#FF9500] hover:bg-[#E08400] text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-md active:scale-95 duration-200">Créer</button>
             </form>
         </div>
     </AuthenticatedLayout>

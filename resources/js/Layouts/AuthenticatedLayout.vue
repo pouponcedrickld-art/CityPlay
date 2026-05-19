@@ -1,5 +1,27 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
+
+const isDark = ref(true);
+
+const initTheme = () => {
+  isDark.value = localStorage.getItem('theme') !== 'light';
+  if (isDark.value) {
+    document.documentElement.classList.remove('light-theme');
+  } else {
+    document.documentElement.classList.add('light-theme');
+  }
+};
+
+const toggleTheme = () => {
+  isDark.value = !isDark.value;
+  if (isDark.value) {
+    localStorage.setItem('theme', 'dark');
+    document.documentElement.classList.remove('light-theme');
+  } else {
+    localStorage.setItem('theme', 'light');
+    document.documentElement.classList.add('light-theme');
+  }
+};
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import VideoLoader from '@/Components/VideoLoader.vue';
@@ -17,6 +39,8 @@ const isGameMode = computed(() => {
 });
 
 onMounted(() => {
+    initTheme();
+
     router.on('start', () => {
         showLoader.value = true;
     });
@@ -144,6 +168,16 @@ const menuItems = [
                 <span class="text-[8px] font-black uppercase tracking-widest">{{ item.label }}</span>
             </Link>
         </nav>
+
+        <!-- Floating Theme Toggle Switch -->
+        <button 
+          class="theme-switch-float" 
+          @click="toggleTheme" 
+          aria-label="Toggle Theme"
+          title="Changer de Thème"
+        >
+          <i :class="isDark ? 'pi pi-sun' : 'pi pi-moon'" />
+        </button>
     </div>
 </template>
 

@@ -24,7 +24,7 @@
             </div>
 
             <div class="bg-black/40 p-6 rounded-2xl border border-white/5 italic text-white/60 text-sm">
-                "Ce n'est pas la bonne réponse. Reprenez vos esprits, l'indice est peut-être juste sous vos yeux."
+                "{{ partie.environnement?.message_mauvaise_reponse || "Ce n'est pas la bonne réponse. Reprenez vos esprits, l'indice est peut-être juste sous vos yeux." }}"
             </div>
 
             <div class="space-y-4">

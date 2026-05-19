@@ -44,7 +44,7 @@
           <Column field="name" header="Utilisateur" sortable>
             <template #body="{ data }">
               <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs">
+                <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 border border-blue-100 font-bold text-xs shadow-inner">
                   {{ data.name.charAt(0) }}
                 </div>
                 <div>
@@ -59,8 +59,8 @@
 
           <Column field="is_admin" header="Rôle" sortable :showFilterMatchModes="false">
             <template #body="{ data }">
-              <span :class="data.is_admin ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'"
-                    class="px-2 py-1 rounded-full text-xs font-semibold">
+              <span :class="data.is_admin ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-blue-50 text-blue-700 border border-blue-100'"
+                    class="px-2.5 py-1 rounded-full text-xs font-bold shadow-sm">
                 {{ data.is_admin ? 'Admin' : 'Joueur' }}
               </span>
             </template>
