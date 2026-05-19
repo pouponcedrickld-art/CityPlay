@@ -127,8 +127,8 @@ const filters = ref({
 const filteredInvitations = computed(() => {
   if (!filters.value.global.value) return props.invitations
   const search = filters.value.global.value.toLowerCase()
-  return props.invitations.filter(i => 
-    i.token.toLowerCase().includes(search) || 
+  return props.invitations.filter(i =>
+    i.token.toLowerCase().includes(search) ||
     (i.email && i.email.toLowerCase().includes(search))
   )
 })
@@ -137,18 +137,18 @@ const keyRefs = ref([])
 
 const animateKeys = () => {
   if (keyRefs.value.length > 0) {
-    gsap.fromTo(keyRefs.value, 
-      { 
-        opacity: 0, 
+    gsap.fromTo(keyRefs.value,
+      {
+        opacity: 0,
         scale: 0.5,
         y: 100
-      }, 
-      { 
-        opacity: 1, 
+      },
+      {
+        opacity: 1,
         scale: 1,
         y: 0,
-        duration: 0.5, 
-        stagger: 0.1, 
+        duration: 0.5,
+        stagger: 0.1,
         ease: 'elastic.out(1, 0.75)',
         clearProps: 'all'
       }
@@ -219,7 +219,7 @@ const confirmDelete = (invitation) => {
 }
 
 const getInvitationLink = (token) => {
-  return `${window.location.origin}/register?token=${token}`
+  return `${window.location.origin}/register?invite=${token}`
 }
 
 const copyLink = (token) => {
