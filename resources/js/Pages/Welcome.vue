@@ -178,42 +178,24 @@ onMounted(() => {
     });
   });
 
-  // 2. Custom Holographic Entrance Timeline
+  // 2. Cartoon Hero Entrance Timeline
   const tl = gsap.timeline();
   tl.fromTo('.cyber-overlay',
     { opacity: 1 },
-    { opacity: 0, duration: 0.8, ease: 'power2.inOut' }
+    { opacity: 0, duration: 0.6, ease: 'power2.inOut' }
   );
-
-  tl.from('.nav-bar', {
-    y: -80,
-    opacity: 0,
-    duration: 1,
-    ease: 'power3.out'
-  }, '-=0.4');
-
-  tl.from('.hero-logo-container', {
-    scale: 0.5,
-    rotate: -15,
-    opacity: 0,
-    duration: 1.2,
-    ease: 'back.out(1.4)'
+  tl.from('.gsap-brand', {
+    y: -60, opacity: 0, duration: 1, ease: 'back.out(1.4)'
+  }, '-=0.2');
+  tl.from('.cartoon-title span', {
+    y: -40, opacity: 0, scale: 0.5, rotation: -15,
+    duration: 0.6, stagger: 0.06, ease: 'back.out(2)'
   }, '-=0.6');
-
-  tl.from('.hero-anim', {
-    y: 35,
-    opacity: 0,
-    duration: 0.85,
-    stagger: 0.15,
-    ease: 'power3.out'
-  }, '-=0.8');
-
-  tl.from('.cta-btn', {
-    scale: 0.8,
-    opacity: 0,
-    duration: 0.8,
-    stagger: 0.12,
-    ease: 'back.out(1.5)'
+  tl.from('.gsap-cta', {
+    y: 60, opacity: 0, duration: 0.8, ease: 'back.out(1.5)'
+  }, '-=0.3');
+  tl.from('.nav-bar', {
+    y: -40, opacity: 0, duration: 0.6, ease: 'power2.out'
   }, '-=0.6');
 
   // Activate scroll observer on all target sections
@@ -233,24 +215,251 @@ onMounted(() => {
     <!-- Ambient Floating Cursor Glow -->
     <div class="cursor-glow" />
 
-    <!-- Section 1: Hero Video Landing Page -->
-    <section class="section-hero">
+    <!-- ══ MOBILE HERO (< 1024px) : Cartoon Welcome ══ -->
+    <section class="section-hero section-hero--mobile">
+
+      <!-- ══ SVG SCENE BACKGROUND ══ -->
+      <div class="hero-scene" aria-hidden="true">
+        <svg class="scene-svg" viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+          <!-- Sky gradient -->
+          <defs>
+            <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#1a6fc4"/>
+              <stop offset="45%" stop-color="#4db8e8"/>
+              <stop offset="100%" stop-color="#a8e6cf"/>
+            </linearGradient>
+            <linearGradient id="groundGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#4caf50"/>
+              <stop offset="100%" stop-color="#2e7d32"/>
+            </linearGradient>
+            <linearGradient id="hillGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#66bb6a"/>
+              <stop offset="100%" stop-color="#388e3c"/>
+            </linearGradient>
+            <linearGradient id="treeTrunkL" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#5d4037"/>
+              <stop offset="100%" stop-color="#3e2723"/>
+            </linearGradient>
+            <linearGradient id="mountainGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#7986cb"/>
+              <stop offset="100%" stop-color="#5c6bc0"/>
+            </linearGradient>
+            <linearGradient id="sunGrad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%" gradientUnits="objectBoundingBox">
+              <stop offset="0%" stop-color="#fff9c4"/>
+              <stop offset="100%" stop-color="#ffcc02"/>
+            </linearGradient>
+            <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#fff176" stop-opacity="0.6"/>
+              <stop offset="100%" stop-color="#ffcc02" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="vignetteGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(0,0,0,0)"/>
+              <stop offset="60%" stop-color="rgba(0,0,0,0)"/>
+              <stop offset="100%" stop-color="rgba(0,0,0,0.82)"/>
+            </linearGradient>
+            <filter id="blur4">
+              <feGaussianBlur stdDeviation="4"/>
+            </filter>
+            <filter id="blur2">
+              <feGaussianBlur stdDeviation="2"/>
+            </filter>
+          </defs>
+
+          <!-- Sky -->
+          <rect width="390" height="844" fill="url(#skyGrad)"/>
+
+          <!-- Sun glow -->
+          <circle cx="195" cy="200" r="90" fill="url(#sunGlow)" filter="url(#blur4)"/>
+          <!-- Sun -->
+          <circle cx="195" cy="210" r="38" fill="#fff176"/>
+          <circle cx="195" cy="210" r="30" fill="#ffee58"/>
+
+          <!-- Distant mountains -->
+          <polygon points="60,420 160,260 260,420" fill="#7986cb" opacity="0.55"/>
+          <polygon points="140,420 230,290 320,420" fill="#9fa8da" opacity="0.45"/>
+          <polygon points="200,420 290,310 380,420" fill="#7986cb" opacity="0.4"/>
+
+          <!-- Mid ground hills -->
+          <ellipse cx="195" cy="500" rx="260" ry="100" fill="#81c784"/>
+          <ellipse cx="80" cy="520" rx="140" ry="80" fill="#66bb6a"/>
+          <ellipse cx="310" cy="510" rx="140" ry="75" fill="#66bb6a"/>
+
+          <!-- Ground -->
+          <rect x="0" y="490" width="390" height="354" fill="url(#groundGrad)"/>
+
+          <!-- Path -->
+          <path d="M155,844 Q175,650 185,530 Q190,490 195,480 Q200,490 205,530 Q215,650 235,844Z" fill="#a5d6a7" opacity="0.7"/>
+          <path d="M162,844 Q180,660 188,535 Q192,495 195,485 Q198,495 202,535 Q210,660 228,844Z" fill="#c8e6c9" opacity="0.5"/>
+
+          <!-- ── LEFT BIG TREE ── -->
+          <!-- Trunk -->
+          <rect x="-18" y="280" width="55" height="320" rx="20" fill="url(#treeTrunkL)"/>
+          <!-- Roots -->
+          <ellipse cx="10" cy="590" rx="40" ry="12" fill="#3e2723" opacity="0.6"/>
+          <!-- Foliage layers -->
+          <ellipse cx="30" cy="200" rx="95" ry="110" fill="#2e7d32"/>
+          <ellipse cx="15" cy="170" rx="80" ry="95" fill="#388e3c"/>
+          <ellipse cx="40" cy="145" rx="70" ry="80" fill="#43a047"/>
+          <ellipse cx="20" cy="125" rx="55" ry="65" fill="#4caf50"/>
+          <!-- Highlight -->
+          <ellipse cx="50" cy="140" rx="25" ry="30" fill="#66bb6a" opacity="0.5"/>
+
+          <!-- ── RIGHT BIG TREE ── -->
+          <rect x="353" y="300" width="55" height="300" rx="20" fill="url(#treeTrunkL)"/>
+          <ellipse cx="380" cy="590" rx="40" ry="12" fill="#3e2723" opacity="0.6"/>
+          <ellipse cx="360" cy="215" rx="90" ry="105" fill="#1b5e20"/>
+          <ellipse cx="375" cy="185" rx="78" ry="90" fill="#2e7d32"/>
+          <ellipse cx="355" cy="160" rx="68" ry="78" fill="#388e3c"/>
+          <ellipse cx="370" cy="140" rx="52" ry="62" fill="#43a047"/>
+          <ellipse cx="345" cy="135" rx="28" ry="32" fill="#66bb6a" opacity="0.45"/>
+
+          <!-- Hanging vines left -->
+          <path d="M55,0 Q45,80 60,160 Q70,220 55,300" stroke="#33691e" stroke-width="3" fill="none" opacity="0.8"/>
+          <path d="M80,0 Q65,100 75,180 Q85,240 70,320" stroke="#558b2f" stroke-width="2.5" fill="none" opacity="0.7"/>
+          <ellipse cx="60" cy="160" rx="8" ry="10" fill="#4caf50" opacity="0.8"/>
+          <ellipse cx="75" cy="200" rx="7" ry="9" fill="#66bb6a" opacity="0.7"/>
+          <ellipse cx="55" cy="300" rx="9" ry="11" fill="#4caf50" opacity="0.75"/>
+
+          <!-- Hanging vines right -->
+          <path d="M335,0 Q345,90 330,170 Q320,230 335,310" stroke="#33691e" stroke-width="3" fill="none" opacity="0.8"/>
+          <path d="M310,0 Q325,110 315,190 Q305,250 320,330" stroke="#558b2f" stroke-width="2.5" fill="none" opacity="0.7"/>
+          <ellipse cx="330" cy="170" rx="8" ry="10" fill="#4caf50" opacity="0.8"/>
+          <ellipse cx="315" cy="210" rx="7" ry="9" fill="#66bb6a" opacity="0.7"/>
+          <ellipse cx="335" cy="310" rx="9" ry="11" fill="#4caf50" opacity="0.75"/>
+
+          <!-- Small bushes foreground -->
+          <ellipse cx="60" cy="600" rx="50" ry="30" fill="#2e7d32"/>
+          <ellipse cx="50" cy="590" rx="38" ry="24" fill="#388e3c"/>
+          <ellipse cx="330" cy="605" rx="48" ry="28" fill="#2e7d32"/>
+          <ellipse cx="340" cy="595" rx="36" ry="22" fill="#388e3c"/>
+
+          <!-- Foreground grass tufts -->
+          <ellipse cx="0" cy="700" rx="80" ry="40" fill="#1b5e20"/>
+          <ellipse cx="390" cy="710" rx="80" ry="40" fill="#1b5e20"/>
+          <ellipse cx="100" cy="750" rx="60" ry="30" fill="#2e7d32"/>
+          <ellipse cx="290" cy="755" rx="60" ry="30" fill="#2e7d32"/>
+
+          <!-- ── EXPLORER CHARACTER (seen from behind) ── -->
+          <!-- Shadow -->
+          <ellipse cx="195" cy="590" rx="28" ry="8" fill="#1b5e20" opacity="0.5"/>
+          <!-- Legs -->
+          <rect x="181" y="548" width="12" height="38" rx="6" fill="#6d4c41"/>
+          <rect x="197" y="548" width="12" height="38" rx="6" fill="#5d4037"/>
+          <!-- Boots -->
+          <ellipse cx="187" cy="586" rx="9" ry="6" fill="#3e2723"/>
+          <ellipse cx="203" cy="586" rx="9" ry="6" fill="#3e2723"/>
+          <!-- Body -->
+          <rect x="175" y="490" width="40" height="62" rx="14" fill="#8d6e63"/>
+          <!-- Belt -->
+          <rect x="175" y="538" width="40" height="8" rx="3" fill="#5d4037"/>
+          <rect x="191" y="536" width="8" height="12" rx="2" fill="#ffd54f"/>
+          <!-- Backpack -->
+          <rect x="162" y="495" width="22" height="40" rx="8" fill="#4caf50"/>
+          <rect x="164" y="497" width="18" height="36" rx="6" fill="#66bb6a"/>
+          <!-- Backpack strap -->
+          <path d="M175,495 Q168,510 170,535" stroke="#388e3c" stroke-width="3" fill="none"/>
+          <!-- Arms -->
+          <rect x="215" y="498" width="10" height="30" rx="5" fill="#8d6e63"/>
+          <rect x="165" y="498" width="10" height="28" rx="5" fill="#8d6e63"/>
+          <!-- Hands -->
+          <circle cx="220" cy="530" r="6" fill="#a1887f"/>
+          <circle cx="170" cy="528" r="6" fill="#a1887f"/>
+          <!-- Neck -->
+          <rect x="188" y="478" width="14" height="14" rx="5" fill="#a1887f"/>
+          <!-- Head -->
+          <ellipse cx="195" cy="468" rx="20" ry="18" fill="#a1887f"/>
+          <!-- Hair -->
+          <ellipse cx="195" cy="455" rx="18" ry="10" fill="#5d4037"/>
+          <!-- Hat brim -->
+          <ellipse cx="195" cy="452" rx="26" ry="7" fill="#f9a825"/>
+          <!-- Hat body -->
+          <ellipse cx="195" cy="438" rx="20" ry="16" fill="#fbc02d"/>
+          <!-- Hat highlight -->
+          <ellipse cx="200" cy="433" rx="8" ry="5" fill="#fff176" opacity="0.5"/>
+          <!-- Hat band -->
+          <rect x="175" y="448" width="40" height="6" rx="3" fill="#e65100"/>
+          <!-- Map in hand -->
+          <rect x="222" y="518" width="16" height="20" rx="3" fill="#fff9c4" transform="rotate(-15,230,528)"/>
+          <line x1="225" y1="522" x2="235" y2="522" stroke="#bdbdbd" stroke-width="1.5" transform="rotate(-15,230,528)"/>
+          <line x1="225" y1="526" x2="233" y2="526" stroke="#bdbdbd" stroke-width="1.5" transform="rotate(-15,230,528)"/>
+
+          <!-- ── MAGICAL SPARKLES ── -->
+          <g class="sparkles">
+            <circle cx="120" cy="350" r="3" fill="#fff9c4" opacity="0.9"/>
+            <circle cx="270" cy="320" r="2.5" fill="#e1f5fe" opacity="0.85"/>
+            <circle cx="80" cy="420" r="2" fill="#f3e5f5" opacity="0.8"/>
+            <circle cx="310" cy="380" r="3" fill="#fff9c4" opacity="0.9"/>
+            <circle cx="155" cy="290" r="2" fill="#e8f5e9" opacity="0.75"/>
+            <circle cx="240" cy="400" r="2.5" fill="#fff3e0" opacity="0.8"/>
+            <circle cx="340" cy="450" r="2" fill="#e1f5fe" opacity="0.7"/>
+            <circle cx="50" cy="370" r="2.5" fill="#f3e5f5" opacity="0.8"/>
+            <!-- Star sparkles -->
+            <path d="M130,310 L132,305 L134,310 L139,312 L134,314 L132,319 L130,314 L125,312Z" fill="#fff9c4" opacity="0.9"/>
+            <path d="M260,360 L262,355 L264,360 L269,362 L264,364 L262,369 L260,364 L255,362Z" fill="#e1f5fe" opacity="0.85"/>
+            <path d="M320,290 L322,285 L324,290 L329,292 L324,294 L322,299 L320,294 L315,292Z" fill="#fff176" opacity="0.8"/>
+          </g>
+
+          <!-- Bottom vignette for button readability -->
+          <rect width="390" height="844" fill="url(#vignetteGrad)"/>
+        </svg>
+      </div>
+
+      <!-- ══ FLOATING PARTICLES (CSS animated) ══ -->
+      <div class="particles" aria-hidden="true">
+        <span class="particle p1">✦</span>
+        <span class="particle p2">✦</span>
+        <span class="particle p3">⬡</span>
+        <span class="particle p4">✦</span>
+        <span class="particle p5">⬡</span>
+        <span class="particle p6">✦</span>
+      </div>
+
+      <!-- ══ TOP BRANDING ══ -->
+      <div class="hero-brand gsap-brand">
+        <div class="brand-badge"> L'aventure commence ici</div>
+        <h1 class="cartoon-title">
+          <span class="ct-c">C</span><span class="ct-i">I</span><span class="ct-t">T</span><span class="ct-y">Y</span><span class="ct-p">P</span><span class="ct-l">L</span><span class="ct-a">A</span><span class="ct-y2">Y</span>
+        </h1>
+        <p class="hero-tagline">Explore · Découvre · Conquiers</p>
+      </div>
+
+      <!-- ══ BOTTOM CTA BUTTONS ══ -->
+      <div class="hero-cta-zone gsap-cta">
+        <template v-if="$page.props.auth.user">
+          <Link :href="route('dashboard')" class="btn-cartoon-primary">
+            <span class="btn-icon">▶</span>
+            <span>Reprendre la Quête</span>
+          </Link>
+        </template>
+        <template v-else>
+          <Link v-if="canRegister" :href="route('register')" class="btn-cartoon-primary">
+            <span class="btn-icon">▶</span>
+            <span>COMMENCER</span>
+          </Link>
+          <Link :href="route('login')" class="btn-cartoon-secondary">
+            <span>CONNEXION</span>
+          </Link>
+        </template>
+
+        <!-- Scroll hint -->
+        <a href="#concept" class="scroll-hint">
+          <span>En savoir plus</span>
+          <i class="pi pi-angle-down bounce-arrow"></i>
+        </a>
+      </div>
+
+    </section>
+
+    <!-- ══ DESKTOP HERO (>= 1024px) : Vidéo + HUD original ══ -->
+    <section class="section-hero section-hero--desktop">
+
       <div class="video-background-container">
-        <video
-          ref="introVideo"
-          autoplay
-          muted
-          playsinline
-          class="bg-video"
-          @timeupdate="handleTimeUpdate"
-        >
+        <video ref="introVideo" autoplay muted playsinline class="bg-video" @timeupdate="handleTimeUpdate">
           <source src="/videos/cityplay_oneShoot.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
         </video>
         <div class="video-overlay" />
       </div>
 
-      <!-- Main Navigation Bar -->
       <nav class="nav-bar">
         <div class="nav-left">
           <img :src="logoWhrite" alt="CityPlay Logo" class="nav-logo" />
@@ -259,87 +468,53 @@ onMounted(() => {
             <span class="brand-tag">AVENTURE BÉNIN</span>
           </div>
         </div>
-
         <div class="nav-center hidden lg:flex">
           <a href="#concept" class="nav-link">Le Concept</a>
           <a href="#cites" class="nav-link">Cités Épiques</a>
           <a href="#leaderboard" class="nav-link">Classement</a>
           <a href="#faq" class="nav-link">F.A.Q</a>
         </div>
-
         <div v-if="canLogin" class="nav-right">
-          <Link
-            v-if="$page.props.auth.user"
-            :href="route('dashboard')"
-            class="btn-dashboard"
-          >
-            <i class="pi pi-th-large" />
-            <span>Mon Espace</span>
+          <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="btn-dashboard">
+            <i class="pi pi-th-large" /><span>Mon Espace</span>
           </Link>
-
           <template v-else>
-           
-
-            <Link
-              v-if="canRegister"
-              :href="route('login')"
-              class="btn-register"
-            >
+            <Link v-if="canRegister" :href="route('login')" class="btn-register">
               <span>Commencer</span>
             </Link>
           </template>
         </div>
       </nav>
 
-      <!-- Hero Main Area -->
       <div class="hero-main">
         <div class="hero-logo-container">
           <img :src="logoWhrite" alt="CityPlay Emblem" class="hero-logo" />
           <div class="glow-ring" />
         </div>
-
         <h2 class="hero-subtitle hero-anim">L'Aventure Urbaine Phénoménale</h2>
         <h1 class="hero-title hero-anim">CITYPLAY</h1>
-
         <p class="hero-desc hero-anim">
           Explorez le Bénin à travers une expérience interactive hors du commun. Décryptez des énigmes, parcourez des lieux chargés d'histoire et vivez une quête ludique ultime au cœur de votre ville.
         </p>
-
         <div class="hero-ctas">
-          <Link
-            v-if="$page.props.auth.user"
-            :href="route('dashboard')"
-            class="cta-btn primary-cta"
-          >
-            <i class="pi pi-play" />
-            <span>Reprendre la Quête</span>
+          <Link v-if="$page.props.auth.user" :href="route('dashboard')" class="cta-btn primary-cta">
+            <i class="pi pi-play" /><span>Reprendre la Quête</span>
           </Link>
-
           <template v-else>
-            <Link
-              v-if="canRegister"
-              :href="route('register')"
-              class="cta-btn primary-cta"
-            >
-              <i class="pi pi-play" />
-              <span>Lancer l'Aventure</span>
+            <Link v-if="canRegister" :href="route('register')" class="cta-btn primary-cta">
+              <i class="pi pi-play" /><span>Lancer l'Aventure</span>
             </Link>
-            <Link
-              :href="route('login')"
-              class="cta-btn secondary-cta"
-            >
-              <i class="pi pi-users" />
-              <span>Rejoindre une Équipe</span>
+            <Link :href="route('login')" class="cta-btn secondary-cta">
+              <i class="pi pi-users" /><span>Rejoindre une Équipe</span>
             </Link>
           </template>
         </div>
-
-        <!-- Scroll Indicator Bouncing -->
         <a href="#concept" class="scroll-indicator">
           <span>DÉCOUVRIR LE CONCEPT</span>
           <i class="pi pi-angle-down bounce-arrow" />
         </a>
       </div>
+
     </section>
 
     <!-- Section 2: Comment ça marche (Gameplay Timeline) -->
@@ -688,14 +863,265 @@ section {
   transform: translateY(0);
 }
 
+/* ── RESPONSIVE HERO SWITCHING ──
+   Mobile  (< 1024px)  → cartoon scene
+   Desktop (>= 1024px) → vidéo HUD original
+*/
+.section-hero--mobile  { display: flex; }
+.section-hero--desktop { display: none; }
+
+@media (min-width: 1024px) {
+  .section-hero--mobile  { display: none; }
+  .section-hero--desktop { display: flex; }
+}
+
 /* Section 1: Hero Video Landing Page styling */
 .section-hero {
   min-height: 100vh;
-  display: flex;
   flex-direction: column;
   position: relative;
+  overflow: hidden;
 }
 
+/* ── CARTOON SCENE ── */
+.hero-scene {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.scene-svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── SPARKLE ANIMATION ── */
+.sparkles circle, .sparkles path {
+  animation: sparkle-pulse 2.5s ease-in-out infinite alternate;
+}
+.sparkles circle:nth-child(2n) { animation-delay: 0.6s; }
+.sparkles circle:nth-child(3n) { animation-delay: 1.2s; }
+@keyframes sparkle-pulse {
+  0%   { opacity: 0.3; transform: scale(0.8); }
+  100% { opacity: 1;   transform: scale(1.3); }
+}
+
+/* ── FLOATING PARTICLES ── */
+.particles {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+.particle {
+  position: absolute;
+  font-size: 0.75rem;
+  color: #fff9c4;
+  opacity: 0;
+  animation: float-up 6s ease-in-out infinite;
+}
+.p1 { left: 15%; top: 55%; animation-delay: 0s;   color: #fff9c4; }
+.p2 { left: 75%; top: 60%; animation-delay: 1.2s; color: #e1f5fe; }
+.p3 { left: 30%; top: 65%; animation-delay: 2.4s; color: #f3e5f5; font-size: 0.6rem; }
+.p4 { left: 60%; top: 50%; animation-delay: 0.8s; color: #fff9c4; }
+.p5 { left: 45%; top: 70%; animation-delay: 3s;   color: #e8f5e9; font-size: 0.6rem; }
+.p6 { left: 85%; top: 45%; animation-delay: 1.8s; color: #fff3e0; }
+@keyframes float-up {
+  0%   { opacity: 0;   transform: translateY(0)   scale(0.8); }
+  20%  { opacity: 0.9; }
+  80%  { opacity: 0.7; }
+  100% { opacity: 0;   transform: translateY(-80px) scale(1.2); }
+}
+
+/* ── TOP BRANDING ── */
+.hero-brand {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 3.5rem 2rem 0;
+  pointer-events: none;
+}
+.brand-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.35);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.4rem 1.1rem;
+  border-radius: 99px;
+  margin-bottom: 1.2rem;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+
+/* ── CARTOON 3D TITLE ── */
+.cartoon-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(3.8rem, 16vw, 6rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center;
+  gap: 0.02em;
+  filter: drop-shadow(0 6px 0 rgba(0,0,0,0.35));
+  margin-bottom: 0.6rem;
+}
+.cartoon-title span {
+  display: inline-block;
+  -webkit-text-stroke: 2.5px rgba(0,0,0,0.5);
+  animation: letter-bob 3s ease-in-out infinite;
+}
+.ct-c  { color: #ff6b35; animation-delay: 0s;    }
+.ct-i  { color: #ffd700; animation-delay: 0.08s; }
+.ct-t  { color: #4caf50; animation-delay: 0.16s; }
+.ct-y  { color: #29b6f6; animation-delay: 0.24s; }
+.ct-p  { color: #ff6b35; animation-delay: 0.32s; }
+.ct-l  { color: #ffd700; animation-delay: 0.40s; }
+.ct-a  { color: #4caf50; animation-delay: 0.48s; }
+.ct-y2 { color: #29b6f6; animation-delay: 0.56s; }
+@keyframes letter-bob {
+  0%, 100% { transform: translateY(0)   rotate(0deg); }
+  25%       { transform: translateY(-5px) rotate(-1deg); }
+  75%       { transform: translateY(3px)  rotate(1deg); }
+}
+
+.hero-tagline {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.85);
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+/* ── BOTTOM CTA ZONE ── */
+.hero-cta-zone {
+  position: relative;
+  z-index: 10;
+  margin-top: auto;
+  padding: 0 1.75rem 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+/* Primary button — glossy orange-yellow */
+.btn-cartoon-primary {
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.1rem 2rem;
+  border-radius: 1.5rem;
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  background: linear-gradient(180deg, #ffb300 0%, #ff6f00 100%);
+  border: none;
+  box-shadow:
+    0 6px 0 #bf360c,
+    0 10px 25px rgba(255, 111, 0, 0.45),
+    inset 0 1px 0 rgba(255,255,255,0.35);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+}
+.btn-cartoon-primary::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 45%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, transparent 100%);
+  border-radius: 1.5rem 1.5rem 0 0;
+  pointer-events: none;
+}
+.btn-cartoon-primary:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 9px 0 #bf360c,
+    0 15px 30px rgba(255, 111, 0, 0.55),
+    inset 0 1px 0 rgba(255,255,255,0.35);
+}
+.btn-cartoon-primary:active {
+  transform: translateY(4px);
+  box-shadow:
+    0 2px 0 #bf360c,
+    0 4px 10px rgba(255, 111, 0, 0.3),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+}
+.btn-icon {
+  font-size: 1rem;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+}
+
+/* Secondary button — glass white */
+.btn-cartoon-secondary {
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2rem;
+  border-radius: 1.5rem;
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  background: rgba(255,255,255,0.12);
+  border: 2px solid rgba(255,255,255,0.55);
+  box-shadow:
+    0 4px 0 rgba(0,0,0,0.2),
+    0 8px 20px rgba(0,0,0,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+  backdrop-filter: blur(8px);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  transition: all 0.15s ease;
+}
+.btn-cartoon-secondary:hover {
+  background: rgba(255,255,255,0.22);
+  border-color: rgba(255,255,255,0.8);
+  transform: translateY(-2px);
+}
+.btn-cartoon-secondary:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+}
+
+/* Scroll hint */
+.scroll-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  color: rgba(255,255,255,0.55);
+  text-decoration: none;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-top: 0.5rem;
+  transition: color 0.3s;
+}
+.scroll-hint:hover { color: #ffd700; }
+
+/* Desktop nav — handled by section-hero--desktop */
+
+/* Video background (kept for desktop fallback) */
 .video-background-container {
   position: absolute;
   inset: 0;
@@ -704,22 +1130,18 @@ section {
   overflow: hidden;
   z-index: 1;
 }
-
 .bg-video {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.45; /* Dark subtle presence */
+  opacity: 0.45;
 }
-
 .video-overlay {
   position: absolute;
   inset: 0;
   background: radial-gradient(circle at center, rgba(4, 5, 8, 0.4) 0%, rgba(4, 5, 8, 0.98) 95%);
   z-index: 2;
 }
-
-/* Intro Flash Glitch Overlay */
 .cyber-overlay {
   position: fixed;
   inset: 0;
