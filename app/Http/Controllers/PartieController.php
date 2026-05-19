@@ -107,7 +107,7 @@ class PartieController extends Controller
     {
         $input = trim($input);
 
-        if (preg_match('#/rejoindre/([^/?\s#]+)#i', $input, $matches)) {
+        if (preg_match('#/rejoindre/([^/?\s]+)#i', $input, $matches)) {
             return strtoupper(urldecode($matches[1]));
         }
 
