@@ -25,7 +25,7 @@ const handleVideoError = () => {
             <video 
                 v-show="videoLoaded"
                 ref="videoRef"
-                class="absolute inset-0 min-w-full min-h-full object-cover opacity-40 transition-opacity duration-1000"
+                class="absolute inset-0 w-full h-full object-cover object-center opacity-40 transition-opacity duration-1000"
                 muted
                 playsinline
                 autoplay
@@ -54,8 +54,7 @@ const handleVideoError = () => {
                 <!-- Texte et Barre de Progression -->
                 <div class="text-center space-y-4">
                     <div class="space-y-1">
-                        <p class="text-[12px] font-black text-white uppercase tracking-[0.6em] animate-pulse">Initialisation</p>
-                        <p class="text-[8px] font-black text-[#FF9500] uppercase tracking-[0.4em]">Flux de données CityPlay</p>
+                        <p class="text-[12px] font-black text-white uppercase tracking-[0.6em] animate-pulse">CityPlay: Welcome in Benin</p>
                     </div>
                     
                     <div class="w-48 h-1 bg-white/5 rounded-full overflow-hidden mx-auto border border-white/5">

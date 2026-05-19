@@ -111,11 +111,11 @@ const startTimer = () => {
         if (props.progression?.statut === 'en_cours' && timeLeft.value > 0) {
             timeLeft.value--;
             
-            // On synchronise avec le serveur toutes les 30 secondes pour éviter les triches de rafraîchissement
+            // Sync silencieuse (axios, pas Inertia) pour ne pas interrompre la page
             if (timeLeft.value % 30 === 0) {
-                router.post(route('progression.store', props.partie.id), {
-                    temps_restant: timeLeft.value
-                }, { preserveScroll: true, preserveState: true });
+                window.axios.post(route('progression.store', props.partie.id), {
+                    temps_restant: timeLeft.value,
+                }).catch(() => {});
             }
         }
     }, 1000);
@@ -152,7 +152,9 @@ onUnmounted(() => {
                 </div>
                 
                 <div class="p-10 space-y-4">
-                    <p class="text-center font-bold text-white/60 mb-8">Que souhaitez-vous faire ?</p>
+                    <p class="text-center font-bold text-white/60 mb-8">
+                        {{ partie.environnement?.message_pause || 'Que souhaitez-vous faire ?' }}
+                    </p>
                     
                     <button @click="togglePause" class="w-full p-5 bg-[#FF9500] text-black rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-4 shadow-[0_8px_0_#cc7a00] active:shadow-none active:translate-y-[8px] transition-all">
                         <div class="w-10 h-10 bg-black/10 rounded-xl flex items-center justify-center">

@@ -83,11 +83,18 @@
                         <p class="text-xl font-black text-white uppercase tracking-tight">Aucun déploiement</p>
                         <p class="text-[10px] text-white/40 font-bold uppercase tracking-[0.2em]">Sélectionnez un parcours pour commencer</p>
                     </div>
-                    <Link :href="route('parties.web.create')">
-                        <button class="px-8 py-4 bg-[#FF9500] text-black font-black uppercase tracking-widest text-xs rounded-2xl shadow-lg shadow-[#FF9500]/20 active:scale-95 transition-all">
-                            Explorer les zones
-                        </button>
-                    </Link>
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                        <Link :href="route('parties.web.create')">
+                            <button class="px-8 py-4 bg-[#FF9500] text-black font-black uppercase tracking-widest text-xs rounded-2xl shadow-lg shadow-[#FF9500]/20 active:scale-95 transition-all">
+                                Créer une équipe
+                            </button>
+                        </Link>
+                        <Link :href="route('parties.web.create') + '?tab=join'">
+                            <button class="px-8 py-4 bg-white/5 text-white font-black uppercase tracking-widest text-xs rounded-2xl border border-white/10 hover:border-[#FF9500]/30 active:scale-95 transition-all">
+                                Rejoindre une équipe
+                            </button>
+                        </Link>
+                    </div>
                 </div>
             </section>
 
@@ -122,9 +129,9 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
-const props = defineProps({
-    parties: Array,
-    environnements: Array
+defineProps({
+    parties: { type: Array, default: () => [] },
+    environnements: { type: Array, default: () => [] },
 });
 
 const getStatutLabel = (statut) => {

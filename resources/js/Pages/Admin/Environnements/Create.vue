@@ -60,7 +60,7 @@ const submit = () => {
                     <label>Message pause</label>
                     <input v-model="form.message_pause" type="text" class="w-full border rounded p-2" />
                 </div>
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
+                <button type="submit" class="bg-[#FF9500] hover:bg-[#E08400] text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-md active:scale-95 duration-200">
                     Créer
                 </button>
             </form>

@@ -57,6 +57,10 @@ class PartieService
             'expire_at' => now()->addHours($environnement->duree_vie_lien_heures ?? 24),
         ]);
 
+        $partie->update([
+            'lien_partage' => $partie->genererLienPartage(),
+        ]);
+
         \Log::info('PartieService: Fin création partie', ['id' => $partie->id]);
         return $partie->load('environnement');
     }

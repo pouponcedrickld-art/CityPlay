@@ -69,8 +69,9 @@ Route::middleware('auth')->group(function () {
         // Dashboard joueur
         Route::get('/dashboard', [PartieController::class, 'index'])->name('dashboard');
 
-        // Rejoindre une partie via lien/code
+        // Rejoindre une partie via lien
         Route::get('/rejoindre/{code}', [PartieController::class, 'rejoindreParLien'])->name('parties.rejoindre');
+        Route::post('/parties/rejoindre', [PartieController::class, 'rejoindre'])->name('parties.rejoindre.form');
 
         // Parties
         Route::get('/parties', [PartieController::class, 'index'])->name('parties.web.index');

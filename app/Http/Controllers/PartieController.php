@@ -39,48 +39,93 @@ class PartieController extends Controller
     }
 
     /**
-     * Rejoindre une partie via un lien direct ou un code
+     * Rejoindre une partie via un lien collé dans le formulaire
+     */
+    public function rejoindre(Request $request)
+    {
+        $request->validate([
+            'lien' => 'required|string|max:500',
+        ]);
+
+        $code = $this->extraireCodeDepuisLien($request->lien);
+
+        if (!$code) {
+            return back()->with('error', 'Lien d\'invitation invalide. Vérifiez l\'URL reçue.');
+        }
+
+        return redirect()->route('parties.rejoindre', $code);
+    }
+
+    /**
+     * Rejoindre une partie via un lien direct
      */
     public function rejoindreParLien(string $code)
     {
+        $code = strtoupper(trim($code));
         $partie = Partie::where('code_liaison', $code)->first();
 
         if (!$partie) {
-            return redirect()->route('dashboard')->with('error', 'Lien ou code d\'invitation invalide.');
+            return redirect()->route('parties.web.create')
+                ->with('error', 'Lien d\'invitation invalide ou expiré.');
         }
 
-        // Si la partie appartient à quelqu'un d'autre et est en solo, erreur
         if ($partie->mode === 'solo' && $partie->createur_id !== auth()->id()) {
-            return redirect()->route('dashboard')->with('error', 'Cette partie est privée.');
+            return redirect()->route('parties.web.create')
+                ->with('error', 'Cette partie est privée.');
         }
 
-        // Si la partie a expiré
-        if ($partie->expire_at && $partie->expire_at->isPast()) {
-            return redirect()->route('dashboard')->with('error', 'Ce lien d\'invitation a expiré.');
+        if ($partie->estExpiree()) {
+            return redirect()->route('parties.web.create')
+                ->with('error', 'Ce lien d\'invitation a expiré.');
         }
 
-        // Si c'est une partie en équipe, on l'ajoute à l'équipe si pas déjà fait
-        if ($partie->mode === 'team' && $partie->createur_id !== auth()->id()) {
-            if ($partie->team) {
-                $dejaMembre = $partie->team->users()->where('user_id', auth()->id())->exists();
-                if (!$dejaMembre) {
-                    $nbJoueursMax = $partie->parametres['nb_joueurs'] ?? 10;
-                    if ($partie->team->users()->count() >= $nbJoueursMax) {
-                        return redirect()->route('dashboard')->with('error', 'L\'équipe est déjà complète.');
-                    }
-                    $partie->team->users()->attach(auth()->id(), ['role' => 'challenger']);
+        if ($partie->mode === 'team' && $partie->team) {
+            $dejaMembre = $partie->team->users()->where('user_id', auth()->id())->exists();
+
+            if (!$dejaMembre && $partie->createur_id !== auth()->id()) {
+                $nbJoueursMax = $partie->parametres['nb_joueurs'] ?? 10;
+                if ($partie->team->users()->count() >= $nbJoueursMax) {
+                    return redirect()->route('parties.web.create')
+                        ->with('error', 'L\'équipe est déjà complète.');
                 }
+                $partie->team->users()->attach(auth()->id(), ['role' => 'participant']);
+            }
+
+            if ($partie->statut === 'en_attente') {
+                return redirect()->route('parties.team-setup', $partie)
+                    ->with('success', 'Bienvenue dans l\'équipe ! Choisissez votre rôle.');
             }
         }
 
-        // Redirection vers le jeu
         return redirect()->route('progression.enigme', $partie);
+    }
+
+    /**
+     * Extrait le code de liaison depuis une URL ou une saisie brute
+     */
+    private function extraireCodeDepuisLien(string $input): ?string
+    {
+        $input = trim($input);
+
+        if (preg_match('#/rejoindre/([^/?\s#]+)#i', $input, $matches)) {
+            return strtoupper(urldecode($matches[1]));
+        }
+
+        if (preg_match('/^[A-Z0-9]{4}-[A-Z0-9]{4}$/i', $input)) {
+            return strtoupper($input);
+        }
+
+        if (preg_match('/^[A-Z0-9]{6,12}$/i', $input)) {
+            return strtoupper($input);
+        }
+
+        return null;
     }
 
     /**
      * Affiche le formulaire de création
      */
-    public function create()
+    public function create(Request $request)
     {
         $environnements = Environnement::where('actif', true)
             ->withCount('lieux')
@@ -88,19 +133,62 @@ class PartieController extends Controller
 
         return Inertia::render('Player/CreatePartie', [
             'environnements' => $environnements,
+            'tab' => $request->query('tab', 'create'),
         ]);
     }
 
     /**
-     * Affiche une partie spécifique
+     * Affiche une partie spécifique (redirige vers le bon écran)
      */
     public function show(Partie $partie)
     {
         $this->authorize('view', $partie);
 
-        return Inertia::render('Player/Dashboard', [
-            'partie' => $partie->load('environnement', 'progression'),
+        if ($partie->mode === 'team' && $partie->statut === 'en_attente') {
+            return redirect()->route('parties.team-setup', $partie);
+        }
+
+        return redirect()->route('progression.enigme', $partie);
+    }
+
+    /**
+     * Configuration équipe : choix du rôle et partage du code
+     */
+    public function teamSetup(Partie $partie)
+    {
+        $this->authorize('view', $partie);
+
+        if ($partie->mode !== 'team') {
+            return redirect()->route('progression.enigme', $partie);
+        }
+
+        if (!$partie->lien_partage && $partie->code_liaison) {
+            $partie->update(['lien_partage' => $partie->genererLienPartage()]);
+        }
+
+        return Inertia::render('Player/JoinPartie', [
+            'partie' => $partie->fresh()->load('environnement', 'team'),
         ]);
+    }
+
+    /**
+     * Met à jour le rôle du joueur dans l'équipe
+     */
+    public function updateRole(Request $request, Partie $partie)
+    {
+        $this->authorize('view', $partie);
+
+        $validated = $request->validate([
+            'role' => 'required|in:challenger,participant',
+        ]);
+
+        if ($partie->team) {
+            $partie->team->users()->updateExistingPivot(auth()->id(), [
+                'role' => $validated['role'],
+            ]);
+        }
+
+        return redirect()->route('progression.enigme', $partie);
     }
 
     /**
@@ -140,7 +228,7 @@ class PartieController extends Controller
                     ->with('success', 'Votre mission commence !');
             }
 
-            return redirect()->route('parties.web.show', $partie)
+            return redirect()->route('parties.team-setup', $partie)
                 ->with('success', 'Partie créée avec succès ! Invitez vos coéquipiers.');
 
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -166,13 +254,14 @@ class PartieController extends Controller
 
         $partie->update([
             'code_liaison' => $code,
+            'lien_partage' => route('parties.rejoindre', $code),
             'expire_at' => now()->addHours(
                 $partie->environnement->duree_vie_lien_heures ?? 24
             ),
             'verrouillee' => true,
         ]);
 
-        return back()->with('success', "Code généré : $code");
+        return back()->with('success', 'Lien d\'invitation régénéré.');
     }
 
     /**

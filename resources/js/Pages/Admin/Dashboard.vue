@@ -70,11 +70,18 @@ const statutChartData = computed(() => {
         'abandonnee': 'Abandonnée'
     };
 
+    const colors = {
+        'en_cours': '#3B82F6',   // Info (Bleu vif)
+        'terminee': '#10B981',   // Succès (Vert émeraude)
+        'suspendue': '#FF9500',  // Avertissement (Orange #FF9500)
+        'abandonnee': '#EF4444'  // Danger (Rouge pur)
+    };
+
     return {
         labels: props.charts.parties_par_statut.map(item => labels[item.statut] || item.statut),
         datasets: [
             {
-                backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444'],
+                backgroundColor: props.charts.parties_par_statut.map(item => colors[item.statut] || '#9CA3AF'),
                 data: props.charts.parties_par_statut.map(item => item.total),
             }
         ]

@@ -1,5 +1,27 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
+
+const isDark = ref(true);
+
+const initTheme = () => {
+  isDark.value = localStorage.getItem('theme') !== 'light';
+  if (isDark.value) {
+    document.documentElement.classList.remove('light-theme');
+  } else {
+    document.documentElement.classList.add('light-theme');
+  }
+};
+
+const toggleTheme = () => {
+  isDark.value = !isDark.value;
+  if (isDark.value) {
+    localStorage.setItem('theme', 'dark');
+    document.documentElement.classList.remove('light-theme');
+  } else {
+    localStorage.setItem('theme', 'light');
+    document.documentElement.classList.add('light-theme');
+  }
+};
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import VideoLoader from '@/Components/VideoLoader.vue';
@@ -17,6 +39,8 @@ const isGameMode = computed(() => {
 });
 
 onMounted(() => {
+    initTheme();
+
     router.on('start', () => {
         showLoader.value = true;
     });
@@ -40,6 +64,7 @@ window.addEventListener('resize', () => {
 const menuItems = [
     { label: 'Dashboard', icon: 'pi pi-home', route: 'dashboard' },
     { label: 'Parcours', icon: 'pi pi-map', route: 'parties.web.create' },
+    { label: 'Rejoindre', icon: 'pi pi-link', route: 'parties.web.create', query: { tab: 'join' } },
     { label: 'Mon Profil', icon: 'pi pi-user', route: 'profile.edit' },
 ];
 </script>
@@ -62,8 +87,8 @@ const menuItems = [
             <nav class="flex-1 space-y-2">
                 <Link 
                     v-for="item in menuItems" 
-                    :key="item.route"
-                    :href="route(item.route)"
+                    :key="item.label"
+                    :href="item.query ? `${route(item.route)}?${new URLSearchParams(item.query)}` : route(item.route)"
                     class="flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 group"
                     :class="route().current(item.route) ? 'bg-orange-50 text-orange-950 shadow-inner' : 'text-orange-900/40 hover:bg-orange-50/50 hover:text-orange-900'"
                 >
@@ -135,8 +160,8 @@ const menuItems = [
         <nav v-if="isMobile && !isGameMode" class="fixed bottom-0 left-0 right-0 h-20 bg-white border-t border-orange-100 z-40 px-6 flex items-center justify-around pb-4">
             <Link 
                 v-for="item in menuItems" 
-                :key="item.route"
-                :href="route(item.route)"
+                :key="item.label"
+                :href="item.query ? `${route(item.route)}?${new URLSearchParams(item.query)}` : route(item.route)"
                 class="flex flex-col items-center gap-1"
                 :class="route().current(item.route) ? 'text-orange-600' : 'text-orange-300'"
             >
@@ -144,6 +169,16 @@ const menuItems = [
                 <span class="text-[8px] font-black uppercase tracking-widest">{{ item.label }}</span>
             </Link>
         </nav>
+
+        <!-- Floating Theme Toggle Switch -->
+        <button 
+          class="theme-switch-float" 
+          @click="toggleTheme" 
+          aria-label="Toggle Theme"
+          title="Changer de Thème"
+        >
+          <i :class="isDark ? 'pi pi-sun' : 'pi pi-moon'" />
+        </button>
     </div>
 </template>
 

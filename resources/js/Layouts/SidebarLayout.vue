@@ -91,7 +91,7 @@ const closeSidebar = () => {
             <div class="relative h-48 flex items-end p-6 overflow-hidden shrink-0">
                 <div class="absolute inset-0 z-0 bg-cover bg-center opacity-10" :style="{ backgroundImage: `url(${logoWhite})` }"></div>
                 <div class="absolute inset-0 z-10 bg-gradient-to-t from-white via-white/80 to-transparent"></div>
-                
+
                 <div class="relative z-20 flex items-center gap-4 w-full">
                     <div class="w-14 h-14 rounded-2xl bg-white shadow-xl flex items-center justify-center p-1 border border-orange-50">
                         <img :src="logoWhite" alt="Logo" class="w-full h-full object-contain" />

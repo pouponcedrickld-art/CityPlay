@@ -60,4 +60,26 @@ class Partie extends Model
         'started_at' => 'datetime',
         'ended_at' => 'datetime',
     ];
+
+    protected $appends = ['lien_invitation'];
+
+    public function getLienInvitationAttribute(): string
+    {
+        return $this->lien_partage ?? $this->genererLienPartage();
+    }
+
+    public function genererLienPartage(): string
+    {
+        return route('parties.rejoindre', $this->code_liaison);
+    }
+
+    public function estExpiree(): bool
+    {
+        return $this->expire_at && $this->expire_at->isPast();
+    }
+
+    public function estVerrouillee(): bool
+    {
+        return (bool) $this->verrouillee;
+    }
 }
