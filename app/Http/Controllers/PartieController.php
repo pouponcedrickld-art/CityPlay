@@ -92,39 +92,64 @@ class PartieController extends Controller
     }
 
     /**
-     * Rejoindre une partie via un lien direct
+     * Point d'entrée public du lien d'invitation équipe
      */
     public function rejoindreParLien(string $code)
     {
         $code = strtoupper(trim($code));
-        $partie = Partie::where('code_liaison', $code)->first();
+        $partie = Partie::with('environnement')->where('code_liaison', $code)->first();
 
         if (!$partie) {
-            return redirect()->route('parties.web.create')
+            return redirect()->route('register')
                 ->with('error', 'Lien d\'invitation invalide ou expiré.');
         }
 
-        if ($partie->mode === 'solo' && $partie->createur_id !== auth()->id()) {
-            return redirect()->route('parties.web.create')
-                ->with('error', 'Cette partie est privée.');
+        if ($partie->mode !== 'team') {
+            return redirect()->route('register')
+                ->with('error', 'Ce lien ne correspond pas à une partie en équipe.');
         }
 
         if ($partie->estExpiree()) {
-            return redirect()->route('parties.web.create')
+            return redirect()->route('register')
                 ->with('error', 'Ce lien d\'invitation a expiré.');
         }
 
+        session(['partie_invitation_code' => $code]);
+
+        if (!auth()->check()) {
+            return redirect()->route('register')
+                ->with('info', 'Créez un compte ou connectez-vous pour rejoindre l\'équipe « ' . ($partie->environnement?->nom ?? 'CityPlay') . ' ».');
+        }
+
+        $user = auth()->user();
+
+        if (!$user->otp_verified_at) {
+            return redirect()->route('otp.show')
+                ->with('info', 'Vérifiez votre compte pour rejoindre la partie.');
+        }
+
+        return $this->finaliserRejoindrePartie($partie);
+    }
+
+    /**
+     * Intègre le joueur connecté à la partie puis redirige vers le bon écran
+     */
+    private function finaliserRejoindrePartie(Partie $partie)
+    {
         if ($partie->mode === 'team' && $partie->team) {
             $dejaMembre = $partie->team->users()->where('user_id', auth()->id())->exists();
 
-            if (!$dejaMembre && $partie->createur_id !== auth()->id()) {
+            if (!$dejaMembre) {
                 $nbJoueursMax = $partie->parametres['nb_joueurs'] ?? 10;
                 if ($partie->team->users()->count() >= $nbJoueursMax) {
-                    return redirect()->route('parties.web.create')
+                    session()->forget('partie_invitation_code');
+                    return redirect()->route('dashboard')
                         ->with('error', 'L\'équipe est déjà complète.');
                 }
                 $partie->team->users()->attach(auth()->id(), ['role' => 'participant']);
             }
+
+            session()->forget('partie_invitation_code');
 
             if ($partie->statut === 'en_attente') {
                 return redirect()->route('parties.team-setup', $partie)
@@ -132,7 +157,54 @@ class PartieController extends Controller
             }
         }
 
+        session()->forget('partie_invitation_code');
+
         return redirect()->route('progression.enigme', $partie);
+    }
+
+    /**
+     * Redirection après login / OTP si une invitation partie est en attente
+     */
+    public static function redirectApresAuthentification()
+    {
+        $user = auth()->user();
+
+        if ($code = session('partie_invitation_code')) {
+            if (!$user->otp_verified_at) {
+                return redirect()->route('otp.show')
+                    ->with('info', 'Vérifiez votre compte pour rejoindre la partie.');
+            }
+
+            return redirect()->route('parties.rejoindre', $code);
+        }
+
+        if ($user->is_admin || $user->hasRole('admin')) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return redirect()->route('dashboard');
+    }
+
+    /**
+     * Infos d'invitation partie stockées en session (pour register/login)
+     */
+    public static function invitationPartieEnSession(): ?array
+    {
+        $code = session('partie_invitation_code');
+        if (!$code) {
+            return null;
+        }
+
+        $partie = Partie::with('environnement')->where('code_liaison', $code)->first();
+        if (!$partie || $partie->estExpiree() || $partie->mode !== 'team') {
+            session()->forget('partie_invitation_code');
+            return null;
+        }
+
+        return [
+            'code' => $code,
+            'environnement' => $partie->environnement?->nom,
+        ];
     }
 
     /**

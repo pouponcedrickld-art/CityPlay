@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\PartieController;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -21,6 +22,7 @@ class AuthenticatedSessionController extends Controller
         return Inertia::render('Auth/Login', [
             'canResetPassword' => Route::has('password.request'),
             'status' => session('status'),
+            'partie_invitation' => PartieController::invitationPartieEnSession(),
         ]);
     }
 
@@ -33,13 +35,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        $user = auth()->user();
-
-        if ($user->is_admin || $user->hasRole('admin')) {
-            return redirect()->route('admin.dashboard');
-        }
-
-        return redirect()->route('dashboard');
+        return PartieController::redirectApresAuthentification();
     }
 
     /**
