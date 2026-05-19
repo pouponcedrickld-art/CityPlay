@@ -1099,3 +1099,7 @@
 [2026-05-18 14:33:18] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
 [2026-05-18 14:45:51] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
 [2026-05-18 14:45:54] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 11:04:53] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 11:05:57] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 11:06:05] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 11:06:11] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
