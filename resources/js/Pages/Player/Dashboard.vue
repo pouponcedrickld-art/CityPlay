@@ -166,7 +166,6 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';
 import CavePlayLayout from '@/Layouts/CavePlayLayout.vue';

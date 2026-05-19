@@ -100,13 +100,13 @@
           <span>Villes</span>
         </Link>
         
-        <!-- Parties (Center FAB) -->
+        <!-- Player / Jouer (Center FAB) -->
         <div class="nav-item-center-wrapper">
-          <Link :href="route('admin.parties.index')" class="nav-item-center" :class="{ 'active': isActive('admin.parties') }">
+          <Link :href="route('dashboard')" class="nav-item-center">
             <div class="center-btn-inner">
               <i class="pi pi-play"></i>
             </div>
-            <span>Parties</span>
+            <span>Jouer</span>
           </Link>
         </div>
         
@@ -130,6 +130,10 @@
       <div class="sheet-handle" @click="closeMobileMenu"></div>
       <div class="sheet-content">
         <h3 class="sheet-title">Autres Menus</h3>
+        <Link :href="route('admin.parties.index')" class="sheet-item" @click="closeMobileMenu">
+          <i class="pi pi-th-large"></i>
+          <span>Gestion Parties</span>
+        </Link>
         <Link :href="route('admin.environnements.index')" class="sheet-item" @click="closeMobileMenu">
           <i class="pi pi-globe"></i>
           <span>Environnements</span>
@@ -137,10 +141,6 @@
         <Link :href="route('admin.invitations.index')" class="sheet-item" @click="closeMobileMenu">
           <i class="pi pi-link"></i>
           <span>Invitations App</span>
-        </Link>
-        <Link :href="route('dashboard')" class="sheet-item text-orange-500" @click="closeMobileMenu">
-          <i class="pi pi-external-link"></i>
-          <span>Retour au site</span>
         </Link>
       </div>
     </div>
