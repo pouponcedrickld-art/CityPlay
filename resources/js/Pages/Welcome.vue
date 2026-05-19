@@ -60,10 +60,10 @@ const onCardMove = (event) => {
   const rect = card.getBoundingClientRect();
   const x = event.clientX - rect.left - rect.width / 2;
   const y = event.clientY - rect.top - rect.height / 2;
-  
+
   const borderCol = isDark.value ? 'rgba(0, 229, 255, 0.45)' : 'rgba(0, 180, 216, 0.45)';
   const shadowCol = isDark.value ? '0 20px 40px rgba(0, 229, 255, 0.15)' : '0 15px 30px rgba(0, 180, 216, 0.12)';
-  
+
   gsap.to(card, {
     rotateX: -y / 12,
     rotateY: x / 12,
@@ -79,7 +79,7 @@ const onCardLeave = (event) => {
   const card = event.currentTarget;
   const borderCol = isDark.value ? 'rgba(255, 149, 0, 0.12)' : 'rgba(0, 135, 81, 0.15)';
   const shadowCol = isDark.value ? '0 10px 30px rgba(0, 0, 0, 0.5)' : '0 10px 30px rgba(0, 0, 0, 0.05)';
-  
+
   gsap.to(card, {
     rotateX: 0,
     rotateY: 0,
@@ -106,7 +106,7 @@ const changeTab = (tab) => {
   leaderboardTab.value = tab;
 
   // Stagger entry animation on leaderboard rows
-  gsap.fromTo('.leaderboard-row', 
+  gsap.fromTo('.leaderboard-row',
     { x: -30, opacity: 0 },
     { x: 0, opacity: 1, duration: 0.45, stagger: 0.08, ease: 'back.out(1.2)' }
   );
@@ -141,7 +141,7 @@ const toggleFaq = (index) => {
       gsap.to(`.faq-answer-${activeFaqIndex.value}`, { height: 0, opacity: 0, duration: 0.35, ease: 'power2.inOut' });
     }
     activeFaqIndex.value = index;
-    gsap.fromTo(`.faq-answer-${index}`, 
+    gsap.fromTo(`.faq-answer-${index}`,
       { height: 0, opacity: 0 },
       { height: 'auto', opacity: 1, duration: 0.45, ease: 'power2.out' }
     );
@@ -156,8 +156,8 @@ const observer = new IntersectionObserver((entries) => {
       // Trigger GSAP stagger reveals on children
       const animItems = entry.target.querySelectorAll('.scroll-anim-item');
       if (animItems.length > 0) {
-        gsap.fromTo(animItems, 
-          { y: 35, opacity: 0 }, 
+        gsap.fromTo(animItems,
+          { y: 35, opacity: 0 },
           { y: 0, opacity: 1, duration: 0.75, stagger: 0.12, ease: 'power2.out' }
         );
       }
@@ -180,8 +180,8 @@ onMounted(() => {
 
   // 2. Custom Holographic Entrance Timeline
   const tl = gsap.timeline();
-  tl.fromTo('.cyber-overlay', 
-    { opacity: 1 }, 
+  tl.fromTo('.cyber-overlay',
+    { opacity: 1 },
     { opacity: 0, duration: 0.8, ease: 'power2.inOut' }
   );
 
@@ -225,7 +225,7 @@ onMounted(() => {
 
 <template>
   <Head title="Welcome to CityPlay" />
-  
+
   <div class="welcome-container font-outfit">
     <!-- Cyber Glitch Intro Overlay -->
     <div class="cyber-overlay" />
@@ -236,11 +236,11 @@ onMounted(() => {
     <!-- Section 1: Hero Video Landing Page -->
     <section class="section-hero">
       <div class="video-background-container">
-        <video 
+        <video
           ref="introVideo"
-          autoplay 
-          muted 
-          playsinline 
+          autoplay
+          muted
+          playsinline
           class="bg-video"
           @timeupdate="handleTimeUpdate"
         >
@@ -259,14 +259,14 @@ onMounted(() => {
             <span class="brand-tag">AVENTURE BÉNIN</span>
           </div>
         </div>
-        
+
         <div class="nav-center hidden lg:flex">
           <a href="#concept" class="nav-link">Le Concept</a>
           <a href="#cites" class="nav-link">Cités Épiques</a>
           <a href="#leaderboard" class="nav-link">Classement</a>
           <a href="#faq" class="nav-link">F.A.Q</a>
         </div>
-        
+
         <div v-if="canLogin" class="nav-right">
           <Link
             v-if="$page.props.auth.user"
@@ -278,16 +278,11 @@ onMounted(() => {
           </Link>
 
           <template v-else>
-            <Link
-              :href="route('login')"
-              class="btn-login"
-            >
-              <span>Connexion</span>
-            </Link>
+           
 
             <Link
               v-if="canRegister"
-              :href="route('register')"
+              :href="route('login')"
               class="btn-register"
             >
               <span>Commencer</span>
@@ -305,7 +300,7 @@ onMounted(() => {
 
         <h2 class="hero-subtitle hero-anim">L'Aventure Urbaine Phénoménale</h2>
         <h1 class="hero-title hero-anim">CITYPLAY</h1>
-        
+
         <p class="hero-desc hero-anim">
           Explorez le Bénin à travers une expérience interactive hors du commun. Décryptez des énigmes, parcourez des lieux chargés d'histoire et vivez une quête ludique ultime au cœur de votre ville.
         </p>
@@ -319,7 +314,7 @@ onMounted(() => {
             <i class="pi pi-play" />
             <span>Reprendre la Quête</span>
           </Link>
-          
+
           <template v-else>
             <Link
               v-if="canRegister"
@@ -357,7 +352,7 @@ onMounted(() => {
 
       <div class="timeline-container">
         <div class="timeline-line"></div>
-        
+
         <div class="timeline-steps">
           <!-- Step 1 -->
           <div class="timeline-step scroll-anim-item">
@@ -474,17 +469,17 @@ onMounted(() => {
       <div class="leaderboard-container scroll-anim-item">
         <!-- Tabs -->
         <div class="leaderboard-tabs">
-          <button 
-            class="tab-btn" 
-            :class="{ active: leaderboardTab === 'guilds' }" 
+          <button
+            class="tab-btn"
+            :class="{ active: leaderboardTab === 'guilds' }"
             @click="changeTab('guilds')"
           >
             <i class="pi pi-shield" />
             <span>Guildes Actives</span>
           </button>
-          <button 
-            class="tab-btn" 
-            :class="{ active: leaderboardTab === 'players' }" 
+          <button
+            class="tab-btn"
+            :class="{ active: leaderboardTab === 'players' }"
             @click="changeTab('players')"
           >
             <i class="pi pi-user" />
@@ -494,9 +489,9 @@ onMounted(() => {
 
         <!-- Leaderboard Rows -->
         <div class="leaderboard-list">
-          <div 
-            v-for="(row, idx) in activeLeaderboardData" 
-            :key="row.name" 
+          <div
+            v-for="(row, idx) in activeLeaderboardData"
+            :key="row.name"
             class="leaderboard-row"
           >
             <div class="row-rank" :class="'rank-' + row.rank">
@@ -505,11 +500,11 @@ onMounted(() => {
               <span v-else-if="row.rank === 3">🥉</span>
               <span v-else>#{{ row.rank }}</span>
             </div>
-            
+
             <div class="row-name">
               <span>{{ row.name }}</span>
             </div>
-            
+
             <div class="row-city">
               <i class="pi pi-compass" />
               <span>{{ row.city }}</span>
@@ -588,9 +583,9 @@ onMounted(() => {
     </footer>
 
     <!-- Floating Theme Toggle Switch -->
-    <button 
-      class="theme-switch-float" 
-      @click="toggleTheme" 
+    <button
+      class="theme-switch-float"
+      @click="toggleTheme"
       aria-label="Toggle Theme"
       title="Changer de Thème"
     >

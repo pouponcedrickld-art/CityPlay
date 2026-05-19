@@ -208,19 +208,28 @@ class GameplayService
         }
 
         $lieu = $enigme->lieu;
+        if (!$lieu) {
+            return ['succes' => false, 'message' => 'Lieu de l\'énigme introuvable.'];
+        }
 
-        // Validation GPS via le service dédié
+        $lieuId = $lieu->id;
+
+        // Validation GPS via le service dédié (coordonnées + rayon_metres du lieu en BDD)
         $resultat = $this->gpsService->validerPosition($lat, $lng, $precision, $lieu);
 
-        // Si succès, marque l'énigme comme résolue
+        // Si succès, marque l'énigme comme résolue et crédite les points
         if ($resultat['succes']) {
-            $progression->resoudreEnigmeCourante();
+            $pointsGagnes = $progression->resoudreEnigmeCourante();
+            $progression->refresh();
 
-            // Passe à l'énigme suivante
             $aSuivante = $progression->passerEnigmeSuivante();
 
             $resultat['enigme_resolue'] = true;
             $resultat['partie_terminee'] = !$aSuivante;
+            $resultat['lieu_id'] = $lieuId;
+            $resultat['points_gagnes'] = $pointsGagnes;
+            $resultat['score_total'] = $progression->score;
+            $resultat['lieu_nom'] = $lieu->nom;
         }
 
         return $resultat;
@@ -276,6 +285,33 @@ class GameplayService
     }
 
     /**
+     * Retourne la solution de l'énigme courante sans avancer la progression.
+     */
+    public function solutionEnigmeCourante(Partie $partie): array
+    {
+        $progression = $partie->progression;
+
+        if ($progression->estTerminee()) {
+            return ['succes' => false, 'message' => 'La partie est terminée.'];
+        }
+
+        $enigme = $progression->enigmeCourante;
+        if (!$enigme) {
+            return ['succes' => false, 'message' => 'Aucune énigme en cours.'];
+        }
+
+        $solution = $this->texteSolutionEnigme($enigme);
+        if ($solution === '') {
+            return ['succes' => false, 'message' => 'Aucune solution n\'est disponible pour cette énigme.'];
+        }
+
+        return [
+            'succes' => true,
+            'solution' => $solution,
+        ];
+    }
+
+    /**
      * Action : révéler la solution de l'énigme courante
      * Marque l'énigme comme non résolue et passe à la suivante
      * 
@@ -284,26 +320,30 @@ class GameplayService
      */
     public function revelerSolution(Partie $partie): array
     {
-        $progression = $partie->progression;
-        $enigme = $progression->enigmeCourante;
-
-        if (!$enigme) {
-            return ['succes' => false, 'message' => 'Aucune énigme en cours.'];
+        $resultat = $this->solutionEnigmeCourante($partie);
+        if (!$resultat['succes']) {
+            return $resultat;
         }
 
-        // Récupère la solution (pour l'instant, le texte de l'énigme)
-        // TODO : ajouter un champ 'solution' dans la table enigmes
-        $solution = $enigme->texte;
-
-        // Passe à l'énigme suivante sans incrémenter le score
+        $progression = $partie->progression;
         $aSuivante = $progression->passerEnigmeSuivante();
 
         return [
             'succes' => true,
-            'solution' => $solution,
+            'solution' => $resultat['solution'],
             'message' => 'Solution révélée. L\'énigme est marquée comme non résolue.',
             'partie_terminee' => !$aSuivante,
         ];
+    }
+
+    private function texteSolutionEnigme(Enigme $enigme): string
+    {
+        $solution = trim((string) ($enigme->solution ?? ''));
+        if ($solution !== '') {
+            return $solution;
+        }
+
+        return trim((string) ($enigme->reponse ?? ''));
     }
 
     /**

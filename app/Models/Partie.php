@@ -25,6 +25,7 @@ class Partie extends Model
         'verrouillee',
         'started_at',
         'ended_at',
+        'score_total',
     ];
 
     /**
@@ -60,4 +61,35 @@ class Partie extends Model
         'started_at' => 'datetime',
         'ended_at' => 'datetime',
     ];
+
+    /**
+     * Lien d'invitation pour rejoindre la partie (null si pas de code)
+     */
+    public function getLienInvitation(): ?string
+    {
+        if (!empty($this->lien_partage)) {
+            return $this->lien_partage;
+        }
+
+        return $this->genererLienPartage();
+    }
+
+    public function genererLienPartage(): ?string
+    {
+        if (blank($this->code_liaison)) {
+            return null;
+        }
+
+        return route('parties.rejoindre', $this->code_liaison);
+    }
+
+    public function estExpiree(): bool
+    {
+        return $this->expire_at && $this->expire_at->isPast();
+    }
+
+    public function estVerrouillee(): bool
+    {
+        return (bool) $this->verrouillee;
+    }
 }

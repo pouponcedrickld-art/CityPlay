@@ -64,8 +64,20 @@ window.addEventListener('resize', () => {
 const menuItems = [
     { label: 'Dashboard', icon: 'pi pi-home', route: 'dashboard' },
     { label: 'Parcours', icon: 'pi pi-map', route: 'parties.web.create' },
+    { label: 'Rejoindre', icon: 'pi pi-link', route: 'parties.web.create', query: { tab: 'join' } },
     { label: 'Mon Profil', icon: 'pi pi-user', route: 'profile.edit' },
 ];
+
+const menuItemHref = (item) => {
+    const base = route(item.route);
+    if (!item.query) {
+        return base;
+    }
+    const params = Object.entries(item.query)
+        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+        .join('&');
+    return `${base}?${params}`;
+};
 </script>
 
 <template>
@@ -86,8 +98,8 @@ const menuItems = [
             <nav class="flex-1 space-y-2">
                 <Link 
                     v-for="item in menuItems" 
-                    :key="item.route"
-                    :href="route(item.route)"
+                    :key="item.label"
+                    :href="menuItemHref(item)"
                     class="flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 group"
                     :class="route().current(item.route) ? 'bg-orange-50 text-orange-950 shadow-inner' : 'text-orange-900/40 hover:bg-orange-50/50 hover:text-orange-900'"
                 >
@@ -159,8 +171,8 @@ const menuItems = [
         <nav v-if="isMobile && !isGameMode" class="fixed bottom-0 left-0 right-0 h-20 bg-white border-t border-orange-100 z-40 px-6 flex items-center justify-around pb-4">
             <Link 
                 v-for="item in menuItems" 
-                :key="item.route"
-                :href="route(item.route)"
+                :key="item.label"
+                :href="menuItemHref(item)"
                 class="flex flex-col items-center gap-1"
                 :class="route().current(item.route) ? 'text-orange-600' : 'text-orange-300'"
             >
