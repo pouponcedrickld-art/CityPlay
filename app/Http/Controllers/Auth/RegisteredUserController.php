@@ -27,8 +27,10 @@ class RegisteredUserController extends Controller
     public function create(Request $request): Response
     {
         $invitation = null;
-        if ($request->has('invite')) {
-            $invitation = AppInvitation::where('token', $request->invite)
+        $inviteToken = $request->query('invite') ?? $request->query('token');
+
+        if ($inviteToken) {
+            $invitation = AppInvitation::where('token', $inviteToken)
                 ->whereNull('used_at')
                 ->where(function($query) {
                     $query->whereNull('expires_at')

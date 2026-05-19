@@ -5,72 +5,84 @@
     </template>
 
     <div class="page-header">
-      <div>
-        <h1 class="page-title">Énigmes — {{ lieu.nom }}</h1>
-        <p class="page-subtitle">{{ lieu.environnement?.ville?.nom }} · {{ lieu.environnement?.nom }}</p>
+      <div class="header-content">
+        <h1 class="page-title">Codex des <span class="text-primary-500">Énigmes</span></h1>
+        <p class="page-subtitle">{{ lieu.environnement?.ville?.nom }} · <span class="text-white">{{ lieu.nom }}</span></p>
       </div>
-      <div class="completion-badge" :class="completionClass">
-        <i :class="completionIcon" />
-        {{ completedCount }}/4 énigmes renseignées
+
+      <div class="header-actions">
+        <div class="completion-status">
+          <div class="status-indicator" :class="completionClass">
+            <i class="pi" :class="completionIcon" />
+            <span>{{ completedCount }} / 4 ÉNIGMES</span>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Convention difficulté -->
-    <Message severity="info" :closable="false" class="convention-msg">
-      <strong>Convention difficulté :</strong> Force 3 = plus difficile (énigme cryptique) ·
-      Force 2 = intermédiaire · Force 1 = facile (avec indices directs) · Enfant = adapté aux enfants
+    <!-- Info Message -->
+    <Message severity="info" class="convention-msg" :closable="false">
+      <i class="pi pi-info-circle mr-2" />
+      <span>PROTOCOLE : Un lieu complet doit contenir 4 énigmes (Force 1, 2, 3 et Enfant).</span>
     </Message>
 
-    <!-- Cartes des 4 énigmes -->
     <div class="enigmes-grid">
       <div v-for="(typeLabel, typeKey) in types" :key="typeKey" class="enigme-card"
-        :class="{ 'has-content': enigmes[typeKey], 'missing': !enigmes[typeKey] }">
+        :class="{ 'has-content': enigmes[typeKey], 'missing': !enigmes[typeKey] }" ref="enigmeRefs">
 
-        <!-- Header carte -->
-        <div class="card-header">
-          <div class="type-badge" :class="`type-${typeKey}`">
-            {{ typeLabel }}
+        <div class="card-inner">
+          <div class="card-header">
+            <div class="type-badge" :class="`type-${typeKey}`">
+              {{ typeLabel }}
+            </div>
+            <div class="card-status-tag">
+               <Tag v-if="enigmes[typeKey]" value="ACTIF" severity="success" />
+               <Tag v-else value="INACTIF" severity="danger" />
+            </div>
           </div>
-          <Tag v-if="enigmes[typeKey]" value="Renseignée" severity="success" />
-          <Tag v-else value="Manquante" severity="warn" />
-        </div>
 
-        <!-- Contenu si existant -->
-        <div v-if="enigmes[typeKey]" class="card-content">
-          <p class="enigme-texte">{{ enigmes[typeKey].texte }}</p>
-          <div v-if="enigmes[typeKey].image_url" class="enigme-image">
-            <img :src="`/storage/${enigmes[typeKey].image_url}`" alt="Image énigme" />
+          <div class="card-body">
+            <div v-if="enigmes[typeKey]">
+              <div class="enigme-image" v-if="enigmes[typeKey].image_url">
+                <img :src="`/storage/${enigmes[typeKey].image_url}`" alt="Visuel">
+                <div class="image-overlay"></div>
+              </div>
+              <div class="no-image" v-else>
+                <i class="pi pi-image" />
+                <span>AUCUN VISUEL</span>
+              </div>
+              <p class="enigme-texte">{{ enigmes[typeKey].texte }}</p>
+            </div>
+
+            <div v-else class="card-empty">
+              <div class="empty-icon">
+                <i class="pi pi-lock" />
+              </div>
+              <p>EMPLACEMENT DISPONIBLE</p>
+            </div>
           </div>
-          <div v-else class="no-image">
-            <i class="pi pi-image" /> Pas d'image
+
+          <div class="card-footer">
+            <Link :href="route('admin.enigmes.edit', [lieu.id, typeKey])">
+              <Button :icon="enigmes[typeKey] ? 'pi pi-pencil' : 'pi pi-plus'"
+                :label="enigmes[typeKey] ? 'MODIFIER' : 'AJOUTER'"
+                :class="enigmes[typeKey] ? 'p-button-outlined' : 'p-button-primary'"
+                size="small" />
+            </Link>
+            <Button v-if="enigmes[typeKey]" icon="pi pi-trash" text rounded severity="danger"
+              @click="confirmDelete(typeKey, typeLabel)" class="action-btn-danger" />
           </div>
         </div>
-
-        <div v-else class="card-empty">
-          <i class="pi pi-lightbulb" />
-          <p>Cette énigme n'est pas encore renseignée.</p>
-        </div>
-
-        <!-- Actions -->
-        <div class="card-footer">
-          <Link :href="route('admin.enigmes.edit', [lieu.id, typeKey])">
-            <Button :icon="enigmes[typeKey] ? 'pi pi-pencil' : 'pi pi-plus'"
-              :label="enigmes[typeKey] ? 'Modifier' : 'Ajouter'"
-              :severity="enigmes[typeKey] ? 'secondary' : 'primary'"
-              size="small" outlined />
-          </Link>
-          <Button v-if="enigmes[typeKey]" icon="pi pi-trash" text rounded severity="danger"
-            size="small" @click="confirmDelete(typeKey, typeLabel)" />
-        </div>
+        <div class="card-glow"></div>
       </div>
     </div>
 
-    <ConfirmDialog />
+    <ConfirmDialog class="gaming-confirm" />
   </AdminLayout>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { Link, useForm } from '@inertiajs/vue3'
 import { useConfirm } from 'primevue/useconfirm'
 import AdminLayout from '@/Pages/Admin/Layouts/AdminLayout.vue'
@@ -79,11 +91,27 @@ import Tag from 'primevue/tag'
 import Message from 'primevue/message'
 import Breadcrumb from 'primevue/breadcrumb'
 import ConfirmDialog from 'primevue/confirmdialog'
+import gsap from 'gsap'
 
 const props = defineProps({
   lieu: Object,
-  enigmes: Object, // { force1: {...}, force2: {...}, ... } (peut être null par type)
-  types: Object,   // { force3: 'Difficile (Force 3)', ... }
+  enigmes: Object,
+  types: Object,
+})
+
+const enigmeRefs = ref([])
+
+onMounted(() => {
+  if (enigmeRefs.value.length > 0) {
+    gsap.from(enigmeRefs.value, {
+      opacity: 0,
+      y: 30,
+      scale: 0.9,
+      duration: 0.5,
+      stagger: 0.1,
+      ease: 'back.out(1.7)'
+    })
+  }
 })
 
 const confirm = useConfirm()
@@ -93,13 +121,13 @@ const completedCount = computed(() =>
 )
 
 const completionClass = computed(() => ({
-  'badge-complete': completedCount.value === 4,
-  'badge-partial': completedCount.value > 0 && completedCount.value < 4,
-  'badge-empty': completedCount.value === 0,
+  'status-complete': completedCount.value === 4,
+  'status-partial': completedCount.value > 0 && completedCount.value < 4,
+  'status-empty': completedCount.value === 0,
 }))
 
 const completionIcon = computed(() =>
-  completedCount.value === 4 ? 'pi pi-check-circle' : 'pi pi-exclamation-circle'
+  completedCount.value === 4 ? 'pi-check-circle' : 'pi-exclamation-circle'
 )
 
 const breadcrumbs = computed(() => [
@@ -112,11 +140,11 @@ const breadcrumbs = computed(() => [
 
 const confirmDelete = (typeKey, typeLabel) => {
   confirm.require({
-    message: `Supprimer l'énigme "${typeLabel}" du lieu "${props.lieu.nom}" ?`,
-    header: 'Confirmation',
+    message: `Voulez-vous supprimer l'énigme "${typeLabel}" ?`,
+    header: 'PROTOCOLE DE SUPPRESSION',
     icon: 'pi pi-exclamation-triangle',
-    acceptLabel: 'Supprimer',
-    rejectLabel: 'Annuler',
+    acceptLabel: 'SUPPRIMER',
+    rejectLabel: 'ANNULER',
     acceptClass: 'p-button-danger',
     accept: () => useForm({}).delete(route('admin.enigmes.destroy', [props.lieu.id, typeKey])),
   })
@@ -124,88 +152,213 @@ const confirmDelete = (typeKey, typeLabel) => {
 </script>
 
 <style scoped>
-.page-header  { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem; }
-.page-title   { font-size: 1.4rem; font-weight: 700; color: #1a202c; }
-.page-subtitle { font-size: 0.85rem; color: #718096; margin-top: 0.2rem; }
-
-.completion-badge {
-  display: flex; align-items: center; gap: 0.4rem;
-  font-size: 0.82rem; font-weight: 600;
-  padding: 0.4rem 0.85rem;
-  border-radius: 99px;
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
 }
-.badge-complete { background: #f0fff4; color: #276749; }
-.badge-partial  { background: #fffaf0; color: #c05621; }
-.badge-empty    { background: #fff5f5; color: #c53030; }
 
-.convention-msg { margin-bottom: 1.25rem; font-size: 0.875rem; }
+.page-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.page-subtitle {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.9rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 0.5rem;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 800;
+  font-size: 0.8rem;
+  border: 1px solid transparent;
+}
+
+.status-complete { background: rgba(16, 185, 129, 0.1); color: #10b981; border-color: rgba(16, 185, 129, 0.2); }
+.status-partial { background: rgba(255, 149, 0, 0.1); color: #FF9500; border-color: rgba(255, 149, 0, 0.2); }
+.status-empty { background: rgba(239, 68, 68, 0.1); color: #ef4444; border-color: rgba(239, 68, 68, 0.2); }
+
+.convention-msg {
+  background: rgba(17, 24, 39, 0.8) !important;
+  border: 1px solid #1f2937 !important;
+  color: #94a3b8 !important;
+  margin-bottom: 2rem !important;
+}
 
 .enigmes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
 }
 
 .enigme-card {
-  background: #fff;
-  border: 1px solid #e5e9f0;
-  border-radius: 12px;
+  position: relative;
+  background: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 400px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  transition: box-shadow 0.15s;
 }
-.enigme-card:hover  { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-.enigme-card.missing { border-style: dashed; opacity: 0.85; }
+
+.enigme-card:hover {
+  border-color: #FF9500;
+  transform: translateY(-10px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+}
+
+.card-inner {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  z-index: 2;
+}
 
 .card-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 0.85rem 1rem;
-  border-bottom: 1px solid #f0f4f8;
+  align-items: center;
+  margin-bottom: 1.5rem;
 }
 
 .type-badge {
-  font-size: 0.8rem;
-  font-weight: 700;
-  padding: 0.2rem 0.6rem;
-  border-radius: 6px;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 800;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
-.type-force3 { background: #fff5f5; color: #c53030; }
-.type-force2 { background: #fffaf0; color: #c05621; }
-.type-force1 { background: #f0fff4; color: #276749; }
-.type-enfant { background: #ebf8ff; color: #2b6cb0; }
 
-.card-content { padding: 1rem; flex: 1; }
-.enigme-texte {
-  font-size: 0.82rem;
-  color: #4a5568;
-  line-height: 1.5;
-  margin: 0 0 0.75rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  white-space: pre-line;
-}
-.enigme-image img { width: 100%; border-radius: 6px; object-fit: cover; max-height: 100px; }
-.no-image { display: flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; color: #cbd5e0; }
+.type-force_3 { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+.type-force_2 { background: rgba(255, 149, 0, 0.2); color: #FF9500; border: 1px solid rgba(255, 149, 0, 0.3); }
+.type-force_1 { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+.type-enfant { background: rgba(59, 130, 246, 0.2); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); }
 
-.card-empty {
-  padding: 1.5rem 1rem;
-  text-align: center;
-  color: #a0aec0;
+.card-body {
   flex: 1;
 }
-.card-empty i { font-size: 1.5rem; display: block; margin-bottom: 0.5rem; }
-.card-empty p { font-size: 0.82rem; margin: 0; }
+
+.enigme-image {
+  position: relative;
+  width: 100%;
+  height: 150px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  border: 1px solid #1f2937;
+}
+
+.enigme-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(0deg, rgba(11, 14, 20, 0.6) 0%, transparent 100%);
+}
+
+.no-image {
+  width: 100%;
+  height: 150px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px dashed #1f2937;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  color: #374151;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+.enigme-texte {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-empty {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: #374151;
+}
+
+.empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  opacity: 0.2;
+}
+
+.card-empty p {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+}
 
 .card-footer {
-  padding: 0.75rem 1rem;
-  border-top: 1px solid #f0f4f8;
+  padding-top: 1.5rem;
+  border-top: 1px solid #1f2937;
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.action-btn-danger:hover {
+  background: rgba(239, 68, 68, 0.1) !important;
+}
+
+.card-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at top right, rgba(255, 149, 0, 0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+:deep(.p-tag) {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 800;
+  font-size: 0.6rem;
+  letter-spacing: 0.05em;
 }
 </style>

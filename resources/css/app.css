@@ -1,9 +1,14 @@
+<<<<<<< HEAD
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cinzel:wght@700;900&family=Outfit:wght@400;600;800;900&family=Share+Tech+Mono&display=swap');
+=======
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap');
+>>>>>>> 5fbddc62cb3d8326a80c2472f9df79b62f006164
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+<<<<<<< HEAD
 /* Premium Global Theme CSS Variables */
 :root {
   --bg-main: #040508;
@@ -1272,3 +1277,150 @@ body .char-count {
       linear-gradient(90deg, rgba(212, 184, 138, 0.2) 1px, transparent 1px);
 }
 
+=======
+@layer base {
+  body {
+    @apply bg-dark-bg text-white font-sans;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-gaming uppercase tracking-wider text-white;
+  }
+}
+
+/* Custom Scrollbar for Gaming look */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0b0e14;
+}
+::-webkit-scrollbar-thumb {
+  background: #30363d;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #FF9500;
+}
+
+/* PrimeVue Overrides for Gaming Theme */
+.p-datatable {
+  @apply bg-dark-surface border border-dark-border rounded-xl overflow-hidden !important;
+}
+
+.p-datatable .p-datatable-header {
+  @apply bg-dark-surface border-b border-dark-border text-white p-4 font-gaming uppercase tracking-wider !important;
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+  @apply bg-dark-surface text-primary-400 border-b border-dark-border p-4 font-gaming uppercase text-xs tracking-widest !important;
+}
+
+.p-datatable .p-datatable-tbody > tr {
+  @apply bg-dark-surface text-gray-100 transition-colors !important;
+}
+
+.p-datatable .p-datatable-tbody > tr:hover {
+  @apply bg-white/5 !important;
+}
+
+.p-datatable .p-datatable-tbody > tr > td {
+  @apply border-b border-dark-border/50 p-4 !important;
+}
+
+.p-paginator {
+  @apply bg-dark-surface border-t border-dark-border text-gray-400 p-2 !important;
+}
+
+.p-paginator .p-paginator-page,
+.p-paginator .p-paginator-next,
+.p-paginator .p-paginator-last,
+.p-paginator .p-paginator-first,
+.p-paginator .p-paginator-prev {
+  @apply text-gray-400 rounded-md transition-all !important;
+}
+
+.p-paginator .p-paginator-page.p-highlight {
+  @apply bg-primary-500/20 text-primary-500 border border-primary-500/30 !important;
+}
+
+/* Buttons */
+.p-button {
+  @apply font-gaming uppercase tracking-widest text-sm transition-all duration-300 !important;
+}
+
+.p-button.p-button-primary {
+  @apply bg-primary-500 border-primary-500 text-black font-bold !important;
+}
+
+.p-button.p-button-primary:hover {
+  @apply bg-primary-600 border-primary-600 shadow-[0_0_15px_rgba(255,149,0,0.4)] !important;
+}
+
+.p-button.p-button-outlined {
+  @apply border-primary-500/50 text-primary-500 !important;
+}
+
+.p-button.p-button-outlined:hover {
+  @apply bg-primary-500/10 border-primary-500 !important;
+}
+
+.p-button.p-button-text {
+  @apply text-gray-400 !important;
+}
+
+.p-button.p-button-text:hover {
+  @apply text-primary-500 bg-primary-500/5 !important;
+}
+
+/* Dialogs */
+.p-dialog {
+  @apply bg-dark-surface border border-dark-border rounded-2xl shadow-2xl !important;
+}
+
+.p-dialog .p-dialog-header {
+  @apply bg-dark-surface text-white border-b border-dark-border p-6 font-gaming uppercase tracking-widest !important;
+}
+
+.p-dialog .p-dialog-content {
+  @apply bg-dark-surface text-gray-300 p-6 !important;
+}
+
+.p-dialog .p-dialog-footer {
+  @apply bg-dark-surface border-t border-dark-border p-4 !important;
+}
+
+/* Inputs */
+.p-inputtext {
+  @apply bg-white/5 border-dark-border text-white rounded-lg px-4 py-2 transition-all !important;
+}
+
+.p-inputtext:focus {
+  @apply border-primary-500 ring-1 ring-primary-500/50 shadow-[0_0_10px_rgba(255,149,0,0.2)] !important;
+}
+
+.p-inputtext.p-invalid {
+  @apply border-red-500 !important;
+}
+
+.p-error {
+  @apply text-red-500 text-xs mt-1 font-medium !important;
+}
+
+/* Breadcrumb */
+.p-breadcrumb {
+  @apply bg-transparent border-none p-0 !important;
+}
+
+.p-breadcrumb .p-menuitem-text {
+  @apply text-white font-gaming uppercase tracking-widest text-xs !important;
+}
+
+.p-breadcrumb .p-breadcrumb-separator {
+  @apply text-gray-600 mx-2 !important;
+}
+
+.p-breadcrumb .p-menuitem-link:hover .p-menuitem-text {
+  @apply text-primary-500 !important;
+}
+>>>>>>> 5fbddc62cb3d8326a80c2472f9df79b62f006164

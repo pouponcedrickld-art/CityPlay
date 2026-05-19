@@ -1,295 +1,141 @@
 <script setup>
-/*
-|--------------------------------------------------------------------------
-| IMPORTS VUE + INERTIA
-|--------------------------------------------------------------------------
-*/
-import SidebarLayout from '@/Layouts/SidebarLayout.vue';
+import AdminLayout from '@/Pages/Admin/Layouts/AdminLayout.vue';
 import { useForm, Head } from '@inertiajs/vue3';
-import { onMounted, ref, watch } from 'vue';
+import { ref } from 'vue';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import Textarea from 'primevue/textarea';
-import ToggleSwitch from 'primevue/toggleswitch';
-import IconField from 'primevue/iconfield';
-import InputIcon from 'primevue/inputicon';
-import InputNumber from 'primevue/inputnumber';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
 
-/*
-|--------------------------------------------------------------------------
-| PROPS
-|--------------------------------------------------------------------------
-*/
 const props = defineProps({
-    lieux: Array,
+    lieu: Object,
+    type: String,
     types: Array
 });
 
-/*
-|--------------------------------------------------------------------------
-| MAP SETUP
-|--------------------------------------------------------------------------
-*/
-const mapContainer = ref(null);
-let map = null;
-let marker = null;
-
-const initMap = () => {
-    if (!mapContainer.value) return;
-
-    map = L.map(mapContainer.value).setView([48.8566, 2.3522], 13); // Default Paris
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-};
-
-const updateMarker = (lat, lng) => {
-    if (!map) return;
-    if (marker) {
-        marker.setLatLng([lat, lng]);
-    } else {
-        marker = L.marker([lat, lng]).addTo(map);
-    }
-    map.setView([lat, lng], 16);
-};
-
-onMounted(() => {
-    initMap();
-});
-
-/*
-|--------------------------------------------------------------------------
-| FORMULAIRE
-|--------------------------------------------------------------------------
-*/
 const form = useForm({
-    lieu_id: null,
-    type: props.types && props.types.length > 0 ? props.types[0] : 'force1',
-    titre: '',
+    type: props.type || 'force_1',
     texte: '',
     reponse: '',
-    solution: '',
-    points: 10,
-    image_url: '',
-    actif: true
+    image: null,
 });
 
-// Quand on change de lieu, on centre la carte sur le lieu
-watch(() => form.lieu_id, (newLieuId) => {
-    if (!newLieuId) {
-        if (marker && map) {
-            map.removeLayer(marker);
-            marker = null;
-        }
-        return;
-    }
-
-    const lieu = props.lieux.find(l => l.id === newLieuId);
-    if (lieu && lieu.latitude && lieu.longitude) {
-        updateMarker(lieu.latitude, lieu.longitude);
-    }
-});
+const onFileChange = (e) => {
+    form.image = e.target.files[0];
+};
 
 const submit = () => {
-    form.post(route('enigmes.store'));
+    form.post(route('admin.enigmes.store', props.lieu.id));
 };
 </script>
 
 <template>
-    <Head title="Créer une Énigme" />
+    <Head title="Forger une Énigme" />
 
-    <SidebarLayout>
-        <div class="p-4 sm:p-8 min-h-screen bg-gray-50/50">
-            
-            <!-- HEADER -->
+    <AdminLayout>
+        <template #breadcrumb>
+            <span class="text-sm text-white font-gaming uppercase tracking-widest">Énigmes / Créer</span>
+        </template>
+
+        <div class="max-w-4xl mx-auto p-8">
             <div class="mb-8">
-                <button 
-                    @click="$window.history.back()" 
-                    class="flex items-center gap-2 text-orange-900/40 hover:text-[#FF9500] font-bold text-[10px] uppercase tracking-widest transition-colors mb-4"
+                <button
+                    @click="$window.history.back()"
+                    class="flex items-center gap-2 text-gray-500 hover:text-primary-500 font-bold text-[10px] uppercase tracking-widest transition-colors mb-4"
                 >
                     <i class="pi pi-arrow-left" />
-                    Retour à la liste
+                    RETOUR AU CODEX
                 </button>
-                <h1 class="text-3xl font-black text-orange-950 uppercase tracking-tight">
-                    Nouvelle <span class="text-[#FF9500]">Énigme</span>
+                <h1 class="text-3xl font-bold text-white font-gaming uppercase tracking-wider">
+                    Forger une <span class="text-primary-500">Énigme</span>
                 </h1>
-                <p class="text-orange-900/60 font-medium text-sm mt-1 uppercase tracking-widest">
-                    Ajouter un nouveau défi au parcours
+                <p class="text-gray-500 font-medium text-sm mt-1 uppercase tracking-widest font-gaming">
+                    DÉFI POUR : <span class="text-white">{{ lieu.nom }}</span>
                 </p>
             </div>
 
-            <!-- FORMULAIRE -->
-            <form @submit.prevent="submit" class="max-w-3xl">
-                <div class="bg-white p-8 rounded-3xl border border-orange-100 shadow-sm space-y-6">
-                    
-                    <!-- Lieu & Type -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="flex flex-col gap-2">
-                            <label class="text-[10px] font-bold uppercase tracking-widest text-orange-900/40 ml-1">Lieu associé</label>
-                            <Select
-                                v-model="form.lieu_id"
-                                :options="lieux"
-                                optionLabel="nom"
-                                optionValue="id"
-                                placeholder="Sélectionner un lieu"
-                                class="w-full border-orange-50 focus:border-orange-300 rounded-xl"
-                                :class="{ 'p-invalid': form.errors.lieu_id }"
-                            />
-                            <small class="text-red-500" v-if="form.errors.lieu_id">{{ form.errors.lieu_id }}</small>
-                        </div>
-
-                        <div class="flex flex-col gap-2">
-                            <label class="text-[10px] font-bold uppercase tracking-widest text-orange-900/40 ml-1">Difficulté / Type</label>
-                            <Select
-                                v-model="form.type"
-                                :options="types"
-                                placeholder="Type d'énigme"
-                                class="w-full border-orange-50 focus:border-orange-300 rounded-xl"
-                                :class="{ 'p-invalid': form.errors.type }"
-                            />
-                            <small class="text-red-500" v-if="form.errors.type">{{ form.errors.type }}</small>
-                        </div>
-                    </div>
-
-                    <!-- Titre & Points -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="flex flex-col gap-2">
-                            <label class="text-[10px] font-bold uppercase tracking-widest text-orange-900/40 ml-1">Titre de l'énigme</label>
-                            <InputText
-                                v-model="form.titre"
-                                placeholder="Nom de l'énigme"
-                                class="w-full border-orange-50 focus:border-orange-300 rounded-xl"
-                                :class="{ 'p-invalid': form.errors.titre }"
-                            />
-                            <small class="text-red-500" v-if="form.errors.titre">{{ form.errors.titre }}</small>
-                        </div>
-
-                        <div class="flex flex-col gap-2">
-                            <label class="text-[10px] font-bold uppercase tracking-widest text-orange-900/40 ml-1">Points accordés</label>
-                            <InputNumber
-                                v-model="form.points"
-                                :min="0"
-                                placeholder="Nombre de points"
-                                class="w-full border-orange-50 focus:border-orange-300 rounded-xl"
-                                :class="{ 'p-invalid': form.errors.points }"
-                            />
-                            <small class="text-red-500" v-if="form.errors.points">{{ form.errors.points }}</small>
-                        </div>
-                    </div>
-
-                    <!-- Texte de l'énigme -->
+            <form @submit.prevent="submit" class="bg-dark-surface p-10 rounded-2xl border border-dark-border shadow-2xl space-y-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div class="flex flex-col gap-2">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-orange-900/40 ml-1">Texte de l'énigme (Question)</label>
-                        <Textarea
-                            v-model="form.texte"
-                            rows="4"
-                            placeholder="Écrivez ici l'énigme que les joueurs devront résoudre..."
-                            class="w-full border-orange-50 focus:border-orange-300 rounded-xl p-4"
-                            :class="{ 'p-invalid': form.errors.texte }"
+                        <label class="text-xs font-bold font-gaming uppercase tracking-widest text-primary-500/70">Type de défi</label>
+                        <Select
+                            v-model="form.type"
+                            :options="types"
+                            placeholder="Sélectionner la difficulté"
+                            class="gaming-dropdown w-full"
                         />
-                        <small class="text-red-500" v-if="form.errors.texte">{{ form.errors.texte }}</small>
+                        <small class="text-red-500" v-if="form.errors.type">{{ form.errors.type }}</small>
                     </div>
 
-                    <!-- Réponse & Solution -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="flex flex-col gap-2">
-                            <label class="text-[10px] font-bold uppercase tracking-widest text-orange-900/40 ml-1">Réponse attendue (Indice court)</label>
-                            <InputText
-                                v-model="form.reponse"
-                                placeholder="Ex: La tour Eiffel"
-                                class="w-full border-orange-50 focus:border-orange-300 rounded-xl"
-                                :class="{ 'p-invalid': form.errors.reponse }"
-                            />
-                            <small class="text-red-500" v-if="form.errors.reponse">{{ form.errors.reponse }}</small>
-                        </div>
-
-                        <div class="flex flex-col gap-2">
-                            <label class="text-[10px] font-bold uppercase tracking-widest text-orange-900/40 ml-1">Solution détaillée</label>
-                            <Textarea
-                                v-model="form.solution"
-                                rows="2"
-                                placeholder="Explication complète de la solution..."
-                                class="w-full border-orange-50 focus:border-orange-300 rounded-xl p-4"
-                                :class="{ 'p-invalid': form.errors.solution }"
-                            />
-                            <small class="text-red-500" v-if="form.errors.solution">{{ form.errors.solution }}</small>
-                        </div>
-                    </div>
-
-                    <!-- Géolocalisation -->
-                    <div class="flex flex-col gap-4">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-orange-900/40 ml-1">Localisation du lieu associé</label>
-                        <div ref="mapContainer" class="w-full h-64 rounded-2xl border border-orange-100 overflow-hidden z-0"></div>
-                        
-                        <p class="text-[10px] text-orange-900/60 font-medium italic">
-                            Note: La localisation est définie par le lieu sélectionné ci-dessus.
-                        </p>
-                    </div>
-
-                    <!-- Image URL -->
                     <div class="flex flex-col gap-2">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-orange-900/40 ml-1">URL de l'image (Optionnel)</label>
-                        <IconField>
-                            <InputIcon class="pi pi-image text-orange-300" />
-                            <InputText
-                                v-model="form.image_url"
-                                placeholder="https://..."
-                                class="w-full border-orange-50 focus:border-orange-300 rounded-xl"
-                            />
-                        </IconField>
-                        <small class="text-red-500" v-if="form.errors.image_url">{{ form.errors.image_url }}</small>
-                    </div>
-
-                    <!-- Statut -->
-                    <div class="flex items-center justify-between p-4 bg-orange-50/50 rounded-2xl border border-orange-100">
-                        <div class="flex flex-col">
-                            <span class="text-xs font-bold text-orange-950 uppercase tracking-tight">Activer l'énigme</span>
-                            <span class="text-[10px] text-orange-900/60 uppercase font-medium">L'énigme sera visible immédiatement</span>
-                        </div>
-                        <ToggleSwitch v-model="form.actif" />
-                    </div>
-
-                    <!-- Bouton de validation -->
-                    <div class="flex justify-end pt-4">
-                        <Button
-                            type="submit"
-                            label="Enregistrer l'énigme"
-                            icon="pi pi-check"
-                            :loading="form.processing"
-                            class="p-button-orange shadow-lg shadow-orange-200"
+                        <label class="text-xs font-bold font-gaming uppercase tracking-widest text-primary-500/70">Réponse attendue</label>
+                        <InputText
+                            v-model="form.reponse"
+                            placeholder="Ex: LA TOUR EIFFEL"
+                            class="gaming-input w-full"
                         />
+                        <small class="text-red-500" v-if="form.errors.reponse">{{ form.errors.reponse }}</small>
                     </div>
+                </div>
 
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-bold font-gaming uppercase tracking-widest text-primary-500/70">Texte de l'énigme</label>
+                    <Textarea
+                        v-model="form.texte"
+                        rows="5"
+                        placeholder="Écrivez ici le défi que les joueurs devront résoudre..."
+                        class="gaming-input w-full p-4"
+                    />
+                    <small class="text-red-500" v-if="form.errors.texte">{{ form.errors.texte }}</small>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-xs font-bold font-gaming uppercase tracking-widest text-primary-500/70">Visuel d'illustration (Optionnel)</label>
+                    <div class="upload-zone" @click="$refs.fileInput.click()">
+                        <i class="pi pi-cloud-upload text-3xl mb-2" />
+                        <p class="font-gaming">TÉLÉCHARGER UNE IMAGE</p>
+                        <span v-if="form.image" class="text-primary-500 text-xs mt-2">{{ form.image.name }}</span>
+                        <input type="file" ref="fileInput" class="hidden" @change="onFileChange" accept="image/*">
+                    </div>
+                    <small class="text-red-500" v-if="form.errors.image">{{ form.errors.image }}</small>
+                </div>
+
+                <div class="flex justify-end pt-6 border-t border-white/5">
+                    <Button type="submit" label="ACTIVER L'ÉNIGME" class="p-button-primary shadow-glow" :loading="form.processing" />
                 </div>
             </form>
-
         </div>
-    </SidebarLayout>
+    </AdminLayout>
 </template>
 
-<style>
-/* Réutilisation des styles globaux */
-.p-button-orange {
-    background: linear-gradient(135deg, #FF9500 0%, #FF7B00 100%) !important;
-    border: none !important;
-    border-radius: 16px !important;
-    padding: 0.75rem 1.5rem !important;
-    font-weight: 700 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.05em !important;
-    font-size: 0.8rem !important;
+<style scoped>
+.gaming-input :deep(.p-inputtext), .gaming-input :deep(.p-textarea) {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid #1f2937 !important;
+  color: #fff !important;
 }
 
-.p-textarea:focus {
-    box-shadow: 0 0 0 2px rgba(255, 149, 0, 0.1) !important;
-    border-color: #FF9500 !important;
+.gaming-dropdown {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid #1f2937 !important;
 }
 
-.p-toggleswitch.p-toggleswitch-checked .p-toggleswitch-slider {
-    background: #FF9500 !important;
+.upload-zone {
+  border: 2px dashed #1f2937;
+  border-radius: 12px;
+  padding: 3rem;
+  text-align: center;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.01);
+  transition: all 0.3s;
+}
+
+.upload-zone:hover {
+  border-color: #FF9500;
+  background: rgba(255, 149, 0, 0.03);
+}
+
+.shadow-glow {
+  box-shadow: 0 0 20px rgba(255, 149, 0, 0.3);
 }
 </style>
