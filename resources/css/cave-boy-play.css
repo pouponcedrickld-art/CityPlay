@@ -1133,6 +1133,52 @@
   box-shadow: 0 2px 0 var(--cave-border-darker);
 }
 
+.cave-hud__score {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 3px solid var(--cave-border-dark);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #FFF8C8, var(--cave-gold));
+  color: var(--cave-border-dark);
+  font-family: var(--cave-font-title);
+  font-size: 0.85rem;
+  font-weight: 700;
+  box-shadow: 0 4px 0 var(--cave-border-darker);
+}
+
+.cave-hud__score i {
+  color: var(--cave-gold-dark);
+  font-size: 0.9rem;
+}
+
+.cave-gps-result {
+  padding: 12px 14px;
+  border: 3px solid var(--cave-border-dark);
+  border-radius: 14px;
+  background: #FFF8EE;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--cave-border-dark);
+  line-height: 1.45;
+}
+
+.cave-gps-result strong {
+  font-weight: 800;
+  color: #8B2A2A;
+}
+
+.cave-flash--info {
+  background: #E8F4FD;
+  color: #1A4A6B;
+}
+
+.cave-hint--warn {
+  color: #8B2A2A !important;
+  font-weight: 700;
+}
+
 .cave-step-ring {
   position: relative;
   width: 48px;

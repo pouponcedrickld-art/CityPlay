@@ -90,6 +90,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/parties/{partie}/succes', [ProgressionController::class, 'showSuccess'])->name('progression.success');
         Route::get('/parties/{partie}/echec', [ProgressionController::class, 'showFailure'])->name('progression.failure');
         Route::post('/parties/{partie}/suivant', [ProgressionController::class, 'nextEnigme'])->name('progression.next');
+        Route::post('/parties/{partie}/solution', [ProgressionController::class, 'showSolution'])->name('progression.solution');
         Route::get('/parties/{partie}/resume', [ProgressionController::class, 'showSummary'])->name('progression.summary');
         Route::post('/parties/{partie}/progression', [ProgressionController::class, 'store'])->name('progression.store');
 

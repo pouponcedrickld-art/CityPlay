@@ -23,6 +23,19 @@ class GpsValidationService
             'precision' => $precision,
         ]);
 
+        // === VÉRIFICATION 0 : Lieu sans coordonnées en base ===
+        if ($lieu->latitude === null || $lieu->longitude === null) {
+            Log::channel('cityplay')->warning('Lieu sans coordonnées GPS', ['lieu_id' => $lieu->id]);
+
+            return [
+                'succes' => false,
+                'message' => 'La zone de cette énigme n\'a pas de GPS configuré. Contactez l\'organisateur.',
+                'erreur' => 'lieu_sans_gps',
+                'distance' => null,
+                'rayon' => $lieu->rayon_metres,
+            ];
+        }
+
         // === VÉRIFICATION 1 : GPS indisponible ===
         if (is_null($latJoueur) || is_null($lngJoueur)) {
             Log::channel('cityplay')->warning('GPS indisponible', ['lieu_id' => $lieu->id]);
@@ -77,7 +90,7 @@ class GpsValidationService
         if ($estDansLeRayon) {
             return [
                 'succes' => true,
-                'message' => 'Position validée ! Vous êtes sur le lieu.',
+                'message' => 'Position validée ! Vous êtes sur la zone de l\'énigme.',
                 'distance' => round($distance, 1),
                 'rayon' => $lieu->rayon_metres,
                 'precision' => $precision,
@@ -87,9 +100,8 @@ class GpsValidationService
         return [
             'succes' => false,
             'message' => sprintf(
-                'Vous êtes à %.0f mètres du lieu. Approchez-vous encore (rayon : %d m).',
-                $distance,
-                $lieu->rayon_metres
+                'Vous n\'êtes pas encore sur la zone de l\'énigme (environ %.0f m). Rapprochez-vous et réessayez.',
+                $distance
             ),
             'erreur' => 'hors_rayon',
             'distance' => round($distance, 1),

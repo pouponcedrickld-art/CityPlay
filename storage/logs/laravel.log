@@ -2569,3 +2569,86 @@
 [2026-05-19 15:18:46] local.INFO: GameplayService: Énigme de départ identifiée {"id":22} 
 [2026-05-19 15:18:46] local.INFO: GameplayService: Progression créée {"id":4} 
 [2026-05-19 15:18:46] local.INFO: GameplayService: Partie marquée comme en cours  
+[2026-05-19 17:13:12] testing.INFO: GameplayService: Début initialisation progression {"partie_id":1} 
+[2026-05-19 17:13:12] testing.INFO: GameplayService: Paramètres extraits {"duree":60,"locomotion":"pied","difficulte":2} 
+[2026-05-19 17:13:12] testing.INFO: GameplayService: Nombre d'énigmes calculé {"count":6} 
+[2026-05-19 17:13:12] testing.INFO: GameplayService: Lieux sélectionnés {"count":1,"ids":{"Illuminate\\Support\\Collection":[1]}} 
+[2026-05-19 17:13:12] testing.INFO: GameplayService: Énigme de départ identifiée {"id":1} 
+[2026-05-19 17:13:12] testing.INFO: GameplayService: Progression créée {"id":1} 
+[2026-05-19 17:13:12] testing.INFO: GameplayService: Partie marquée comme en cours  
+[2026-05-19 17:13:18] testing.INFO: GameplayService: Début initialisation progression {"partie_id":1} 
+[2026-05-19 17:13:18] testing.INFO: GameplayService: Paramètres extraits {"duree":60,"locomotion":"pied","difficulte":2} 
+[2026-05-19 17:13:18] testing.INFO: GameplayService: Nombre d'énigmes calculé {"count":6} 
+[2026-05-19 17:13:18] testing.INFO: GameplayService: Lieux sélectionnés {"count":1,"ids":{"Illuminate\\Support\\Collection":[1]}} 
+[2026-05-19 17:13:18] testing.INFO: GameplayService: Énigme de départ identifiée {"id":1} 
+[2026-05-19 17:13:18] testing.INFO: GameplayService: Progression créée {"id":1} 
+[2026-05-19 17:13:18] testing.INFO: GameplayService: Partie marquée comme en cours  
+[2026-05-19 17:13:19] testing.INFO: GameplayService: Début initialisation progression {"partie_id":1} 
+[2026-05-19 17:13:20] testing.INFO: GameplayService: Paramètres extraits {"duree":60,"locomotion":"pied","difficulte":2} 
+[2026-05-19 17:13:20] testing.INFO: GameplayService: Nombre d'énigmes calculé {"count":6} 
+[2026-05-19 17:13:20] testing.INFO: GameplayService: Lieux sélectionnés {"count":1,"ids":{"Illuminate\\Support\\Collection":[1]}} 
+[2026-05-19 17:13:20] testing.INFO: GameplayService: Énigme de départ identifiée {"id":1} 
+[2026-05-19 17:13:20] testing.INFO: GameplayService: Progression créée {"id":1} 
+[2026-05-19 17:13:20] testing.INFO: GameplayService: Partie marquée comme en cours  
+[2026-05-19 17:36:36] local.ERROR: Call to a member function map() on array {"userId":6,"exception":"[object] (Error(code: 0): Call to a member function map() on array at C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/app/Http/Controllers/ProgressionController.php:221)
+[stacktrace]
+#0 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/app/Http/Controllers/ProgressionController.php(45): App/Http/Controllers/ProgressionController->enigmePourJoueur(Object(App/Models/Enigme))
+#1 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php(46): App/Http/Controllers/ProgressionController->getCurrentEnigme(Object(App/Models/Partie))
+#2 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Routing/Route.php(265): Illuminate/Routing/ControllerDispatcher->dispatch(Object(Illuminate/Routing/Route), Object(App/Http/Controllers/ProgressionController), 'getCurrentEnigm...')
+#3 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Routing/Route.php(211): Illuminate/Routing/Route->runController()
+#4 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Routing/Router.php(822): Illuminate/Routing/Route->run()
+#5 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate/Routing/Router->Illuminate/Routing/{closure}(Object(Illuminate/Http/Request))
+#6 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/app/Http/Middleware/EnsureOtpVerified.php(38): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#7 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): App/Http/Middleware/EnsureOtpVerified->handle(Object(Illuminate/Http/Request), Object(Closure))
+#8 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Http/Middleware/AddLinkHeadersForPreloadedAssets.php(32): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#9 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Http/Middleware/AddLinkHeadersForPreloadedAssets->handle(Object(Illuminate/Http/Request), Object(Closure))
+#10 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/inertiajs/inertia-laravel/src/Middleware.php(122): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#11 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Inertia/Middleware->handle(Object(Illuminate/Http/Request), Object(Closure))
+#12 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Routing/Middleware/SubstituteBindings.php(50): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#13 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Routing/Middleware/SubstituteBindings->handle(Object(Illuminate/Http/Request), Object(Closure))
+#14 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Auth/Middleware/Authenticate.php(63): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#15 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Auth/Middleware/Authenticate->handle(Object(Illuminate/Http/Request), Object(Closure))
+#16 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/VerifyCsrfToken.php(87): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#17 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Foundation/Http/Middleware/VerifyCsrfToken->handle(Object(Illuminate/Http/Request), Object(Closure))
+#18 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/View/Middleware/ShareErrorsFromSession.php(48): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#19 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/View/Middleware/ShareErrorsFromSession->handle(Object(Illuminate/Http/Request), Object(Closure))
+#20 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(120): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#21 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(63): Illuminate/Session/Middleware/StartSession->handleStatefulRequest(Object(Illuminate/Http/Request), Object(Illuminate/Session/Store), Object(Closure))
+#22 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Session/Middleware/StartSession->handle(Object(Illuminate/Http/Request), Object(Closure))
+#23 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/AddQueuedCookiesToResponse.php(36): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#24 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Cookie/Middleware/AddQueuedCookiesToResponse->handle(Object(Illuminate/Http/Request), Object(Closure))
+#25 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/EncryptCookies.php(74): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#26 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Cookie/Middleware/EncryptCookies->handle(Object(Illuminate/Http/Request), Object(Closure))
+#27 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(137): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#28 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Routing/Router.php(821): Illuminate/Pipeline/Pipeline->then(Object(Closure))
+#29 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Routing/Router.php(800): Illuminate/Routing/Router->runRouteWithinStack(Object(Illuminate/Routing/Route), Object(Illuminate/Http/Request))
+#30 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Routing/Router.php(764): Illuminate/Routing/Router->runRoute(Object(Illuminate/Http/Request), Object(Illuminate/Routing/Route))
+#31 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Routing/Router.php(753): Illuminate/Routing/Router->dispatchToRoute(Object(Illuminate/Http/Request))
+#32 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(200): Illuminate/Routing/Router->dispatch(Object(Illuminate/Http/Request))
+#33 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate/Foundation/Http/Kernel->Illuminate/Foundation/Http/{closure}(Object(Illuminate/Http/Request))
+#34 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#35 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate/Foundation/Http/Middleware/TransformsRequest->handle(Object(Illuminate/Http/Request), Object(Closure))
+#36 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull->handle(Object(Illuminate/Http/Request), Object(Closure))
+#37 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#38 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(51): Illuminate/Foundation/Http/Middleware/TransformsRequest->handle(Object(Illuminate/Http/Request), Object(Closure))
+#39 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Foundation/Http/Middleware/TrimStrings->handle(Object(Illuminate/Http/Request), Object(Closure))
+#40 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePostSize.php(27): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#41 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Http/Middleware/ValidatePostSize->handle(Object(Illuminate/Http/Request), Object(Closure))
+#42 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(109): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#43 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance->handle(Object(Illuminate/Http/Request), Object(Closure))
+#44 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(61): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#45 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Http/Middleware/HandleCors->handle(Object(Illuminate/Http/Request), Object(Closure))
+#46 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(58): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#47 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Http/Middleware/TrustProxies->handle(Object(Illuminate/Http/Request), Object(Closure))
+#48 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/InvokeDeferredCallbacks.php(22): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#49 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Foundation/Http/Middleware/InvokeDeferredCallbacks->handle(Object(Illuminate/Http/Request), Object(Closure))
+#50 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePathEncoding.php(26): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#51 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Http/Middleware/ValidatePathEncoding->handle(Object(Illuminate/Http/Request), Object(Closure))
+#52 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(137): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#53 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(175): Illuminate/Pipeline/Pipeline->then(Object(Closure))
+#54 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate/Foundation/Http/Kernel->sendRequestThroughRouter(Object(Illuminate/Http/Request))
+#55 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1220): Illuminate/Foundation/Http/Kernel->handle(Object(Illuminate/Http/Request))
+#56 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/public/index.php(20): Illuminate/Foundation/Application->handleRequest(Object(Illuminate/Http/Request))
+#57 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php(23): require_once('C://Users//halil....')
+#58 {main}
+"} 
