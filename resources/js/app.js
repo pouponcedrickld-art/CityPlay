@@ -1,4 +1,5 @@
 import '../css/app.css';
+import '../css/cave-boy-play.css';
 import './bootstrap';
 import 'primeicons/primeicons.css';
 

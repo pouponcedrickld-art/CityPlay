@@ -17,6 +17,9 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+// Invitation équipe (accessible sans compte)
+Route::get('/rejoindre/{code}', [PartieController::class, 'rejoindreParLien'])->name('parties.rejoindre');
+
 // Page d'accueil
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -69,8 +72,7 @@ Route::middleware('auth')->group(function () {
         // Dashboard joueur
         Route::get('/dashboard', [PartieController::class, 'index'])->name('dashboard');
 
-        // Rejoindre une partie via lien/code
-        Route::get('/rejoindre/{code}', [PartieController::class, 'rejoindreParLien'])->name('parties.rejoindre');
+        Route::post('/parties/rejoindre', [PartieController::class, 'rejoindre'])->name('parties.rejoindre.form');
 
         // Parties
         Route::get('/parties', [PartieController::class, 'index'])->name('parties.web.index');
