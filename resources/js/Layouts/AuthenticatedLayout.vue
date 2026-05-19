@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, onUnmounted } from 'vue';
+import { isPlaying, toggleAudio, playAudio } from '@/audioPlayer';
 
 const isDark = ref(true);
 
@@ -52,6 +53,19 @@ onMounted(() => {
     });
     router.on('error', () => {
         showLoader.value = false;
+    });
+
+    // Auto-play attempt on first user interaction if they haven't explicitly paused it
+    const handleFirstInteraction = () => {
+        if (!isPlaying.value) {
+            playAudio();
+        }
+        window.removeEventListener('click', handleFirstInteraction);
+    };
+    window.addEventListener('click', handleFirstInteraction);
+
+    onUnmounted(() => {
+        window.removeEventListener('click', handleFirstInteraction);
     });
 });
 
@@ -168,6 +182,17 @@ const menuItems = [
                 <span class="text-[8px] font-black uppercase tracking-widest">{{ item.label }}</span>
             </Link>
         </nav>
+
+        <!-- Floating Music Switch -->
+        <button 
+          class="theme-switch-float" 
+          style="bottom: 5rem;"
+          @click="toggleAudio" 
+          aria-label="Toggle Music"
+          title="Musique de fond"
+        >
+          <i :class="isPlaying ? 'pi pi-volume-up' : 'pi pi-volume-off'" />
+        </button>
 
         <!-- Floating Theme Toggle Switch -->
         <button 
