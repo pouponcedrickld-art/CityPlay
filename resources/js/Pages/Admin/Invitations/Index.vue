@@ -50,36 +50,11 @@
               </div>
             </div>
 
-<<<<<<< HEAD
-          <Column field="used_at" header="Statut">
-            <template #body="{ data }">
-              <span v-if="data.used_at" class="bg-emerald-50 text-emerald-700 border border-emerald-100 px-2.5 py-1 rounded-full text-xs font-bold shadow-sm">
-                Utilisé le {{ new Date(data.used_at).toLocaleDateString() }}
-              </span>
-              <span v-else-if="isExpired(data.expires_at)" class="bg-red-50 text-red-700 border border-red-100 px-2.5 py-1 rounded-full text-xs font-bold shadow-sm">
-                Expiré
-              </span>
-              <span v-else class="bg-blue-50 text-blue-700 border border-blue-100 px-2.5 py-1 rounded-full text-xs font-bold shadow-sm">
-                Valide
-              </span>
-            </template>
-          </Column>
-
-          <Column field="expires_at" header="Expire le">
-            <template #body="{ data }">
-              <span class="text-sm">{{ data.expires_at ? new Date(data.expires_at).toLocaleDateString() : 'Jamais' }}</span>
-            </template>
-          </Column>
-
-          <Column header="Actions" class="text-right">
-            <template #body="{ data }">
-=======
             <div class="key-footer">
               <div class="key-expiry">
                 <i class="pi pi-clock" />
                 {{ invitation.expires_at ? 'Expire le ' + new Date(invitation.expires_at).toLocaleDateString() : 'Pas d\'expiration' }}
               </div>
->>>>>>> 5fbddc62cb3d8326a80c2472f9df79b62f006164
               <Button
                 icon="pi pi-trash"
                 text

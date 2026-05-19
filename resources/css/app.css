@@ -1,14 +1,12 @@
-<<<<<<< HEAD
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cinzel:wght@700;900&family=Outfit:wght@400;600;800;900&family=Share+Tech+Mono&display=swap');
-=======
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap');
->>>>>>> 5fbddc62cb3d8326a80c2472f9df79b62f006164
+
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-<<<<<<< HEAD
 /* Premium Global Theme CSS Variables */
 :root {
   --bg-main: #040508;
@@ -19,8 +17,10 @@
   --glow-shadow: 0 10px 30px rgba(255, 149, 0, 0.05);
 
   /* Dual-accent palette for Dark Mode (Land & Water Adventure) */
-  --accent-primary: #FF9500; /* Cyber-Orange (Sun, Dahomey Royalty) */
-  --accent-secondary: #00E5FF; /* Electric Cyan (Water, Ganvié, Modern Exploration) */
+  --accent-primary: #FF9500;
+  /* Cyber-Orange (Sun, Dahomey Royalty) */
+  --accent-secondary: #00E5FF;
+  /* Electric Cyan (Water, Ganvié, Modern Exploration) */
   --accent-glow-primary: rgba(255, 149, 0, 0.25);
   --accent-glow-secondary: rgba(0, 229, 255, 0.25);
   --accent-gradient: linear-gradient(135deg, #FF9500 0%, #00E5FF 100%);
@@ -45,56 +45,75 @@
 }
 
 :root.light-theme {
-  --bg-main: #f1f3f7;
-  --bg-card: rgba(255, 255, 255, 0.85);
-  --text-main: #111827;
-  --text-muted: #4b5563;
-  --border-glow: rgba(0, 135, 81, 0.25);
-  --glow-shadow: 0 10px 30px rgba(0, 135, 81, 0.08);
+  --bg-main: #f5f0e8;
+  --bg-card: rgba(255, 252, 245, 0.92);
+  --text-main: #1a1208;
+  --text-muted: #5c4a2a;
+  --border-glow: rgba(5, 150, 105, 0.3);
+  --glow-shadow: 0 10px 30px rgba(5, 150, 105, 0.1);
 
-  /* Dual-accent palette for Light Mode (Forest & Lagoon) */
-  --accent-primary: #008751; /* Emerald Green (Flora, Vegetation) */
-  --accent-secondary: #00B4D8; /* Lagoon Blue (Sky, Crystal Water) */
-  --accent-glow-primary: rgba(0, 135, 81, 0.25);
-  --accent-glow-secondary: rgba(0, 180, 216, 0.25);
-  --accent-gradient: linear-gradient(135deg, #008751 0%, #00B4D8 100%);
-  --accent-gradient-hover: linear-gradient(135deg, #006b3f 0%, #0077b6 100%);
+  /* ── Player Light Mode: Emerald + Parchment (board game palette) ── */
+  --accent-primary: #059669;       /* Emerald-600 — couleur principale */
+  --accent-secondary: #0891b2;     /* Cyan-600 — accent secondaire */
+  --accent-tertiary: #7c3aed;      /* Violet-600 — accent tertiaire */
+  --accent-warm: #d97706;          /* Amber-600 — chaleur dorée */
+  --accent-glow-primary: rgba(5, 150, 105, 0.28);
+  --accent-glow-secondary: rgba(8, 145, 178, 0.28);
+  --accent-gradient: linear-gradient(135deg, #059669 0%, #0891b2 100%);
+  --accent-gradient-hover: linear-gradient(135deg, #047857 0%, #0e7490 100%);
+
+  /* Player board parchment palette */
+  --player-bg: #faf6ee;            /* Fond parchemin ivoire */
+  --player-card: #fffdf7;          /* Carte ivoire clair */
+  --player-border: #c8a96e;        /* Bordure dorée */
+  --player-border-dark: #8b6914;   /* Bordure dorée foncée */
+  --player-text: #1a1208;          /* Texte brun très foncé */
+  --player-text-muted: #6b4c1e;    /* Texte brun moyen */
+  --player-accent: #059669;        /* Émeraude principal */
+  --player-accent-glow: rgba(5, 150, 105, 0.25);
+  --player-column-blue: #1d4ed8;   /* Colonne bleue (comme le plateau) */
+  --player-column-green: #059669;  /* Colonne verte émeraude */
+  --player-column-red: #dc2626;    /* Colonne rouge */
+  --player-column-purple: #7c3aed; /* Colonne violette */
 
   /* PrimeVue Theme Variable Overrides for Light Mode */
-  --primary-color: #008751 !important;
+  --primary-color: #059669 !important;
   --primary-color-text: #ffffff !important;
-  --highlight-bg: rgba(0, 135, 81, 0.08) !important;
-  --highlight-color: #008751 !important;
-  --content-background: #ffffff !important;
-  --content-border: rgba(0, 0, 0, 0.06) !important;
-  --text-color: #111827 !important;
-  --text-muted-color: #4b5563 !important;
-  --border-color: rgba(0, 0, 0, 0.08) !important;
-  --mask-background: rgba(0, 0, 0, 0.4) !important;
-  --surface-ground: #f8fafc !important;
-  --surface-section: #ffffff !important;
-  --surface-card: #ffffff !important;
-  --surface-border: rgba(0, 0, 0, 0.06) !important;
-  --surface-hover: rgba(0, 135, 81, 0.04) !important;
+  --highlight-bg: rgba(5, 150, 105, 0.08) !important;
+  --highlight-color: #059669 !important;
+  --content-background: #fffdf7 !important;
+  --content-border: rgba(200, 169, 110, 0.3) !important;
+  --text-color: #1a1208 !important;
+  --text-muted-color: #6b4c1e !important;
+  --border-color: rgba(200, 169, 110, 0.35) !important;
+  --mask-background: rgba(26, 18, 8, 0.5) !important;
+  --surface-ground: #f5f0e8 !important;
+  --surface-section: #fffdf7 !important;
+  --surface-card: #fffdf7 !important;
+  --surface-border: rgba(200, 169, 110, 0.25) !important;
+  --surface-hover: rgba(5, 150, 105, 0.05) !important;
 }
 
 /* ==========================================
    TYPOGRAPHY SYSTEM (Video Game Inspired)
    ========================================== */
 
-body, .admin-layout-wrapper, .p-component {
+body,
+.admin-layout-wrapper,
+.p-component {
   font-family: 'Outfit', sans-serif !important;
 }
 
 /* 1. Futuristic Header (GTA & Watch Dogs vibe) */
-.page-title, 
+.page-title,
 .form-page .page-title,
 .section-title,
 .dashboard-title,
 .topbar-title,
 .hud-title,
 .brand-title,
-h1, h2 {
+h1,
+h2 {
   font-family: 'Orbitron', sans-serif !important;
   font-weight: 900 !important;
   letter-spacing: 0.06em !important;
@@ -102,9 +121,9 @@ h1, h2 {
 }
 
 /* 2. Historic & Ancient Exploration (Tomb Raider / Uncharted vibe) */
-.city-info h3, 
-.adventure-title, 
-.ancient-title, 
+.city-info h3,
+.adventure-title,
+.ancient-title,
 .city-name,
 h3 {
   font-family: 'Cinzel', serif !important;
@@ -113,10 +132,10 @@ h3 {
 }
 
 /* 3. Tech widgets & Terminal numbers (Watch Dogs hacker code vibe) */
-.order-badge, 
-.row-score, 
-.row-rank, 
-.metric-val, 
+.order-badge,
+.row-score,
+.row-rank,
+.metric-val,
 .char-count,
 .section-badge,
 .player-score,
@@ -151,12 +170,12 @@ html:not(.light-theme) .admin-layout {
 
 /* Light Theme overrides for Welcome Page */
 :root.light-theme .welcome-container {
-  background: #f3f4f6 !important;
-  color: #111827 !important;
+  background: #f5f0e8 !important;
+  color: #1a1208 !important;
 }
 
 :root.light-theme .welcome-container::before {
-  background-image: radial-gradient(rgba(0, 135, 81, 0.04) 1px, transparent 1px) !important;
+  background-image: radial-gradient(rgba(5, 150, 105, 0.05) 1px, transparent 1px) !important;
 }
 
 :root.light-theme .bg-video {
@@ -188,6 +207,7 @@ html:not(.light-theme) .admin-layout {
 :root.light-theme .nav-link {
   color: rgba(17, 24, 39, 0.7) !important;
 }
+
 .nav-link:hover {
   color: var(--accent-primary) !important;
 }
@@ -197,6 +217,7 @@ html:not(.light-theme) .admin-layout {
   border: 1px solid rgba(255, 149, 0, 0.3) !important;
   color: #FF9500 !important;
 }
+
 .btn-dashboard:hover {
   background: var(--accent-gradient) !important;
   color: #040508 !important;
@@ -205,10 +226,11 @@ html:not(.light-theme) .admin-layout {
 }
 
 :root.light-theme .btn-dashboard {
-  background: rgba(0, 135, 81, 0.1) !important;
-  border-color: rgba(0, 135, 81, 0.3) !important;
-  color: #008751 !important;
+  background: rgba(5, 150, 105, 0.1) !important;
+  border-color: rgba(5, 150, 105, 0.3) !important;
+  color: #059669 !important;
 }
+
 :root.light-theme .btn-dashboard:hover {
   background: var(--accent-gradient) !important;
   color: #ffffff !important;
@@ -218,6 +240,7 @@ html:not(.light-theme) .admin-layout {
 :root.light-theme .btn-login {
   color: rgba(17, 24, 39, 0.8) !important;
 }
+
 .btn-login:hover {
   color: var(--accent-primary) !important;
 }
@@ -227,16 +250,21 @@ html:not(.light-theme) .admin-layout {
    ========================================== */
 
 /* 1. Bouton Principal (Primary CTA / Success / Validation) */
-.btn-primary, .primary-cta, .btn-register {
+.btn-primary,
+.primary-cta,
+.btn-register {
   background: var(--accent-gradient) !important;
-  color: #040508 !important; /* Perfect high-contrast black in Dark Mode */
+  color: #040508 !important;
+  /* Perfect high-contrast black in Dark Mode */
   font-weight: 900 !important;
   border: none !important;
   box-shadow: 0 4px 15px var(--accent-glow-primary), 0 4px 20px var(--accent-glow-secondary) !important;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
 }
 
-.btn-primary:hover, .primary-cta:hover, .btn-register:hover {
+.btn-primary:hover,
+.primary-cta:hover,
+.btn-register:hover {
   background: var(--accent-gradient-hover) !important;
   color: #040508 !important;
   box-shadow: 0 6px 20px var(--accent-glow-primary), 0 6px 25px var(--accent-glow-secondary) !important;
@@ -244,12 +272,16 @@ html:not(.light-theme) .admin-layout {
 }
 
 /* Light mode primary text contrast adjustment */
-:root.light-theme .btn-primary, :root.light-theme .primary-cta, :root.light-theme .btn-register {
-  color: #ffffff !important; /* Clean white text in Light Mode */
+:root.light-theme .btn-primary,
+:root.light-theme .primary-cta,
+:root.light-theme .btn-register {
+  color: #ffffff !important;
+  /* Clean white text in Light Mode */
 }
 
 /* 2. Bouton Secondaire (Ghost / Filters / Cancel) */
-.btn-secondary, .secondary-cta {
+.btn-secondary,
+.secondary-cta {
   background: transparent !important;
   border: 2px solid var(--accent-secondary) !important;
   color: var(--accent-secondary) !important;
@@ -257,25 +289,31 @@ html:not(.light-theme) .admin-layout {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-.btn-secondary:hover, .secondary-cta:hover {
-  background: rgba(0, 229, 255, 0.1) !important; /* Cyber Cyan slight opacity */
+.btn-secondary:hover,
+.secondary-cta:hover {
+  background: rgba(0, 229, 255, 0.1) !important;
+  /* Cyber Cyan slight opacity */
   box-shadow: 0 0 20px var(--accent-glow-secondary) !important;
   transform: translateY(-2px);
 }
 
-:root.light-theme .btn-secondary, :root.light-theme .secondary-cta {
+:root.light-theme .btn-secondary,
+:root.light-theme .secondary-cta {
   background: #ffffff !important;
   border: 2px solid var(--accent-secondary) !important;
   color: var(--accent-secondary) !important;
 }
 
-:root.light-theme .btn-secondary:hover, :root.light-theme .secondary-cta:hover {
-  background: rgba(0, 180, 216, 0.08) !important; /* Lagoon Blue slight opacity */
+:root.light-theme .btn-secondary:hover,
+:root.light-theme .secondary-cta:hover {
+  background: rgba(0, 180, 216, 0.08) !important;
+  /* Lagoon Blue slight opacity */
   box-shadow: 0 4px 12px var(--accent-glow-secondary) !important;
 }
 
 /* 3. Bouton Danger / Déconnexion (Pure destructive red, avoiding theme mix) */
-.btn-danger, .btn-logout {
+.btn-danger,
+.btn-logout {
   background: #ef4444 !important;
   color: #ffffff !important;
   border: none !important;
@@ -284,7 +322,8 @@ html:not(.light-theme) .admin-layout {
   transition: all 0.3s ease !important;
 }
 
-.btn-danger:hover, .btn-logout:hover {
+.btn-danger:hover,
+.btn-logout:hover {
   background: #dc2626 !important;
   box-shadow: 0 6px 20px rgba(239, 68, 68, 0.45) !important;
   transform: translateY(-2px);
@@ -299,32 +338,40 @@ html:not(.light-theme) .admin-layout {
 .alert-success {
   background: rgba(16, 18, 27, 0.9) !important;
   border: 1px solid rgba(0, 229, 255, 0.2) !important;
-  border-left: 4px solid var(--accent-secondary) !important; /* Thick Cyan indicator */
+  border-left: 4px solid var(--accent-secondary) !important;
+  /* Thick Cyan indicator */
   color: #ffffff !important;
   box-shadow: 0 10px 30px rgba(0, 229, 255, 0.05) !important;
 }
 
 :root.light-theme .alert-success {
-  background: #f0fdf4 !important; /* Mint green ultra-light background */
-  border: 1px solid rgba(0, 135, 81, 0.15) !important;
-  border-left: 4px solid var(--accent-primary) !important; /* Emerald green left border */
-  color: #166534 !important; /* Forest green text */
-  box-shadow: 0 4px 15px rgba(0, 135, 81, 0.03) !important;
+  background: #f0fdf4 !important;
+  /* Mint green ultra-light background */
+  border: 1px solid rgba(5, 150, 105, 0.15) !important;
+  border-left: 4px solid var(--accent-primary) !important;
+  /* Emerald green left border */
+  color: #166534 !important;
+  /* Forest green text */
+  box-shadow: 0 4px 15px rgba(5, 150, 105, 0.03) !important;
 }
 
 /* 2. Error Toast / Banner */
-.alert-error, .alert-danger {
+.alert-error,
+.alert-danger {
   background: rgba(16, 18, 27, 0.9) !important;
   border: 1px solid rgba(239, 68, 68, 0.2) !important;
   border-left: 4px solid #ef4444 !important;
   color: #f87171 !important;
 }
 
-:root.light-theme .alert-error, :root.light-theme .alert-danger {
-  background: #fef2f2 !important; /* Soft red background */
+:root.light-theme .alert-error,
+:root.light-theme .alert-danger {
+  background: #fef2f2 !important;
+  /* Soft red background */
   border: 1px solid rgba(239, 68, 68, 0.15) !important;
   border-left: 4px solid #ef4444 !important;
-  color: #991b1b !important; /* Deep dark red text */
+  color: #991b1b !important;
+  /* Deep dark red text */
 }
 
 /* 3. Info Toast / Banner */
@@ -336,10 +383,13 @@ html:not(.light-theme) .admin-layout {
 }
 
 :root.light-theme .alert-info {
-  background: #e0f2fe !important; /* Soft sky blue background */
+  background: #e0f2fe !important;
+  /* Soft sky blue background */
   border: 1px solid rgba(0, 180, 216, 0.15) !important;
-  border-left: 4px solid var(--accent-secondary) !important; /* Lagoon Blue left border */
-  color: #0369a1 !important; /* Deep blue text */
+  border-left: 4px solid var(--accent-secondary) !important;
+  /* Lagoon Blue left border */
+  color: #0369a1 !important;
+  /* Deep blue text */
 }
 
 
@@ -360,9 +410,9 @@ html:not(.light-theme) .admin-layout {
 }
 
 :root.light-theme .badge-custom {
-  background: rgba(0, 135, 81, 0.1) !important;
-  color: #008751 !important;
-  border: 1px solid rgba(0, 135, 81, 0.2) !important;
+  background: rgba(5, 150, 105, 0.1) !important;
+  color: #059669 !important;
+  border: 1px solid rgba(5, 150, 105, 0.2) !important;
 }
 
 
@@ -386,7 +436,8 @@ html:not(.light-theme) .admin-layout {
 .step-card {
   background: rgba(16, 18, 27, 0.85);
   border: 1px solid rgba(255, 149, 0, 0.12);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px var(--accent-glow-secondary) !important; /* Glowing player shadows */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px var(--accent-glow-secondary) !important;
+  /* Glowing player shadows */
 }
 
 .step-card:hover {
@@ -396,7 +447,7 @@ html:not(.light-theme) .admin-layout {
 
 :root.light-theme .step-card {
   background: rgba(255, 255, 255, 0.85) !important;
-  border-color: rgba(0, 135, 81, 0.15) !important;
+  border-color: rgba(5, 150, 105, 0.15) !important;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04) !important;
 }
 
@@ -430,6 +481,7 @@ html:not(.light-theme) .admin-layout {
   border: 1px solid rgba(255, 149, 0, 0.12) !important;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px var(--accent-glow-secondary) !important;
 }
+
 .city-card:hover {
   border-color: var(--accent-secondary) !important;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 25px var(--accent-glow-secondary) !important;
@@ -437,7 +489,7 @@ html:not(.light-theme) .admin-layout {
 
 :root.light-theme .city-card {
   background: rgba(255, 255, 255, 0.85) !important;
-  border-color: rgba(0, 135, 81, 0.15) !important;
+  border-color: rgba(5, 150, 105, 0.15) !important;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04) !important;
 }
 
@@ -478,17 +530,19 @@ html:not(.light-theme) .admin-layout {
 
 :root.light-theme .leaderboard-container {
   background: rgba(255, 255, 255, 0.85) !important;
-  border-color: rgba(0, 135, 81, 0.25) !important;
+  border-color: rgba(5, 150, 105, 0.25) !important;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06) !important;
 }
 
 .tab-btn {
   color: rgba(255, 255, 255, 0.6) !important;
 }
+
 .tab-btn:hover {
   color: var(--accent-primary) !important;
   background: rgba(255, 149, 0, 0.05) !important;
 }
+
 .tab-btn.active {
   color: #ffffff !important;
   background: var(--accent-gradient) !important;
@@ -497,10 +551,12 @@ html:not(.light-theme) .admin-layout {
 :root.light-theme .tab-btn {
   color: rgba(17, 24, 39, 0.6) !important;
 }
+
 :root.light-theme .tab-btn:hover {
   color: var(--accent-primary) !important;
-  background: rgba(0, 135, 81, 0.05) !important;
+  background: rgba(5, 150, 105, 0.05) !important;
 }
+
 :root.light-theme .tab-btn.active {
   color: #ffffff !important;
   background: var(--accent-gradient) !important;
@@ -517,7 +573,7 @@ html:not(.light-theme) .admin-layout {
 }
 
 :root.light-theme .leaderboard-row:hover {
-  background: rgba(0, 135, 81, 0.05) !important;
+  background: rgba(5, 150, 105, 0.05) !important;
   border-color: var(--accent-secondary) !important;
 }
 
@@ -527,7 +583,8 @@ html:not(.light-theme) .admin-layout {
 }
 
 :root.light-theme .row-rank.rank-1 {
-  color: var(--accent-secondary) !important; /* Soft Lagoon Blue Rank 1 in Light mode */
+  color: var(--accent-secondary) !important;
+  /* Soft Lagoon Blue Rank 1 in Light mode */
   text-shadow: none !important;
 }
 
@@ -541,11 +598,13 @@ html:not(.light-theme) .admin-layout {
 
 .row-score {
   color: var(--accent-secondary) !important;
-  text-shadow: 0 0 10px var(--accent-glow-secondary) !important; /* Cyan glow score */
+  text-shadow: 0 0 10px var(--accent-glow-secondary) !important;
+  /* Cyan glow score */
 }
 
 :root.light-theme .row-score {
-  color: var(--accent-secondary) !important; /* Soft Lagoon Blue Score in Light mode */
+  color: var(--accent-secondary) !important;
+  /* Soft Lagoon Blue Score in Light mode */
   text-shadow: none !important;
 }
 
@@ -557,9 +616,11 @@ html:not(.light-theme) .admin-layout {
   background: rgba(16, 18, 27, 0.85) !important;
   border: 1px solid rgba(255, 149, 0, 0.12) !important;
 }
+
 .faq-item:hover {
   border-color: var(--accent-secondary) !important;
 }
+
 .faq-item.open {
   border-color: var(--accent-primary) !important;
   box-shadow: 0 0 20px var(--accent-glow-primary) !important;
@@ -567,12 +628,14 @@ html:not(.light-theme) .admin-layout {
 
 :root.light-theme .faq-item {
   background: rgba(255, 255, 255, 0.8) !important;
-  border-color: rgba(0, 135, 81, 0.2) !important;
+  border-color: rgba(5, 150, 105, 0.2) !important;
 }
+
 :root.light-theme .faq-item:hover {
-  background: rgba(0, 135, 81, 0.03) !important;
+  background: rgba(5, 150, 105, 0.03) !important;
   border-color: var(--accent-secondary) !important;
 }
+
 :root.light-theme .faq-item.open {
   border-color: var(--accent-primary) !important;
   box-shadow: 0 10px 25px var(--accent-glow-primary) !important;
@@ -608,7 +671,8 @@ html:not(.light-theme) .admin-layout {
 
 /* Dark Mode Admin Layout */
 .admin-sidebar {
-  background: #10121b !important; /* Premium dark background to prevent eye strain */
+  background: #10121b !important;
+  /* Premium dark background to prevent eye strain */
   border-right: 1px solid rgba(255, 255, 255, 0.04) !important;
   box-shadow: 2px 0 15px rgba(0, 0, 0, 0.15) !important;
 }
@@ -768,13 +832,13 @@ html:not(.light-theme) .admin-layout {
 }
 
 :root.light-theme .sidebar-link:hover {
-  background: rgba(0, 135, 81, 0.04) !important;
+  background: rgba(5, 150, 105, 0.04) !important;
   color: var(--accent-primary) !important;
 }
 
 :root.light-theme .sidebar-link.active {
   border-left: 3px solid var(--accent-primary) !important;
-  background: rgba(0, 135, 81, 0.08) !important;
+  background: rgba(5, 150, 105, 0.08) !important;
   color: var(--accent-primary) !important;
 }
 
@@ -809,10 +873,10 @@ html:not(.light-theme) .admin-layout {
 }
 
 :root.light-theme .theme-switch-float {
-  background: rgba(255, 255, 255, 0.85);
-  border-color: rgba(0, 135, 81, 0.4);
-  color: #008751;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  background: rgba(250, 246, 238, 0.92);
+  border-color: rgba(200, 169, 110, 0.6);
+  color: #059669;
+  box-shadow: 0 4px 15px rgba(139, 105, 20, 0.12);
 }
 
 :root.light-theme .theme-switch-float:hover {
@@ -828,25 +892,41 @@ html:not(.light-theme) .admin-layout {
    ========================================== */
 
 /* Page titles and header texts */
-.page-title, .form-page .page-title {
+.page-title,
+.form-page .page-title {
   color: var(--text-main) !important;
 }
-.page-subtitle, .lieu-meta, .lieu-description, .hint, .char-count, .section-badge {
+
+.page-subtitle,
+.lieu-meta,
+.lieu-description,
+.hint,
+.char-count,
+.section-badge {
   color: var(--text-muted) !important;
 }
 
 /* Cards & Layout panels */
-.stat-card, .chart-card, .lieu-card, .empty-state, .form-card, .map-wrapper {
+.stat-card,
+.chart-card,
+.lieu-card,
+.empty-state,
+.form-card,
+.map-wrapper {
   background-color: var(--bg-card) !important;
   border: 1px solid var(--border-glow) !important;
   color: var(--text-main) !important;
 }
 
-.stat-card:hover, .chart-card:hover, .lieu-card:hover {
-  box-shadow: 0 10px 25px rgba(0,0,0,0.4), 0 0 15px var(--accent-glow-secondary) !important;
+.stat-card:hover,
+.chart-card:hover,
+.lieu-card:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), 0 0 15px var(--accent-glow-secondary) !important;
 }
 
-:root.light-theme .stat-card:hover, :root.light-theme .chart-card:hover, :root.light-theme .lieu-card:hover {
+:root.light-theme .stat-card:hover,
+:root.light-theme .chart-card:hover,
+:root.light-theme .lieu-card:hover {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
 }
 
@@ -873,6 +953,7 @@ html:not(.light-theme) .admin-layout {
   color: var(--text-muted) !important;
   transition: all 0.3s ease !important;
 }
+
 .upload-zone:hover {
   border-color: var(--accent-secondary) !important;
   color: var(--accent-secondary) !important;
@@ -882,6 +963,7 @@ html:not(.light-theme) .admin-layout {
 :root.light-theme .upload-zone {
   background: #ffffff !important;
 }
+
 :root.light-theme .upload-zone:hover {
   border-color: var(--accent-secondary) !important;
   color: var(--accent-secondary) !important;
@@ -904,18 +986,20 @@ html:not(.light-theme) .admin-layout {
   background: rgba(255, 149, 0, 0.1) !important;
   color: #FF9500 !important;
 }
+
 :root.light-theme .order-badge {
-  background: rgba(0, 135, 81, 0.1) !important;
-  color: #008751 !important;
+  background: rgba(5, 150, 105, 0.1) !important;
+  color: #059669 !important;
 }
 
 .section-badge {
   background: rgba(255, 149, 0, 0.1) !important;
   color: #FF9500 !important;
 }
+
 :root.light-theme .section-badge {
-  background: rgba(0, 135, 81, 0.1) !important;
-  color: #008751 !important;
+  background: rgba(5, 150, 105, 0.1) !important;
+  color: #059669 !important;
 }
 
 
@@ -977,8 +1061,8 @@ html:not(.light-theme) body .p-chips,
 html:not(.light-theme) body .p-chips-multiple-container,
 html:not(.light-theme) body .p-calendar input,
 html:not(.light-theme) body .p-datatable,
-html:not(.light-theme) body .p-datatable-tbody > tr,
-html:not(.light-theme) body .p-datatable-thead > tr > th,
+html:not(.light-theme) body .p-datatable-tbody>tr,
+html:not(.light-theme) body .p-datatable-thead>tr>th,
 html:not(.light-theme) body .p-card,
 html:not(.light-theme) body .p-dialog,
 html:not(.light-theme) body .p-dialog-header,
@@ -998,6 +1082,7 @@ body .p-card {
   border-radius: 12px !important;
   box-shadow: var(--glow-shadow) !important;
 }
+
 :root.light-theme body .p-card {
   background: #ffffff !important;
   border-color: rgba(0, 0, 0, 0.06) !important;
@@ -1019,31 +1104,40 @@ body .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-seconda
   color: #040508 !important;
   box-shadow: 0 4px 15px var(--accent-glow-primary) !important;
 }
+
 body .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-secondary):not(.p-button-danger):not(.p-button-success):not(.p-button-link):hover {
   background: var(--accent-gradient-hover) !important;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px var(--accent-glow-primary), 0 6px 25px var(--accent-glow-secondary) !important;
 }
+
 :root.light-theme body .p-button:not(.p-button-outlined):not(.p-button-text):not(.p-button-secondary):not(.p-button-danger):not(.p-button-success):not(.p-button-link) {
   color: #ffffff !important;
 }
 
 /* Outlined / Secondary Button */
-body .p-button.p-button-outlined, body .p-button.p-button-secondary {
+body .p-button.p-button-outlined,
+body .p-button.p-button-secondary {
   background: transparent !important;
   border: 2px solid var(--accent-secondary) !important;
   color: var(--accent-secondary) !important;
 }
-body .p-button.p-button-outlined:hover, body .p-button.p-button-secondary:hover {
+
+body .p-button.p-button-outlined:hover,
+body .p-button.p-button-secondary:hover {
   background: rgba(0, 229, 255, 0.1) !important;
   box-shadow: 0 0 15px var(--accent-glow-secondary) !important;
   color: var(--accent-secondary) !important;
 }
-:root.light-theme body .p-button.p-button-outlined, :root.light-theme body .p-button.p-button-secondary {
+
+:root.light-theme body .p-button.p-button-outlined,
+:root.light-theme body .p-button.p-button-secondary {
   border-color: var(--accent-secondary) !important;
   color: var(--accent-secondary) !important;
 }
-:root.light-theme body .p-button.p-button-outlined:hover, :root.light-theme body .p-button.p-button-secondary:hover {
+
+:root.light-theme body .p-button.p-button-outlined:hover,
+:root.light-theme body .p-button.p-button-secondary:hover {
   background: rgba(0, 180, 216, 0.08) !important;
   box-shadow: 0 4px 12px var(--accent-glow-secondary) !important;
   color: var(--accent-secondary) !important;
@@ -1055,12 +1149,14 @@ body .p-button.p-button-text {
   background: transparent !important;
   border: none !important;
 }
+
 body .p-button.p-button-text:hover {
   background: rgba(255, 149, 0, 0.08) !important;
   color: var(--accent-primary) !important;
 }
+
 :root.light-theme body .p-button.p-button-text:hover {
-  background: rgba(0, 135, 81, 0.08) !important;
+  background: rgba(5, 150, 105, 0.08) !important;
 }
 
 /* Danger Button */
@@ -1069,6 +1165,7 @@ body .p-button.p-button-danger {
   border: none !important;
   color: #ffffff !important;
 }
+
 body .p-button.p-button-danger:hover {
   background: #dc2626 !important;
   box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4) !important;
@@ -1081,7 +1178,8 @@ body .p-datatable {
   border-radius: 12px !important;
   overflow: hidden !important;
 }
-body .p-datatable .p-datatable-thead > tr > th {
+
+body .p-datatable .p-datatable-thead>tr>th {
   background: rgba(255, 255, 255, 0.02) !important;
   color: var(--text-main) !important;
   border-bottom: 1px solid var(--border-glow) !important;
@@ -1090,31 +1188,37 @@ body .p-datatable .p-datatable-thead > tr > th {
   font-size: 0.75rem !important;
   letter-spacing: 0.05em !important;
 }
-body .p-datatable .p-datatable-tbody > tr {
+
+body .p-datatable .p-datatable-tbody>tr {
   background: transparent !important;
   color: var(--text-muted) !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
   transition: all 0.2s ease !important;
 }
-body .p-datatable .p-datatable-tbody > tr:hover {
+
+body .p-datatable .p-datatable-tbody>tr:hover {
   background: rgba(255, 149, 0, 0.03) !important;
   color: var(--text-main) !important;
 }
+
 :root.light-theme body .p-datatable {
   background: #ffffff !important;
   border-color: rgba(0, 0, 0, 0.06) !important;
 }
-:root.light-theme body .p-datatable .p-datatable-thead > tr > th {
+
+:root.light-theme body .p-datatable .p-datatable-thead>tr>th {
   background: #f1f5f9 !important;
   color: #0f172a !important;
   border-bottom-color: rgba(0, 0, 0, 0.06) !important;
 }
-:root.light-theme body .p-datatable .p-datatable-tbody > tr {
+
+:root.light-theme body .p-datatable .p-datatable-tbody>tr {
   color: #475569 !important;
   border-bottom-color: rgba(0, 0, 0, 0.04) !important;
 }
-:root.light-theme body .p-datatable .p-datatable-tbody > tr:hover {
-  background: rgba(0, 135, 81, 0.04) !important;
+
+:root.light-theme body .p-datatable .p-datatable-tbody>tr:hover {
+  background: rgba(5, 150, 105, 0.04) !important;
 }
 
 /* 4. PrimeVue Tag Overrides */
@@ -1124,45 +1228,57 @@ body .p-tag {
   border-radius: 6px !important;
   padding: 0.25rem 0.5rem !important;
 }
+
 body .p-tag-success {
   background: rgba(16, 185, 129, 0.1) !important;
   color: #10b981 !important;
   border: 1px solid rgba(16, 185, 129, 0.2) !important;
 }
-body .p-tag-warning, body .p-tag-warn {
+
+body .p-tag-warning,
+body .p-tag-warn {
   background: rgba(255, 149, 0, 0.1) !important;
   color: #FF9500 !important;
   border: 1px solid rgba(255, 149, 0, 0.2) !important;
 }
 
 /* 5. PrimeVue Popup/Dropdown/Calendar panel overrides */
-.p-dropdown-panel, .p-multiselect-panel, .p-datepicker {
+.p-dropdown-panel,
+.p-multiselect-panel,
+.p-datepicker {
   background: var(--bg-card) !important;
   border: 1px solid var(--border-glow) !important;
   border-radius: 12px !important;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
 }
-.p-dropdown-items-wrapper .p-dropdown-item, .p-multiselect-items-wrapper .p-multiselect-item {
+
+.p-dropdown-items-wrapper .p-dropdown-item,
+.p-multiselect-items-wrapper .p-multiselect-item {
   color: var(--text-main) !important;
   transition: background 0.2s !important;
 }
-.p-dropdown-items-wrapper .p-dropdown-item:hover, 
+
+.p-dropdown-items-wrapper .p-dropdown-item:hover,
 .p-dropdown-items-wrapper .p-dropdown-item.p-highlight,
 .p-multiselect-items-wrapper .p-multiselect-item:hover,
 .p-multiselect-items-wrapper .p-multiselect-item.p-highlight {
   background: rgba(255, 149, 0, 0.08) !important;
   color: var(--accent-primary) !important;
 }
-:root.light-theme .p-dropdown-panel, :root.light-theme .p-multiselect-panel, :root.light-theme .p-datepicker {
+
+:root.light-theme .p-dropdown-panel,
+:root.light-theme .p-multiselect-panel,
+:root.light-theme .p-datepicker {
   background: #ffffff !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
   border-color: rgba(0, 0, 0, 0.08) !important;
 }
-:root.light-theme .p-dropdown-items-wrapper .p-dropdown-item:hover, 
+
+:root.light-theme .p-dropdown-items-wrapper .p-dropdown-item:hover,
 :root.light-theme .p-dropdown-items-wrapper .p-dropdown-item.p-highlight,
 :root.light-theme .p-multiselect-items-wrapper .p-multiselect-item:hover,
 :root.light-theme .p-multiselect-items-wrapper .p-multiselect-item.p-highlight {
-  background: rgba(0, 135, 81, 0.08) !important;
+  background: rgba(5, 150, 105, 0.08) !important;
   color: var(--accent-primary) !important;
 }
 
@@ -1206,29 +1322,34 @@ body .char-count {
 /* ========================================================
    BOARD GAME THEME (PLAYER VIEWS)
    ======================================================== */
+
+/* ── Dark Mode: Bois sombre & Orange ── */
 .game-board {
   background: #1f140e;
   border: 8px solid #3f2a1e;
-  box-shadow: 
-      0 20px 60px rgba(0, 0, 0, 0.8),
-      inset 0 0 80px rgba(0, 0, 0, 0.6);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.8),
+    inset 0 0 80px rgba(0, 0, 0, 0.6);
   border-radius: 20px;
   position: relative;
 }
 
+/* ── Light Mode: Parchemin ivoire & Émeraude (style plateau de jeu) ── */
 :root.light-theme .game-board {
-  background: #fcf8f2;
-  border-color: #d4b88a;
-  box-shadow: 
-      0 20px 50px rgba(0, 0, 0, 0.1),
-      inset 0 0 40px rgba(0, 0, 0, 0.05);
+  background: linear-gradient(145deg, #faf6ee 0%, #f5edd8 100%);
+  border: 8px solid #c8a96e;
+  box-shadow:
+    0 20px 50px rgba(139, 105, 20, 0.18),
+    inset 0 0 60px rgba(200, 169, 110, 0.08),
+    0 0 0 2px #8b6914;
 }
 
+/* ── Dark Mode: Carte bois ── */
 .board-card {
   background: #2a1c14;
   border: 2px solid #5c4033;
   border-radius: 12px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
   overflow: hidden;
@@ -1241,17 +1362,24 @@ body .char-count {
   z-index: 10;
 }
 
+/* ── Light Mode: Carte parchemin avec bordure dorée ── */
 :root.light-theme .board-card {
-  background: #ffffff;
-  border-color: #e5d3b3;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+  background: linear-gradient(145deg, #fffdf7 0%, #fdf8ec 100%);
+  border: 2px solid #c8a96e;
+  box-shadow:
+    0 8px 25px rgba(139, 105, 20, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 :root.light-theme .board-card:hover {
-  border-color: var(--accent-primary);
-  box-shadow: 0 15px 35px rgba(0, 135, 81, 0.15);
+  border-color: var(--player-accent);
+  box-shadow:
+    0 15px 35px rgba(5, 150, 105, 0.18),
+    0 0 0 1px rgba(5, 150, 105, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
+/* ── Typographie commune ── */
 .card-title {
   font-family: 'Cinzel', serif !important;
   font-weight: 900;
@@ -1265,25 +1393,204 @@ body .char-count {
   letter-spacing: 0.1em;
 }
 
+/* ── Dark Mode: Tapis de jeu ── */
 .play-mat {
-  background-image: 
-      linear-gradient(rgba(139, 69, 19, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(139, 69, 19, 0.05) 1px, transparent 1px);
+  background-image:
+    linear-gradient(rgba(139, 69, 19, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 69, 19, 0.05) 1px, transparent 1px);
   background-size: 30px 30px;
 }
+
+/* ── Light Mode: Tapis parchemin avec grille subtile ── */
 :root.light-theme .play-mat {
-  background-image: 
-      linear-gradient(rgba(212, 184, 138, 0.2) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(212, 184, 138, 0.2) 1px, transparent 1px);
+  background-color: #f5f0e8;
+  background-image:
+    linear-gradient(rgba(200, 169, 110, 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200, 169, 110, 0.2) 1px, transparent 1px);
+  background-size: 30px 30px;
 }
 
-=======
+/* ── Light Mode: HUD de jeu (barre du haut) ── */
+:root.light-theme .gsap-hud,
+:root.light-theme .game-hud-bar {
+  background: linear-gradient(180deg, #faf6ee 0%, #f5edd8 100%) !important;
+  border-bottom-color: #c8a96e !important;
+  color: #1a1208 !important;
+}
+
+/* ── Light Mode: Textes dans les cartes player ── */
+:root.light-theme .board-card .card-title,
+:root.light-theme .board-card h2,
+:root.light-theme .board-card h3 {
+  color: #1a1208 !important;
+}
+
+:root.light-theme .board-card .card-badge {
+  color: #6b4c1e !important;
+}
+
+/* ── Light Mode: Bouton principal player (émeraude) ── */
+:root.light-theme .player-btn-primary {
+  background: var(--player-accent) !important;
+  color: #ffffff !important;
+  border-color: #047857 !important;
+  box-shadow: 0 4px 0 #047857 !important;
+}
+
+:root.light-theme .player-btn-primary:hover {
+  background: #047857 !important;
+}
+
+/* ── Light Mode: Panel board (fond parchemin) ── */
+:root.light-theme .board-panel {
+  background: linear-gradient(145deg, #faf6ee 0%, #f5edd8 100%) !important;
+  border-color: #c8a96e !important;
+  color: #1a1208 !important;
+}
+
+/* ── Light Mode: Colonnes colorées style plateau (inspiré de l'image) ── */
+:root.light-theme .column-blue   { background: rgba(29, 78, 216, 0.08) !important; border-color: #1d4ed8 !important; }
+:root.light-theme .column-green  { background: rgba(5, 150, 105, 0.08) !important; border-color: #059669 !important; }
+:root.light-theme .column-red    { background: rgba(220, 38, 38, 0.08) !important; border-color: #dc2626 !important; }
+:root.light-theme .column-purple { background: rgba(124, 58, 237, 0.08) !important; border-color: #7c3aed !important; }
+
+/* ── Light Mode: Barre de progression player ── */
+:root.light-theme .player-progress-bar {
+  background: #e8dfc8 !important;
+  border-color: #c8a96e !important;
+}
+
+:root.light-theme .player-progress-fill {
+  background: linear-gradient(to right, #059669, #0891b2) !important;
+  box-shadow: 0 0 8px rgba(5, 150, 105, 0.4) !important;
+}
+
+/* ── Light Mode: Tokens / outils ── */
+:root.light-theme .tool-token .token-inner {
+  background: #fffdf7 !important;
+  border-color: #c8a96e !important;
+  box-shadow: 0 4px 12px rgba(139, 105, 20, 0.15), inset 0 1px 0 rgba(255,255,255,0.9) !important;
+}
+
+:root.light-theme .tool-token:hover .token-inner {
+  border-color: var(--player-accent) !important;
+  box-shadow: 0 8px 20px rgba(5, 150, 105, 0.2), inset 0 1px 0 rgba(255,255,255,0.9) !important;
+}
+
+/* ── Light Mode: Formulaire de réponse ── */
+:root.light-theme .answer-input-wrapper {
+  background: #fffdf7 !important;
+  border-color: #c8a96e !important;
+}
+
+:root.light-theme .answer-input-wrapper:focus-within {
+  border-color: var(--player-accent) !important;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15) !important;
+}
+
+/* ── Light Mode: Boussole / radar ── */
+:root.light-theme .radar-ring {
+  border-color: var(--player-accent) !important;
+  box-shadow: 0 0 15px rgba(5, 150, 105, 0.3) !important;
+}
+
+/* ── Light Mode: Statut badges ── */
+:root.light-theme .statut-en-cours  { background: rgba(29, 78, 216, 0.1) !important; color: #1d4ed8 !important; border-color: rgba(29, 78, 216, 0.25) !important; }
+:root.light-theme .statut-terminee  { background: rgba(5, 150, 105, 0.1) !important; color: #059669 !important; border-color: rgba(5, 150, 105, 0.25) !important; }
+:root.light-theme .statut-suspendue { background: rgba(217, 119, 6, 0.1) !important; color: #d97706 !important; border-color: rgba(217, 119, 6, 0.25) !important; }
+
+/* ── Light Mode: Score / points ── */
+:root.light-theme .player-score-value {
+  color: var(--player-accent) !important;
+  text-shadow: none !important;
+}
+
+/* ── Light Mode: Dialogue de jeu ── */
+:root.light-theme .game-dialog {
+  background: linear-gradient(145deg, #faf6ee 0%, #f5edd8 100%) !important;
+  border: 3px solid #c8a96e !important;
+  color: #1a1208 !important;
+  box-shadow: 0 20px 50px rgba(139, 105, 20, 0.2) !important;
+}
+
+:root.light-theme .game-dialog .p-dialog-header {
+  border-bottom-color: rgba(200, 169, 110, 0.4) !important;
+  color: var(--player-accent) !important;
+}
+
+:root.light-theme .game-dialog .p-dialog-content {
+  color: #1a1208 !important;
+}
+
+:root.light-theme .game-dialog .p-dialog-header-icons .p-dialog-header-icon {
+  color: rgba(26, 18, 8, 0.4) !important;
+}
+
+/* ── Light Mode: Select button (config partie) ── */
+:root.light-theme .board-select-button .p-button {
+  background: #fffdf7 !important;
+  border-color: #c8a96e !important;
+  color: #6b4c1e !important;
+}
+
+:root.light-theme .board-select-button .p-button:hover {
+  border-color: var(--player-accent) !important;
+  color: #1a1208 !important;
+}
+
+:root.light-theme .board-select-button .p-button.p-highlight {
+  background: rgba(5, 150, 105, 0.1) !important;
+  border-color: var(--player-accent) !important;
+  color: var(--player-accent) !important;
+  box-shadow: 0 0 12px rgba(5, 150, 105, 0.15) !important;
+}
+
+/* ── Light Mode: Slider ── */
+:root.light-theme .board-slider.p-slider {
+  background: #e8dfc8 !important;
+  border-color: #c8a96e !important;
+}
+
+:root.light-theme .board-slider .p-slider-range {
+  background: linear-gradient(to right, var(--player-accent), #0891b2) !important;
+}
+
+:root.light-theme .board-slider .p-slider-handle {
+  border-color: #fffdf7 !important;
+  background: var(--player-accent) !important;
+  box-shadow: 0 0 8px rgba(5, 150, 105, 0.4) !important;
+}
+
+/* ── Light Mode: Header de section player ── */
+:root.light-theme .player-section-header {
+  background: linear-gradient(135deg, #faf6ee 0%, #f0e8d0 100%) !important;
+  border-color: #c8a96e !important;
+}
+
+/* ── Light Mode: Scrollbar player ── */
+:root.light-theme ::-webkit-scrollbar-track {
+  background: #f5f0e8;
+}
+
+:root.light-theme ::-webkit-scrollbar-thumb {
+  background: #c8a96e;
+}
+
+:root.light-theme ::-webkit-scrollbar-thumb:hover {
+  background: var(--player-accent);
+}
+
 @layer base {
   body {
     @apply bg-dark-bg text-white font-sans;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-gaming uppercase tracking-wider text-white;
   }
 }
@@ -1292,13 +1599,16 @@ body .char-count {
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: #0b0e14;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #30363d;
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #FF9500;
 }
@@ -1312,19 +1622,19 @@ body .char-count {
   @apply bg-dark-surface border-b border-dark-border text-white p-4 font-gaming uppercase tracking-wider !important;
 }
 
-.p-datatable .p-datatable-thead > tr > th {
+.p-datatable .p-datatable-thead>tr>th {
   @apply bg-dark-surface text-primary-400 border-b border-dark-border p-4 font-gaming uppercase text-xs tracking-widest !important;
 }
 
-.p-datatable .p-datatable-tbody > tr {
+.p-datatable .p-datatable-tbody>tr {
   @apply bg-dark-surface text-gray-100 transition-colors !important;
 }
 
-.p-datatable .p-datatable-tbody > tr:hover {
+.p-datatable .p-datatable-tbody>tr:hover {
   @apply bg-white/5 !important;
 }
 
-.p-datatable .p-datatable-tbody > tr > td {
+.p-datatable .p-datatable-tbody>tr>td {
   @apply border-b border-dark-border/50 p-4 !important;
 }
 
@@ -1354,7 +1664,8 @@ body .char-count {
 }
 
 .p-button.p-button-primary:hover {
-  @apply bg-primary-600 border-primary-600 shadow-[0_0_15px_rgba(255,149,0,0.4)] !important;
+  @apply bg-primary-600 border-primary-600 !important;
+  box-shadow: 0 0 15px rgba(255, 149, 0, 0.4) !important;
 }
 
 .p-button.p-button-outlined {
@@ -1396,7 +1707,8 @@ body .char-count {
 }
 
 .p-inputtext:focus {
-  @apply border-primary-500 ring-1 ring-primary-500/50 shadow-[0_0_10px_rgba(255,149,0,0.2)] !important;
+  @apply border-primary-500 ring-1 ring-primary-500/50 !important;
+  box-shadow: 0 0 10px rgba(255, 149, 0, 0.2) !important;
 }
 
 .p-inputtext.p-invalid {
@@ -1423,4 +1735,267 @@ body .char-count {
 .p-breadcrumb .p-menuitem-link:hover .p-menuitem-text {
   @apply text-primary-500 !important;
 }
->>>>>>> 5fbddc62cb3d8326a80c2472f9df79b62f006164
+
+
+/* ========================================================
+   PLAYER VIEWS — LIGHT MODE HARDCODED COLOR OVERRIDES
+   Couvre les bg/border/text hardcodés dans Enigme, Success,
+   Failure, Summary, JoinPartie, CreatePartie, Dashboard
+   ======================================================== */
+
+/* Fond principal des pages player */
+:root.light-theme .play-mat,
+:root.light-theme [class*="play-mat"] {
+  background-color: #f5f0e8 !important;
+}
+
+/* Remplace les fonds bois sombre par parchemin */
+:root.light-theme .bg-\[\#1f140e\],
+:root.light-theme .bg-\[\#2a1c14\],
+:root.light-theme .bg-\[\#3f2a1e\] {
+  background-color: #faf6ee !important;
+}
+
+/* Remplace les bordures bois par dorées */
+:root.light-theme .border-\[\#5c4033\],
+:root.light-theme .border-\[\#3f2a1e\] {
+  border-color: #c8a96e !important;
+}
+
+/* Texte crème → brun foncé */
+:root.light-theme .text-\[\#f5e8c7\] {
+  color: #1a1208 !important;
+}
+
+/* Accent orange → émeraude en light */
+:root.light-theme .text-\[\#FF9500\] {
+  color: #059669 !important;
+}
+:root.light-theme .border-\[\#FF9500\] {
+  border-color: #059669 !important;
+}
+:root.light-theme .bg-\[\#FF9500\] {
+  background-color: #059669 !important;
+  color: #ffffff !important;
+}
+
+/* HUD sticky top bar */
+:root.light-theme .gsap-hud {
+  background: linear-gradient(180deg, #faf6ee 0%, #f0e8d0 100%) !important;
+  border-bottom-color: #c8a96e !important;
+}
+:root.light-theme .gsap-hud .card-title,
+:root.light-theme .gsap-hud .card-badge {
+  color: #1a1208 !important;
+}
+:root.light-theme .gsap-hud .text-\[\#FF9500\] {
+  color: #059669 !important;
+}
+
+/* Cercle de progression HUD */
+:root.light-theme .gsap-hud circle[stroke="#FF9500"] {
+  stroke: #059669 !important;
+}
+
+/* Chrono timer */
+:root.light-theme .gsap-hud .text-red-500 {
+  color: #dc2626 !important;
+}
+
+/* Boutons pause / actions dans HUD */
+:root.light-theme .gsap-hud button {
+  background: rgba(200, 169, 110, 0.2) !important;
+  border-color: #c8a96e !important;
+  color: #1a1208 !important;
+}
+:root.light-theme .gsap-hud button:hover {
+  background: rgba(5, 150, 105, 0.1) !important;
+  border-color: #059669 !important;
+}
+
+/* Carte principale enigme */
+:root.light-theme .board-card.gsap-main-card,
+:root.light-theme .gsap-main-card {
+  background: linear-gradient(145deg, #fffdf7 0%, #fdf8ec 100%) !important;
+  border-color: #c8a96e !important;
+}
+
+/* Zone texte enigme (fond parchemin foncé) */
+:root.light-theme .bg-\[\#1f140e\].p-6.rounded-xl,
+:root.light-theme .shadow-inner.bg-\[\#1f140e\] {
+  background: #f0e8d0 !important;
+  border-color: #c8a96e !important;
+  color: #1a1208 !important;
+}
+
+/* Carte action (boussole, réponse) */
+:root.light-theme .gsap-action-card {
+  background: linear-gradient(145deg, #fffdf7 0%, #fdf8ec 100%) !important;
+  border-color: #c8a96e !important;
+}
+
+/* Input réponse */
+:root.light-theme .p-inputtext.w-full {
+  background: #fffdf7 !important;
+  border-color: #c8a96e !important;
+  color: #1a1208 !important;
+}
+:root.light-theme .p-inputtext.w-full:focus {
+  border-color: #059669 !important;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15) !important;
+}
+:root.light-theme .p-inputtext.w-full::placeholder {
+  color: rgba(26, 18, 8, 0.3) !important;
+}
+
+/* Bouton submit réponse */
+:root.light-theme button.bg-\[\#FF9500\].text-\[\#1f140e\] {
+  background: #059669 !important;
+  color: #ffffff !important;
+}
+
+/* Boussole radar */
+:root.light-theme .border-\[\#FF9500\].rounded-full {
+  border-color: #059669 !important;
+  box-shadow: 0 0 15px rgba(5, 150, 105, 0.3) !important;
+}
+
+/* Overlay pause */
+:root.light-theme .game-board.rounded-\[2\.5rem\] {
+  background: linear-gradient(145deg, #faf6ee 0%, #f5edd8 100%) !important;
+  border-color: #c8a96e !important;
+}
+
+/* Page Success */
+:root.light-theme .gsap-header .border-\[\#FF9500\] {
+  border-color: #059669 !important;
+  box-shadow: 0 0 30px rgba(5, 150, 105, 0.3) !important;
+}
+:root.light-theme .gsap-header .text-\[\#FF9500\] {
+  color: #059669 !important;
+}
+:root.light-theme .gsap-card.board-card {
+  background: linear-gradient(145deg, #fffdf7 0%, #fdf8ec 100%) !important;
+  border-color: #c8a96e !important;
+}
+:root.light-theme .gsap-card .bg-\[\#2a1c14\] {
+  background: #f0e8d0 !important;
+}
+
+/* Page Failure */
+:root.light-theme .gsap-fail-card {
+  background: linear-gradient(145deg, #fffdf7 0%, #fdf8ec 100%) !important;
+  border-color: #c8a96e !important;
+  color: #1a1208 !important;
+  box-shadow: 0 20px 50px rgba(220, 38, 38, 0.1) !important;
+}
+:root.light-theme .gsap-fail-card .bg-\[\#2a1c14\] {
+  background: #f0e8d0 !important;
+  border-color: #c8a96e !important;
+}
+
+/* Page Summary */
+:root.light-theme .gsap-item {
+  color: #1a1208 !important;
+}
+:root.light-theme .gsap-item.bg-\[\#1f140e\],
+:root.light-theme .gsap-item.bg-\[\#2a1c14\] {
+  background: linear-gradient(145deg, #fffdf7 0%, #fdf8ec 100%) !important;
+  border-color: #c8a96e !important;
+}
+:root.light-theme .gsap-item .text-\[\#f5e8c7\] {
+  color: #1a1208 !important;
+}
+:root.light-theme .gsap-item .text-\[\#FF9500\] {
+  color: #059669 !important;
+}
+
+/* JoinPartie — cartes de rôle */
+:root.light-theme .role-card {
+  background: linear-gradient(145deg, #fffdf7 0%, #fdf8ec 100%) !important;
+  border-color: #c8a96e !important;
+}
+:root.light-theme .role-card .border-\[\#5c4033\] {
+  border-color: #c8a96e !important;
+}
+:root.light-theme .role-card .bg-\[\#1f140e\] {
+  background: #f0e8d0 !important;
+}
+:root.light-theme .code-overlay {
+  background: linear-gradient(145deg, #fffdf7 0%, #fdf8ec 100%) !important;
+  border-color: #c8a96e !important;
+}
+:root.light-theme .code-overlay .bg-\[\#1f140e\] {
+  background: #f0e8d0 !important;
+  color: #1a1208 !important;
+}
+
+/* Bouton CTA principal player en light */
+:root.light-theme button.bg-\[\#5c4033\],
+:root.light-theme button.from-\[\#5c4033\] {
+  background: #059669 !important;
+  color: #ffffff !important;
+  border-color: #047857 !important;
+  box-shadow: 0 6px 0 #047857 !important;
+}
+:root.light-theme button.bg-\[\#5c4033\]:hover,
+:root.light-theme button.from-\[\#5c4033\]:hover {
+  background: #047857 !important;
+}
+
+/* Bouton "Quitter" secondaire */
+:root.light-theme button.bg-\[\#1f140e\].border-\[\#5c4033\] {
+  background: #f0e8d0 !important;
+  border-color: #c8a96e !important;
+  color: #6b4c1e !important;
+}
+:root.light-theme button.bg-\[\#1f140e\].border-\[\#5c4033\]:hover {
+  border-color: #059669 !important;
+  color: #1a1208 !important;
+}
+
+/* Gradient overlay images en light */
+:root.light-theme .bg-gradient-to-t.from-\[\#1f140e\],
+:root.light-theme .bg-gradient-to-t.from-\[\#2a1c14\] {
+  background: linear-gradient(to top, #faf6ee, transparent) !important;
+}
+:root.light-theme .bg-gradient-to-t.from-\[\#1f140e\].to-transparent,
+:root.light-theme .bg-gradient-to-t.from-\[\#2a1c14\].to-transparent {
+  background: linear-gradient(to top, rgba(250, 246, 238, 0.95), transparent) !important;
+}
+
+/* Texte blanc/opacité → brun en light */
+:root.light-theme .play-mat .text-white\/50,
+:root.light-theme .play-mat .text-white\/60,
+:root.light-theme .play-mat .text-white\/40,
+:root.light-theme .play-mat .text-white\/30,
+:root.light-theme .play-mat .text-white\/20 {
+  color: rgba(107, 76, 30, 0.7) !important;
+}
+:root.light-theme .play-mat .text-white\/80,
+:root.light-theme .play-mat .text-white\/90 {
+  color: #1a1208 !important;
+}
+
+/* Bordures blanches/opacité → dorées en light */
+:root.light-theme .play-mat .border-white\/10,
+:root.light-theme .play-mat .border-white\/5 {
+  border-color: rgba(200, 169, 110, 0.3) !important;
+}
+
+/* Fond noir/opacité → parchemin en light */
+:root.light-theme .play-mat .bg-black\/40,
+:root.light-theme .play-mat .bg-black\/20,
+:root.light-theme .play-mat .bg-black\/60 {
+  background: rgba(200, 169, 110, 0.15) !important;
+}
+
+/* Italic serif text (descriptions) */
+:root.light-theme .font-serif.italic {
+  color: #3d2a0a !important;
+}
+
+/* Offline banner reste rouge */
+:root.light-theme .bg-red-900 {
+  background-color: #7f1d1d !important;
+}

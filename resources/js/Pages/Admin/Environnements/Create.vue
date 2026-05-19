@@ -85,24 +85,6 @@ const submit = () => {
                         Créer
                     </button>
                 </div>
-<<<<<<< HEAD
-                <div>
-                    <label>Message mauvaise réponse</label>
-                    <input v-model="form.message_mauvaise_reponse" type="text" class="w-full border rounded p-2" />
-                </div>
-                <div>
-                    <label>Message fin</label>
-                    <input v-model="form.message_fin" type="text" class="w-full border rounded p-2" />
-                </div>
-                <div>
-                    <label>Message pause</label>
-                    <input v-model="form.message_pause" type="text" class="w-full border rounded p-2" />
-                </div>
-                <button type="submit" class="bg-[#FF9500] hover:bg-[#E08400] text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-md active:scale-95 duration-200">
-                    Créer
-                </button>
-=======
->>>>>>> 5fbddc62cb3d8326a80c2472f9df79b62f006164
             </form>
         </div>
     </AdminLayout>

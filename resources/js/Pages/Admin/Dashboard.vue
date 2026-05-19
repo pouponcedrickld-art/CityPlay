@@ -82,11 +82,7 @@ const statutChartData = computed(() => {
         labels: props.charts.parties_par_statut.map(item => labels[item.statut] || item.statut),
         datasets: [
             {
-<<<<<<< HEAD
-                backgroundColor: props.charts.parties_par_statut.map(item => colors[item.statut] || '#9CA3AF'),
-=======
                 backgroundColor: ['#FF9500', '#10B981', '#F59E0B', '#EF4444'],
->>>>>>> 5fbddc62cb3d8326a80c2472f9df79b62f006164
                 data: props.charts.parties_par_statut.map(item => item.total),
                 borderColor: '#111827',
                 borderWidth: 2,

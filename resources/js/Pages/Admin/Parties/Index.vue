@@ -176,19 +176,6 @@ const getStatusClass = (statut) => {
 
 const confirm = useConfirm()
 
-<<<<<<< HEAD
-const getStatusClass = (statut) => {
-  switch (statut) {
-    case 'en_cours': return 'bg-blue-50 text-blue-700 border border-blue-100' // Info (Bleu vif)
-    case 'terminee': return 'bg-emerald-50 text-emerald-700 border border-emerald-100' // Succès (Vert émeraude)
-    case 'pause': return 'bg-orange-50 text-orange-700 border border-orange-100' // Avertissement (Orange #FF9500)
-    case 'en_attente': return 'bg-orange-50 text-orange-700 border border-orange-100' // Avertissement (Orange #FF9500)
-    default: return 'bg-gray-50 text-gray-600 border border-gray-200'
-  }
-}
-
-=======
->>>>>>> 5fbddc62cb3d8326a80c2472f9df79b62f006164
 const confirmDelete = (partie) => {
   confirm.require({
     message: `Voulez-vous forcer l'arrêt de la session #${partie.id} ?`,

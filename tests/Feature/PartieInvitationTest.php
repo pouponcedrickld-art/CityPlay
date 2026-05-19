@@ -44,9 +44,9 @@ class PartieInvitationTest extends TestCase
         // Crée un lieu avec une énigme
         $this->lieu = Lieu::factory()->create([
             'environnement_id' => $env->id,
-            'latitude' => 48.8566,  // Paris
-            'longitude' => 2.3522,
-            'rayon_metres' => 50,      // 50 mètres
+            'lat' => 48.8566,  // Paris
+            'lng' => 2.3522,
+            'rayon' => 50,      // 50 mètres
             'ordre' => 1,
         ]);
 

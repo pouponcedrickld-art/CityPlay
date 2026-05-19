@@ -80,6 +80,11 @@ const submitTextAnswer = () => {
     form.post(route('progression.submit', props.partie.id));
 };
 
+const confirmAbandon = () => {
+    showAbandonConfirm.value = false;
+    router.post(route('parties.web.abandon', props.partie.id));
+};
+
 const confirmSkip = () => {
     showSkipConfirm.value = false;
     router.post(route('progression.next', props.partie.id));
@@ -89,12 +94,6 @@ const togglePause = () => {
     showPauseConfirm.value = false;
     router.post(route('parties.web.pause', props.partie.id));
 };
-
-const confirmAbandon = () => {
-    showAbandonConfirm.value = false;
-    router.post(route('parties.web.abandon', props.partie.i// LIVE TIMER LOGIC
-const timeLeft = ref(props.progression?.temps_restant || 3600);
-let timerInterval = null;
 
 const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);

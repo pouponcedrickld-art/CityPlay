@@ -77,7 +77,7 @@ const onCardMove = (event) => {
 
 const onCardLeave = (event) => {
   const card = event.currentTarget;
-  const borderCol = isDark.value ? 'rgba(255, 149, 0, 0.12)' : 'rgba(0, 135, 81, 0.15)';
+  const borderCol = isDark.value ? 'rgba(255, 149, 0, 0.12)' : 'rgba(5, 150, 105, 0.15)';
   const shadowCol = isDark.value ? '0 10px 30px rgba(0, 0, 0, 0.5)' : '0 10px 30px rgba(0, 0, 0, 0.05)';
   
   gsap.to(card, {

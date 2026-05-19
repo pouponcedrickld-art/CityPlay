@@ -69,18 +69,24 @@ const menuItems = [
 </script>
 
 <template>
-    <div class="min-h-screen font-sans selection:bg-orange-100 selection:text-orange-950" 
-         :class="isGameMode ? 'bg-[#0f0f0f]' : 'bg-[#FDFCF0]'">
+    <div class="min-h-screen font-sans selection:bg-emerald-100 selection:text-emerald-950" 
+         :class="isGameMode ? 'bg-[#0f0f0f]' : (isDark ? 'bg-[#040508]' : 'bg-[#f5f0e8]')">
         
         <VideoLoader :show="showLoader" />
 
         <!-- DESKTOP SIDEBAR (Cachée en mode jeu pour l'immersion) -->
-        <aside v-if="!isMobile && !isGameMode" class="fixed left-0 top-0 bottom-0 w-72 bg-white border-r border-orange-100 z-40 p-8 flex flex-col">
+        <aside v-if="!isMobile && !isGameMode" 
+               class="fixed left-0 top-0 bottom-0 w-72 z-40 p-8 flex flex-col transition-colors duration-300"
+               :class="isDark 
+                 ? 'bg-[#10121b] border-r border-white/5' 
+                 : 'bg-[#faf6ee] border-r border-[#c8a96e]/40 shadow-[2px_0_20px_rgba(139,105,20,0.08)]'">
             <div class="flex items-center gap-3 mb-12">
-                <div class="w-12 h-12 bg-orange-950 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-900/20">
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg"
+                     :class="isDark ? 'bg-orange-950 shadow-orange-900/20' : 'bg-[#1a1208] shadow-[#8b6914]/20'">
                     <ApplicationLogo class="w-7 h-7 fill-white" />
                 </div>
-                <span class="text-xl font-black text-orange-950 uppercase tracking-tighter">CityPlay</span>
+                <span class="text-xl font-black uppercase tracking-tighter"
+                      :class="isDark ? 'text-orange-950' : 'text-[#1a1208]'">CityPlay</span>
             </div>
 
             <nav class="flex-1 space-y-2">
@@ -89,30 +95,38 @@ const menuItems = [
                     :key="item.route"
                     :href="route(item.route)"
                     class="flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 group"
-                    :class="route().current(item.route) ? 'bg-orange-50 text-orange-950 shadow-inner' : 'text-orange-900/40 hover:bg-orange-50/50 hover:text-orange-900'"
+                    :class="route().current(item.route) 
+                      ? (isDark ? 'bg-orange-50 text-orange-950 shadow-inner' : 'bg-[#059669]/10 text-[#1a1208] border border-[#059669]/30 shadow-inner') 
+                      : (isDark ? 'text-orange-900/40 hover:bg-orange-50/50 hover:text-orange-900' : 'text-[#6b4c1e]/60 hover:bg-[#c8a96e]/10 hover:text-[#1a1208]')"
                 >
-                    <i :class="[item.icon, route().current(item.route) ? 'text-orange-600' : 'text-orange-300 group-hover:text-orange-400']" class="text-lg"></i>
+                    <i :class="[item.icon, route().current(item.route) 
+                      ? (isDark ? 'text-orange-600' : 'text-[#059669]') 
+                      : (isDark ? 'text-orange-300 group-hover:text-orange-400' : 'text-[#c8a96e] group-hover:text-[#059669]')]" 
+                       class="text-lg"></i>
                     <span class="font-black uppercase tracking-widest text-[11px]">{{ item.label }}</span>
                 </Link>
 
                 <div v-if="$page.props.auth.user.is_admin || $page.props.auth.user.roles?.includes('admin')" class="pt-8 space-y-2">
-                    <p class="px-4 text-[9px] font-black text-orange-950/20 uppercase tracking-[0.3em] mb-4">Administration</p>
+                    <p class="px-4 text-[9px] font-black uppercase tracking-[0.3em] mb-4"
+                       :class="isDark ? 'text-orange-950/20' : 'text-[#8b6914]/40'">Administration</p>
                     <Link 
                         :href="route('admin.dashboard')"
-                        class="flex items-center gap-4 p-4 rounded-2xl text-orange-900/40 hover:bg-orange-50/50 hover:text-orange-900 transition-all"
+                        class="flex items-center gap-4 p-4 rounded-2xl transition-all"
+                        :class="isDark ? 'text-orange-900/40 hover:bg-orange-50/50 hover:text-orange-900' : 'text-[#6b4c1e]/60 hover:bg-[#c8a96e]/10 hover:text-[#1a1208]'"
                     >
-                        <i class="pi pi-shield text-lg text-orange-300"></i>
+                        <i class="pi pi-shield text-lg" :class="isDark ? 'text-orange-300' : 'text-[#c8a96e]'"></i>
                         <span class="font-black uppercase tracking-widest text-[11px]">Panel Admin</span>
                     </Link>
                 </div>
             </nav>
 
-            <div class="pt-8 border-t border-orange-50">
+            <div class="pt-8" :class="isDark ? 'border-t border-orange-50' : 'border-t border-[#c8a96e]/30'">
                 <Link 
                     :href="route('logout')" 
                     method="post" 
                     as="button"
-                    class="w-full flex items-center gap-4 p-4 rounded-2xl text-red-400 hover:bg-red-50 hover:text-red-600 transition-all group"
+                    class="w-full flex items-center gap-4 p-4 rounded-2xl transition-all group"
+                    :class="isDark ? 'text-red-400 hover:bg-red-50 hover:text-red-600' : 'text-red-500/70 hover:bg-red-50 hover:text-red-600'"
                 >
                     <i class="pi pi-power-off text-lg group-hover:rotate-12 transition-transform"></i>
                     <span class="font-black uppercase tracking-widest text-[11px]">Déconnexion</span>
@@ -121,15 +135,22 @@ const menuItems = [
         </aside>
 
         <!-- MOBILE HEADER (Caché en mode jeu) -->
-        <header v-if="isMobile && !isGameMode" class="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-xl border-b border-orange-100 z-40 px-6 flex items-center justify-between">
+        <header v-if="isMobile && !isGameMode" 
+                class="fixed top-0 left-0 right-0 h-16 backdrop-blur-xl z-40 px-6 flex items-center justify-between transition-colors duration-300"
+                :class="isDark 
+                  ? 'bg-[#10121b]/90 border-b border-white/5' 
+                  : 'bg-[#faf6ee]/90 border-b border-[#c8a96e]/40 shadow-sm'">
             <div class="flex items-center gap-2">
-                <ApplicationLogo class="w-6 h-6 fill-orange-950" />
-                <span class="text-sm font-black text-orange-950 uppercase tracking-tighter">CityPlay</span>
+                <ApplicationLogo class="w-6 h-6" :class="isDark ? 'fill-orange-950' : 'fill-[#1a1208]'" />
+                <span class="text-sm font-black uppercase tracking-tighter"
+                      :class="isDark ? 'text-orange-950' : 'text-[#1a1208]'">CityPlay</span>
             </div>
             
             <div class="flex items-center gap-3">
-                <Link :href="route('profile.edit')" class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
-                    <i class="pi pi-user text-orange-600 text-xs"></i>
+                <Link :href="route('profile.edit')" 
+                      class="w-8 h-8 rounded-full flex items-center justify-center"
+                      :class="isDark ? 'bg-orange-100' : 'bg-[#c8a96e]/20 border border-[#c8a96e]/40'">
+                    <i class="pi pi-user text-xs" :class="isDark ? 'text-orange-600' : 'text-[#059669]'"></i>
                 </Link>
             </div>
         </header>
@@ -156,13 +177,19 @@ const menuItems = [
         </main>
 
         <!-- MOBILE NAV BAR (Uniquement hors mode jeu) -->
-        <nav v-if="isMobile && !isGameMode" class="fixed bottom-0 left-0 right-0 h-20 bg-white border-t border-orange-100 z-40 px-6 flex items-center justify-around pb-4">
+        <nav v-if="isMobile && !isGameMode" 
+             class="fixed bottom-0 left-0 right-0 h-20 z-40 px-6 flex items-center justify-around pb-4 transition-colors duration-300"
+             :class="isDark 
+               ? 'bg-[#10121b] border-t border-white/5' 
+               : 'bg-[#faf6ee] border-t border-[#c8a96e]/40 shadow-[0_-2px_15px_rgba(139,105,20,0.08)]'">
             <Link 
                 v-for="item in menuItems" 
                 :key="item.route"
                 :href="route(item.route)"
-                class="flex flex-col items-center gap-1"
-                :class="route().current(item.route) ? 'text-orange-600' : 'text-orange-300'"
+                class="flex flex-col items-center gap-1 transition-colors"
+                :class="route().current(item.route) 
+                  ? (isDark ? 'text-orange-600' : 'text-[#059669]') 
+                  : (isDark ? 'text-orange-300' : 'text-[#c8a96e]')"
             >
                 <i :class="item.icon" class="text-xl"></i>
                 <span class="text-[8px] font-black uppercase tracking-widest">{{ item.label }}</span>

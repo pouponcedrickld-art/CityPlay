@@ -85,13 +85,13 @@ onMounted(() => {
         <div class="py-10 px-4 min-h-screen play-mat">
             <div class="max-w-[1280px] mx-auto">
                 
-                <header class="gsap-header relative py-8 px-8 overflow-hidden rounded-3xl bg-[#1f140e] border-[4px] border-[#5c4033] shadow-2xl mb-10 text-center">
-                    <div class="absolute inset-0 opacity-20" :style="{ backgroundImage: 'radial-gradient(circle at 2px 2px, #FF9500 1.5px, transparent 0)', backgroundSize: '32px 32px' }"></div>
+                <header class="gsap-header player-section-header relative py-8 px-8 overflow-hidden rounded-3xl shadow-2xl mb-10 text-center border-[4px]">
+                    <div class="absolute inset-0 opacity-20" :style="{ backgroundImage: 'radial-gradient(circle at 2px 2px, var(--accent-primary) 1.5px, transparent 0)', backgroundSize: '32px 32px' }"></div>
                     <div class="relative z-10">
-                        <h1 class="text-3xl md:text-4xl font-black text-[#f5e8c7] uppercase tracking-tighter card-title">
+                        <h1 class="text-3xl md:text-4xl font-black uppercase tracking-tighter card-title player-title">
                             Choisissez votre Quête
                         </h1>
-                        <p class="card-badge text-[10px] text-white/50 mt-2">Piochez le deck d'exploration pour commencer</p>
+                        <p class="card-badge text-[10px] player-muted-text mt-2">Piochez le deck d'exploration pour commencer</p>
                     </div>
                 </header>
 
@@ -266,6 +266,23 @@ onMounted(() => {
     color: rgba(255, 255, 255, 0.4) !important;
 }
 
+/* Dark mode player utilities */
+.player-section-header {
+    background: #1f140e;
+    border-color: #5c4033;
+}
+.player-title { color: #f5e8c7; }
+.player-muted-text { color: rgba(245, 232, 199, 0.5); }
+
+/* Light mode player utilities */
+:root.light-theme .player-section-header {
+    background: linear-gradient(135deg, #faf6ee 0%, #f0e8d0 100%) !important;
+    border-color: #c8a96e !important;
+    box-shadow: 0 10px 30px rgba(139, 105, 20, 0.12) !important;
+}
+:root.light-theme .player-title { color: #1a1208 !important; }
+:root.light-theme .player-muted-text { color: #6b4c1e !important; }
+
 /* Board Select Button */
 .board-select-button {
     display: flex;
@@ -320,42 +337,63 @@ onMounted(() => {
 }
 
 :root.light-theme .game-dialog {
-    background: #fcf8f2 !important;
-    border-color: #d4b88a !important;
-    color: #1f140e !important;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2) !important;
+    background: linear-gradient(145deg, #faf6ee 0%, #f5edd8 100%) !important;
+    border: 3px solid #c8a96e !important;
+    border-radius: 20px !important;
+    box-shadow: 0 20px 50px rgba(139, 105, 20, 0.2) !important;
+    color: #1a1208 !important;
 }
 :root.light-theme .game-dialog .p-dialog-header {
-    border-color: rgba(0, 0, 0, 0.05);
-    color: var(--accent-primary) !important;
+    background: transparent !important;
+    border-bottom: 1px solid rgba(200, 169, 110, 0.4);
+    padding: 1.5rem !important;
+    color: #059669 !important;
 }
-:root.light-theme .game-dialog .p-dialog-content { color: #1f140e !important; }
-:root.light-theme .game-dialog .p-dialog-header-icons .p-dialog-header-icon { color: rgba(0, 0, 0, 0.4) !important; }
+:root.light-theme .game-dialog .p-dialog-title {
+    font-family: 'Cinzel', serif !important;
+    font-size: 1.25rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+:root.light-theme .game-dialog .p-dialog-content {
+    background: transparent !important;
+    color: #1a1208 !important;
+}
+:root.light-theme .game-dialog .p-dialog-footer {
+    background: transparent !important;
+    padding: 1.5rem !important;
+}
+:root.light-theme .game-dialog .p-dialog-header-icons .p-dialog-header-icon {
+    color: rgba(26, 18, 8, 0.4) !important;
+}
 
 :root.light-theme .board-select-button .p-button {
-    background: #ffffff !important;
-    border-color: #e5d3b3 !important;
-    color: rgba(0, 0, 0, 0.5) !important;
+    background: #fffdf7 !important;
+    border-color: #c8a96e !important;
+    color: #6b4c1e !important;
 }
 :root.light-theme .board-select-button .p-button:hover {
-    border-color: var(--accent-primary) !important;
+    border-color: #059669 !important;
+    color: #1a1208 !important;
 }
 :root.light-theme .board-select-button .p-button.p-highlight {
-    background: #f0fdf4 !important;
-    border-color: var(--accent-primary) !important;
-    color: var(--accent-primary) !important;
+    background: rgba(5, 150, 105, 0.1) !important;
+    border-color: #059669 !important;
+    color: #059669 !important;
+    box-shadow: 0 0 12px rgba(5, 150, 105, 0.15) !important;
 }
 
 :root.light-theme .board-slider.p-slider {
-    background: #ffffff !important;
-    border-color: #e5d3b3 !important;
+    background: #e8dfc8 !important;
+    border-color: #c8a96e !important;
 }
 :root.light-theme .board-slider .p-slider-range {
-    background: linear-gradient(to right, var(--accent-primary), #34d399) !important;
+    background: linear-gradient(to right, #059669, #0891b2) !important;
 }
 :root.light-theme .board-slider .p-slider-handle {
-    border-color: #ffffff !important;
-    background: var(--accent-primary) !important;
+    border-color: #fffdf7 !important;
+    background: #059669 !important;
+    box-shadow: 0 0 8px rgba(5, 150, 105, 0.4) !important;
 }
 </style>
 

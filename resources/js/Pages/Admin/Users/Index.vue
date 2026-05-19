@@ -25,25 +25,6 @@
         />
       </div>
 
-<<<<<<< HEAD
-          <template #empty>
-            <div class="py-8 text-center text-gray-500">
-              <i class="pi pi-users text-4xl mb-3 block" />
-              <p>Aucun utilisateur trouvé.</p>
-            </div>
-          </template>
-
-          <Column field="name" header="Utilisateur" sortable>
-            <template #body="{ data }">
-              <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 border border-blue-100 font-bold text-xs shadow-inner">
-                  {{ data.name.charAt(0) }}
-                </div>
-                <div>
-                  <div class="font-medium text-gray-900">{{ data.name }}</div>
-                  <div class="text-xs text-gray-500">@{{ data.pseudo }}</div>
-                </div>
-=======
       <!-- Joueurs Grid au lieu de DataTable -->
       <div class="players-grid">
         <div v-for="(user, index) in filteredUsers" :key="user.id" class="player-card" ref="playerRefs">
@@ -52,7 +33,6 @@
               <div class="player-avatar">
                 <span class="avatar-text">{{ user.name.charAt(0) }}</span>
                 <div class="online-indicator" :class="{ 'admin': user.is_admin }"></div>
->>>>>>> 5fbddc62cb3d8326a80c2472f9df79b62f006164
               </div>
               <div class="player-role-badge" :class="{ 'is-admin': user.is_admin }">
                 {{ user.is_admin ? 'ADMIN' : 'PLAYER' }}
@@ -65,25 +45,6 @@
               <p class="player-email">{{ user.email }}</p>
             </div>
 
-<<<<<<< HEAD
-          <Column field="is_admin" header="Rôle" sortable :showFilterMatchModes="false">
-            <template #body="{ data }">
-              <span :class="data.is_admin ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-blue-50 text-blue-700 border border-blue-100'"
-                    class="px-2.5 py-1 rounded-full text-xs font-bold shadow-sm">
-                {{ data.is_admin ? 'Admin' : 'Joueur' }}
-              </span>
-            </template>
-            <template #filter="{ filterModel, filterCallback }">
-              <Dropdown
-                v-model="filterModel.value"
-                @change="filterCallback()"
-                :options="roleOptions"
-                optionLabel="label"
-                optionValue="value"
-                placeholder="Tous"
-                class="p-column-filter"
-                :showClear="true"
-=======
             <div class="player-meta">
               <div class="meta-item">
                 <span class="label">INSCRIPTION</span>
@@ -99,7 +60,6 @@
                 @click="confirmToggleAdmin(user)"
                 v-tooltip.top="user.is_admin ? 'Retirer admin' : 'Promouvoir admin'"
                 class="action-btn"
->>>>>>> 5fbddc62cb3d8326a80c2472f9df79b62f006164
               />
               <Button
                 icon="pi pi-trash"

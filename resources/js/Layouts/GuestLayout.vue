@@ -199,7 +199,7 @@ provide('isDark', isDark);
             :class="[
                 isDark 
                     ? 'bg-white/5 border-white/10 hover:bg-[#FF9500] hover:text-black text-[#FF9500] shadow-[0_0_20px_rgba(255,149,0,0.12)]' 
-                    : 'bg-black/5 border-black/10 hover:bg-[#008751] hover:text-white text-[#008751] shadow-[0_0_20px_rgba(0,135,81,0.08)]',
+                    : 'bg-black/5 border-black/10 hover:bg-[#059669] hover:text-white text-[#059669] shadow-[0_0_20px_rgba(0,135,81,0.08)]',
                 'absolute top-6 right-6 z-50 p-3.5 rounded-2xl border backdrop-blur-md transition-all duration-500 active:scale-90 flex items-center justify-center cursor-pointer'
             ]"
             title="Changer de thème"

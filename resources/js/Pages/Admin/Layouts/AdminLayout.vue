@@ -96,38 +96,8 @@
 <script setup>
 import { Link, router, usePage } from '@inertiajs/vue3'
 import Button from 'primevue/button'
-<<<<<<< HEAD
-import { ref, onMounted } from 'vue'
-
-const isDark = ref(true)
-
-const initTheme = () => {
-  isDark.value = localStorage.getItem('theme') !== 'light'
-  if (isDark.value) {
-    document.documentElement.classList.remove('light-theme')
-  } else {
-    document.documentElement.classList.add('light-theme')
-  }
-}
-
-const toggleTheme = () => {
-  isDark.value = !isDark.value
-  if (isDark.value) {
-    localStorage.setItem('theme', 'dark')
-    document.documentElement.classList.remove('light-theme')
-  } else {
-    localStorage.setItem('theme', 'light')
-    document.documentElement.classList.add('light-theme')
-  }
-}
-
-onMounted(() => {
-  initTheme()
-})
-=======
 import { onMounted, ref } from 'vue'
 import gsap from 'gsap'
->>>>>>> 5fbddc62cb3d8326a80c2472f9df79b62f006164
 
 const page = usePage()
 const sidebarRef = ref(null)
@@ -185,61 +155,28 @@ onMounted(() => {
 .admin-layout {
   display: flex;
   min-height: 100vh;
-<<<<<<< HEAD
-  background: var(--bg-main);
-  color: var(--text-main);
-  transition: all 0.3s ease;
-=======
   background: #0b0e14;
   color: #e2e8f0;
   font-family: 'Inter', sans-serif;
->>>>>>> 5fbddc62cb3d8326a80c2472f9df79b62f006164
 }
 
 .sidebar {
   width: 260px;
   min-height: 100vh;
-<<<<<<< HEAD
-  background: #10121b;
-  color: var(--text-main);
-=======
   background: #111827;
   border-right: 1px solid #1f2937;
->>>>>>> 5fbddc62cb3d8326a80c2472f9df79b62f006164
   display: flex;
   flex-direction: column;
   position: fixed;
   left: 0; top: 0;
   z-index: 100;
-<<<<<<< HEAD
-  border-right: 1px solid var(--border-glow);
-}
-
-:root.light-theme .sidebar {
-  background: #ffffff;
-  border-right-color: rgba(0, 0, 0, 0.06);
-=======
   box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
->>>>>>> 5fbddc62cb3d8326a80c2472f9df79b62f006164
 }
 
 .sidebar-logo {
   padding: 2rem 1.5rem;
   display: flex;
   align-items: center;
-<<<<<<< HEAD
-  gap: 0.75rem;
-  border-bottom: 1px solid var(--border-glow);
-}
-
-.logo-icon { font-size: 1.5rem; }
-.logo-text  { 
-  font-family: 'Orbitron', sans-serif !important;
-  font-weight: 900 !important;
-  letter-spacing: 0.05em !important;
-  text-transform: uppercase !important;
-  color: var(--accent-primary);
-=======
   gap: 1rem;
   border-bottom: 1px solid rgba(255, 149, 0, 0.2);
 }
@@ -256,7 +193,6 @@ onMounted(() => {
   text-transform: uppercase;
   color: #FF9500;
   text-shadow: 0 0 10px rgba(255, 149, 0, 0.3);
->>>>>>> 5fbddc62cb3d8326a80c2472f9df79b62f006164
 }
 
 .sidebar-nav {
@@ -266,15 +202,6 @@ onMounted(() => {
 }
 
 .nav-section-title {
-<<<<<<< HEAD
-  font-family: 'Orbitron', sans-serif !important;
-  font-size: 0.65rem;
-  font-weight: 900;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  padding: 1rem 1.25rem 0.4rem;
-=======
   font-family: 'Rajdhani', sans-serif;
   font-size: 0.75rem;
   font-weight: 700;
@@ -282,42 +209,11 @@ onMounted(() => {
   text-transform: uppercase;
   color: rgba(255, 149, 0, 0.85);
   padding: 1.5rem 1.5rem 0.5rem;
->>>>>>> 5fbddc62cb3d8326a80c2472f9df79b62f006164
 }
 
 .nav-item {
   display: flex;
   align-items: center;
-<<<<<<< HEAD
-  gap: 0.75rem;
-  padding: 0.65rem 1.25rem;
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
-  border-left: 3px solid transparent;
-  font-weight: 600;
-}
-
-.nav-item:hover {
-  color: var(--accent-primary);
-  background: rgba(255, 149, 0, 0.04);
-}
-
-:root.light-theme .nav-item:hover {
-  background: rgba(0, 135, 81, 0.04);
-}
-
-.nav-item.active {
-  color: var(--accent-primary);
-  background: rgba(255, 149, 0, 0.08);
-  border-left-color: var(--accent-primary);
-}
-
-:root.light-theme .nav-item.active {
-  background: rgba(0, 135, 81, 0.08);
-  border-left-color: var(--accent-primary);
-=======
   gap: 1rem;
   padding: 0.85rem 1.5rem;
   color: rgba(255, 255, 255, 0.9);
@@ -352,7 +248,6 @@ onMounted(() => {
 
 .nav-item.active i {
   color: #FF9500;
->>>>>>> 5fbddc62cb3d8326a80c2472f9df79b62f006164
 }
 
 .main-content {
@@ -364,16 +259,10 @@ onMounted(() => {
 }
 
 .topbar {
-<<<<<<< HEAD
-  height: 60px;
-  background: var(--bg-card);
-  border-bottom: 1px solid var(--border-glow);
-=======
   height: 70px;
   background: rgba(17, 24, 39, 0.8);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid #1f2937;
->>>>>>> 5fbddc62cb3d8326a80c2472f9df79b62f006164
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -397,57 +286,6 @@ onMounted(() => {
 .admin-badge {
   background: rgba(255, 149, 0, 0.1);
   color: #FF9500;
-<<<<<<< HEAD
-  font-family: 'Share Tech Mono', monospace !important;
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 0.2rem 0.6rem;
-  border-radius: 99px;
-  border: 1px solid rgba(255, 149, 0, 0.2);
-}
-
-:root.light-theme .admin-badge {
-  background: rgba(0, 135, 81, 0.1);
-  color: #008751;
-  border-color: rgba(0, 135, 81, 0.2);
-}
-
-.flash-success, .flash-error {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.flash-success {
-  background: rgba(16, 18, 27, 0.9);
-  border-bottom: 1px solid rgba(0, 229, 255, 0.2);
-  border-left: 4px solid var(--accent-secondary);
-  color: #ffffff;
-}
-
-:root.light-theme .flash-success {
-  background: #f0fdf4;
-  border-bottom-color: rgba(0, 135, 81, 0.15);
-  border-left-color: var(--accent-primary);
-  color: #166534;
-}
-
-.flash-error {
-  background: rgba(16, 18, 27, 0.9);
-  border-bottom: 1px solid rgba(239, 68, 68, 0.2);
-  border-left: 4px solid #ef4444;
-  color: #f87171;
-}
-
-:root.light-theme .flash-error {
-  background: #fef2f2;
-  border-bottom-color: rgba(239, 68, 68, 0.15);
-  border-left-color: #ef4444;
-  color: #991b1b;
-=======
   padding: 0.4rem 1rem;
   border-radius: 4px;
   font-family: 'Rajdhani', sans-serif;
@@ -455,7 +293,6 @@ onMounted(() => {
   font-size: 0.9rem;
   border: 1px solid rgba(255, 149, 0, 0.2);
   text-transform: uppercase;
->>>>>>> 5fbddc62cb3d8326a80c2472f9df79b62f006164
 }
 
 .page-content {
