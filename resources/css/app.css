@@ -155,11 +155,11 @@ html:not(.light-theme) .admin-layout {
 }
 
 :root.light-theme .bg-video {
-  opacity: 0.12 !important;
+  opacity: 0.35 !important;
 }
 
 :root.light-theme .video-overlay {
-  background: radial-gradient(circle at center, rgba(243, 244, 246, 0.2) 0%, rgba(243, 244, 246, 0.98) 95%) !important;
+  background: radial-gradient(circle at center, rgba(243, 244, 246, 0.1) 0%, rgba(243, 244, 246, 0.85) 95%) !important;
 }
 
 :root.light-theme .brand-title {

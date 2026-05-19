@@ -540,7 +540,6 @@ const submit = () => {
 .register-form-panel::-webkit-scrollbar { width: 6px; }
 .register-form-panel::-webkit-scrollbar-track { background: transparent; }
 .register-form-panel::-webkit-scrollbar-thumb {
-.register-form-panel::-webkit-scrollbar-thumb {
     background: rgba(255, 149, 0, 0.2);
     border-radius: 3px;
 }
