@@ -74,6 +74,17 @@ const innerClass = computed(() => [
                     <span>{{ item.label }}</span>
                 </Link>
             </nav>
+            <div class="cave-sidebar-footer">
+                <Link
+                    :href="route('logout')"
+                    method="post"
+                    as="button"
+                    class="cave-desktop-nav-link cave-desktop-nav-link--logout"
+                >
+                    <i class="pi pi-sign-out" />
+                    <span>Déconnexion</span>
+                </Link>
+            </div>
         </aside>
 
         <div class="cave-play-main">

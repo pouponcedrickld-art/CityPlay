@@ -961,6 +961,21 @@
     text-align: center;
   }
 
+  .cave-sidebar-footer {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 3px dashed var(--cave-border-dark);
+  }
+
+  .cave-desktop-nav-link--logout {
+    color: #8B2A2A;
+    background: linear-gradient(180deg, #F5D4D4, #E8B4B4);
+  }
+
+  .cave-desktop-nav-link--logout:hover {
+    color: #5C1A1A;
+  }
+
   .cave-play-main {
     flex: 1;
     overflow-y: auto;
@@ -1700,6 +1715,11 @@
 .cave-profile-section:nth-child(1) { animation-delay: 0.05s; }
 .cave-profile-section:nth-child(2) { animation-delay: 0.15s; }
 .cave-profile-section:nth-child(3) { animation-delay: 0.25s; }
+.cave-profile-section:nth-child(4) { animation-delay: 0.35s; }
+
+.cave-profile-section--logout {
+  text-align: center;
+}
 
 .cave-profile-section__title {
   font-family: var(--cave-font-title);
