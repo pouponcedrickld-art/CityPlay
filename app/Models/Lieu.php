@@ -12,21 +12,25 @@ class Lieu extends Model
     // 🔥 Important : on force le nom de la table
     protected $table = 'lieux';
 
-    protected $fillable = [
+  protected $fillable = [
         'environnement_id',
         'ordre',
-        'nom',
+        'actif',
         'latitude',
         'longitude',
         'rayon_metres',
+        'nom',
         'description',
-        'actif'
+        'photos',
     ];
 
     protected $casts = [
-        'latitude' => 'decimal:8',
-        'longitude' => 'decimal:8',
-        'actif' => 'boolean',
+        'actif'        => 'boolean',
+        'latitude'     => 'decimal:7',
+        'longitude'    => 'decimal:7',
+        'rayon_metres' => 'integer',
+        'ordre'        => 'integer',
+        'photos'       => 'array', // JSON auto-cast
     ];
 
     public function environnement()
@@ -42,5 +46,9 @@ class Lieu extends Model
     public function enigmes()
     {
         return $this->hasMany(Enigme::class);
+    }
+    public function enigmeParType(string $type): ?Enigme
+    {
+        return $this->enigmes()->where('type', $type)->first();
     }
 }

@@ -1,198 +1,193 @@
 <script setup>
-import { ref } from 'vue';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import Dropdown from '@/Components/Dropdown.vue';
-import DropdownLink from '@/Components/DropdownLink.vue';
-import NavLink from '@/Components/NavLink.vue';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
+import { ref, onMounted, computed } from 'vue';
 
+const isDark = ref(true);
+
+const initTheme = () => {
+  isDark.value = localStorage.getItem('theme') !== 'light';
+  if (isDark.value) {
+    document.documentElement.classList.remove('light-theme');
+  } else {
+    document.documentElement.classList.add('light-theme');
+  }
+};
+
+const toggleTheme = () => {
+  isDark.value = !isDark.value;
+  if (isDark.value) {
+    localStorage.setItem('theme', 'dark');
+    document.documentElement.classList.remove('light-theme');
+  } else {
+    localStorage.setItem('theme', 'light');
+    document.documentElement.classList.add('light-theme');
+  }
+};
+import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import { Link, router, usePage } from '@inertiajs/vue3';
+import VideoLoader from '@/Components/VideoLoader.vue';
+
+const page = usePage();
 const showingNavigationDropdown = ref(false);
+const showLoader = ref(false);
+
+// Détecte si on est en mode "Jeu immersif"
+const isGameMode = computed(() => {
+    return page.component.startsWith('Player/Enigme') || 
+           page.component.startsWith('Player/Success') || 
+           page.component.startsWith('Player/Failure') ||
+           page.component.startsWith('Player/Summary');
+});
+
+onMounted(() => {
+    initTheme();
+
+    router.on('start', () => {
+        showLoader.value = true;
+    });
+    router.on('finish', () => {
+        // On laisse le loader un peu pour que la vidéo soit visible
+        setTimeout(() => {
+            showLoader.value = false;
+        }, 1200);
+    });
+    router.on('error', () => {
+        showLoader.value = false;
+    });
+});
+
+const isMobile = ref(window.innerWidth < 1024);
+
+window.addEventListener('resize', () => {
+    isMobile.value = window.innerWidth < 1024;
+});
+
+const menuItems = [
+    { label: 'Dashboard', icon: 'pi pi-home', route: 'dashboard' },
+    { label: 'Parcours', icon: 'pi pi-map', route: 'parties.web.create' },
+    { label: 'Mon Profil', icon: 'pi pi-user', route: 'profile.edit' },
+];
 </script>
 
 <template>
-    <div>
-        <div class="min-h-screen bg-gray-100">
-            <nav
-                class="border-b border-gray-100 bg-white"
-            >
-                <!-- Primary Navigation Menu -->
-                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div class="flex h-16 justify-between">
-                        <div class="flex">
-                            <!-- Logo -->
-                            <div class="flex shrink-0 items-center">
-                                <Link :href="route('dashboard')">
-                                    <ApplicationLogo
-                                        class="block h-9 w-auto fill-current text-gray-800"
-                                    />
-                                </Link>
-                            </div>
+    <div class="min-h-screen font-sans selection:bg-orange-100 selection:text-orange-950" 
+         :class="isGameMode ? 'bg-[#0f0f0f]' : 'bg-[#FDFCF0]'">
+        
+        <VideoLoader :show="showLoader" />
 
-                            <!-- Navigation Links -->
-                            <div
-                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
-                            >
-                                <NavLink
-                                    :href="route('dashboard')"
-                                    :active="route().current('dashboard')"
-                                >
-                                    Dashboard
-                                </NavLink>
-                            </div>
-                        </div>
-
-                        <div class="hidden sm:ms-6 sm:flex sm:items-center">
-                            <!-- Settings Dropdown -->
-                            <div class="relative ms-3">
-                                <Dropdown align="right" width="48">
-                                    <template #trigger>
-                                        <span class="inline-flex rounded-md">
-                                            <button
-                                                type="button"
-                                                class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
-                                            >
-                                                {{ $page.props.auth.user.name }}
-
-                                                <svg
-                                                    class="-me-0.5 ms-2 h-4 w-4"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                >
-                                                    <path
-                                                        fill-rule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                        clip-rule="evenodd"
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </span>
-                                    </template>
-
-                                    <template #content>
-                                        <DropdownLink
-                                            :href="route('profile.edit')"
-                                        >
-                                            Profile
-                                        </DropdownLink>
-                                        <DropdownLink
-                                            :href="route('logout')"
-                                            method="post"
-                                            as="button"
-                                        >
-                                            Log Out
-                                        </DropdownLink>
-                                    </template>
-                                </Dropdown>
-                            </div>
-                        </div>
-
-                        <!-- Hamburger -->
-                        <div class="-me-2 flex items-center sm:hidden">
-                            <button
-                                @click="
-                                    showingNavigationDropdown =
-                                        !showingNavigationDropdown
-                                "
-                                class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
-                            >
-                                <svg
-                                    class="h-6 w-6"
-                                    stroke="currentColor"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        :class="{
-                                            hidden: showingNavigationDropdown,
-                                            'inline-flex':
-                                                !showingNavigationDropdown,
-                                        }"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M4 6h16M4 12h16M4 18h16"
-                                    />
-                                    <path
-                                        :class="{
-                                            hidden: !showingNavigationDropdown,
-                                            'inline-flex':
-                                                showingNavigationDropdown,
-                                        }"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12"
-                                    />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
+        <!-- DESKTOP SIDEBAR (Cachée en mode jeu pour l'immersion) -->
+        <aside v-if="!isMobile && !isGameMode" class="fixed left-0 top-0 bottom-0 w-72 bg-white border-r border-orange-100 z-40 p-8 flex flex-col">
+            <div class="flex items-center gap-3 mb-12">
+                <div class="w-12 h-12 bg-orange-950 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-900/20">
+                    <ApplicationLogo class="w-7 h-7 fill-white" />
                 </div>
+                <span class="text-xl font-black text-orange-950 uppercase tracking-tighter">CityPlay</span>
+            </div>
 
-                <!-- Responsive Navigation Menu -->
-                <div
-                    :class="{
-                        block: showingNavigationDropdown,
-                        hidden: !showingNavigationDropdown,
-                    }"
-                    class="sm:hidden"
+            <nav class="flex-1 space-y-2">
+                <Link 
+                    v-for="item in menuItems" 
+                    :key="item.route"
+                    :href="route(item.route)"
+                    class="flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 group"
+                    :class="route().current(item.route) ? 'bg-orange-50 text-orange-950 shadow-inner' : 'text-orange-900/40 hover:bg-orange-50/50 hover:text-orange-900'"
                 >
-                    <div class="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink
-                            :href="route('dashboard')"
-                            :active="route().current('dashboard')"
-                        >
-                            Dashboard
-                        </ResponsiveNavLink>
-                    </div>
+                    <i :class="[item.icon, route().current(item.route) ? 'text-orange-600' : 'text-orange-300 group-hover:text-orange-400']" class="text-lg"></i>
+                    <span class="font-black uppercase tracking-widest text-[11px]">{{ item.label }}</span>
+                </Link>
 
-                    <!-- Responsive Settings Options -->
-                    <div
-                        class="border-t border-gray-200 pb-1 pt-4"
+                <div v-if="$page.props.auth.user.is_admin || $page.props.auth.user.roles?.includes('admin')" class="pt-8 space-y-2">
+                    <p class="px-4 text-[9px] font-black text-orange-950/20 uppercase tracking-[0.3em] mb-4">Administration</p>
+                    <Link 
+                        :href="route('admin.dashboard')"
+                        class="flex items-center gap-4 p-4 rounded-2xl text-orange-900/40 hover:bg-orange-50/50 hover:text-orange-900 transition-all"
                     >
-                        <div class="px-4">
-                            <div
-                                class="text-base font-medium text-gray-800"
-                            >
-                                {{ $page.props.auth.user.name }}
-                            </div>
-                            <div class="text-sm font-medium text-gray-500">
-                                {{ $page.props.auth.user.email }}
-                            </div>
-                        </div>
-
-                        <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile.edit')">
-                                Profile
-                            </ResponsiveNavLink>
-                            <ResponsiveNavLink
-                                :href="route('logout')"
-                                method="post"
-                                as="button"
-                            >
-                                Log Out
-                            </ResponsiveNavLink>
-                        </div>
-                    </div>
+                        <i class="pi pi-shield text-lg text-orange-300"></i>
+                        <span class="font-black uppercase tracking-widest text-[11px]">Panel Admin</span>
+                    </Link>
                 </div>
             </nav>
 
-            <!-- Page Heading -->
-            <header
-                class="bg-white shadow"
-                v-if="$slots.header"
-            >
-                <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                    <slot name="header" />
-                </div>
-            </header>
+            <div class="pt-8 border-t border-orange-50">
+                <Link 
+                    :href="route('logout')" 
+                    method="post" 
+                    as="button"
+                    class="w-full flex items-center gap-4 p-4 rounded-2xl text-red-400 hover:bg-red-50 hover:text-red-600 transition-all group"
+                >
+                    <i class="pi pi-power-off text-lg group-hover:rotate-12 transition-transform"></i>
+                    <span class="font-black uppercase tracking-widest text-[11px]">Déconnexion</span>
+                </Link>
+            </div>
+        </aside>
 
-            <!-- Page Content -->
-            <main>
+        <!-- MOBILE HEADER (Caché en mode jeu) -->
+        <header v-if="isMobile && !isGameMode" class="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-xl border-b border-orange-100 z-40 px-6 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <ApplicationLogo class="w-6 h-6 fill-orange-950" />
+                <span class="text-sm font-black text-orange-950 uppercase tracking-tighter">CityPlay</span>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <Link :href="route('profile.edit')" class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
+                    <i class="pi pi-user text-orange-600 text-xs"></i>
+                </Link>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1" :class="[!isGameMode && !isMobile ? 'pl-72' : '', !isGameMode && isMobile ? 'pt-16' : '']">
+            <!-- Global Flash Messages -->
+            <div v-if="$page.props.flash?.error" class="fixed top-20 right-6 z-[100] max-w-sm animate-fade-in">
+                <div class="bg-red-600 text-white p-4 rounded-2xl shadow-2xl border border-white/20 flex items-center gap-3">
+                    <i class="pi pi-exclamation-triangle text-xl"></i>
+                    <p class="text-xs font-bold uppercase tracking-tight">{{ $page.props.flash.error }}</p>
+                </div>
+            </div>
+            <div v-if="$page.props.flash?.success" class="fixed top-20 right-6 z-[100] max-w-sm animate-fade-in">
+                <div class="bg-green-600 text-white p-4 rounded-2xl shadow-2xl border border-white/20 flex items-center gap-3">
+                    <i class="pi pi-check-circle text-xl"></i>
+                    <p class="text-xs font-bold uppercase tracking-tight">{{ $page.props.flash.success }}</p>
+                </div>
+            </div>
+
+            <div :class="isGameMode ? '' : 'p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto'">
                 <slot />
-            </main>
-        </div>
+            </div>
+        </main>
+
+        <!-- MOBILE NAV BAR (Uniquement hors mode jeu) -->
+        <nav v-if="isMobile && !isGameMode" class="fixed bottom-0 left-0 right-0 h-20 bg-white border-t border-orange-100 z-40 px-6 flex items-center justify-around pb-4">
+            <Link 
+                v-for="item in menuItems" 
+                :key="item.route"
+                :href="route(item.route)"
+                class="flex flex-col items-center gap-1"
+                :class="route().current(item.route) ? 'text-orange-600' : 'text-orange-300'"
+            >
+                <i :class="item.icon" class="text-xl"></i>
+                <span class="text-[8px] font-black uppercase tracking-widest">{{ item.label }}</span>
+            </Link>
+        </nav>
+
+        <!-- Floating Theme Toggle Switch -->
+        <button 
+          class="theme-switch-float" 
+          @click="toggleTheme" 
+          aria-label="Toggle Theme"
+          title="Changer de Thème"
+        >
+          <i :class="isDark ? 'pi pi-sun' : 'pi pi-moon'" />
+        </button>
     </div>
 </template>
+
+<style>
+/* Game-like background pattern */
+body {
+    background-image: radial-gradient(#FF950010 1px, transparent 1px);
+    background-size: 32px 32px;
+}
+
+.fade-enter-active, .fade-leave-active { transition: opacity 0.5s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+</style>

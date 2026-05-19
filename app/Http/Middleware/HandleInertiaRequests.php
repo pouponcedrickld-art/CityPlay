@@ -32,7 +32,14 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $request->user() ? [
+                    'id' => $request->user()->id,
+                    'name' => $request->user()->name,
+                    'email' => $request->user()->email,
+                    'is_admin' => (bool) $request->user()->is_admin,
+                    'roles' => $request->user()->getRoleNames(), // Spatie roles
+                    'permissions' => $request->user()->getAllPermissions()->pluck('name'), // Spatie permissions
+                ] : null,
             ],
         ];
     }

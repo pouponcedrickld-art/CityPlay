@@ -4,63 +4,98 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Enigme;
+use App\Models\Lieu;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class EnigmeController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Affiche les 4 énigmes d'un lieu (une par type)
      */
-    public function index()
+    public function index(Lieu $lieu): Response
     {
-        //
+        $enigmes = $lieu->enigmes->keyBy('type'); // Indexées par type pour affichage facile
+
+        return Inertia::render('Admin/Enigmes/Index', [
+            'lieu'    => $lieu->load('environnement.ville'),
+            'enigmes' => $enigmes,
+            'types'   => Enigme::TYPE_LABELS,
+        ]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Formulaire créer/modifier une énigme
      */
-    public function create()
+    public function edit(Lieu $lieu, string $type): Response
     {
-        //
+        abort_unless(in_array($type, Enigme::TYPES), 404);
+
+        $enigme = $lieu->enigmes()->where('type', $type)->first();
+
+        return Inertia::render('Admin/Enigmes/Form', [
+            'lieu'   => $lieu->load('environnement'),
+            'enigme' => $enigme,
+            'type'   => $type,
+            'typeLabel' => Enigme::TYPE_LABELS[$type],
+        ]);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Créer ou mettre à jour une énigme (upsert par lieu + type)
      */
-    public function store(Request $request)
+    public function upsert(Request $request, Lieu $lieu, string $type)
     {
-        //
+        abort_unless(in_array($type, Enigme::TYPES), 404);
+
+        $data = $request->validate([
+            'texte'       => 'required|string|max:2000',
+            'image'       => 'nullable|image|max:2048',
+            'remove_image' => 'nullable|boolean',
+        ]);
+
+        $enigme = $lieu->enigmes()->where('type', $type)->first();
+        $imageUrl = $enigme?->image_url;
+
+        // Supprimer image si demandé ou si nouvelle image uploadée
+        if (($data['remove_image'] ?? false) || $request->hasFile('image')) {
+            if ($imageUrl) {
+                Storage::disk('public')->delete($imageUrl);
+                $imageUrl = null;
+            }
+        }
+
+        if ($request->hasFile('image')) {
+            $imageUrl = $request->file('image')->store('enigmes/images', 'public');
+        }
+
+        $lieu->enigmes()->updateOrCreate(
+            ['lieu_id' => $lieu->id, 'type' => $type],
+            [
+                'texte'      => $data['texte'],
+                'image_url' => $imageUrl,
+            ]
+        );
+
+        return redirect()->route('admin.enigmes.index', $lieu)
+            ->with('success', 'Énigme "' . Enigme::TYPE_LABELS[$type] . '" enregistrée.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Enigme $enigme)
+    public function destroy(Lieu $lieu, string $type)
     {
-        //
-    }
+        abort_unless(in_array($type, Enigme::TYPES), 404);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Enigme $enigme)
-    {
-        //
-    }
+        $enigme = $lieu->enigmes()->where('type', $type)->firstOrFail();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Enigme $enigme)
-    {
-        //
-    }
+        if ($enigme->image_url) {
+            Storage::disk('public')->delete($enigme->image_url);
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Enigme $enigme)
-    {
-        //
+        $enigme->delete();
+
+        return redirect()->route('admin.enigmes.index', $lieu)
+            ->with('success', 'Énigme supprimée.');
     }
 }

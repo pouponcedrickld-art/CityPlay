@@ -17,13 +17,17 @@ class Progression extends Model
         'lieux_restants',
         'enigme_courante_id',
         'temps_restant_minutes',
-        'nb_enigmes_resolues'
+        'nb_enigmes_resolues',
+        'score'
     ];
 
     protected $casts = [
         'lieux_a_visiter' => 'array',
         'lieux_decouverts' => 'array',
         'lieux_restants' => 'array',
+        'nb_enigmes_resolues' => 'integer',
+        'score' => 'integer',
+        'temps_restant_minutes' => 'integer',
     ];
 
     public function partie()

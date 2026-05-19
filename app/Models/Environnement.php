@@ -12,17 +12,23 @@ class Environnement extends Model
     protected $fillable = [
         'ville_id',
         'nom',
+        'actif',
         'retention_profils_jours',
-        'duree_vie_lien_heures',
-        'messages',
         'regles',
-        'actif'
+        'duree_vie_lien_heures',
+        'message_bonne_reponse',
+        'message_mauvaise_reponse',
+        'message_fin',
+        'message_pause',
+        'lien_restauration',
+        'lien_boutique',
+        'lien_notation',
     ];
 
     protected $casts = [
-        'messages' => 'array',
-        'regles' => 'array',
         'actif' => 'boolean',
+        'retention_profils_jours' => 'integer',
+        'duree_vie_lien_heures'   => 'integer',
     ];
 
     public function ville()
@@ -32,7 +38,7 @@ class Environnement extends Model
 
     public function lieux()
     {
-        return $this->hasMany(Lieu::class);
+        return $this->hasMany(Lieu::class)->orderBy('ordre');
     }
 
     public function parties()

@@ -1,0 +1,335 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Partie;
+use App\Models\ProgressionPartie;
+use App\Models\Enigme;
+use App\Models\Lieu;
+use Illuminate\Support\Facades\DB;
+
+/**
+ * Service de gestion du gameplay
+ * 
+ * Responsable de :
+ * - Initialiser la progression d'une nouvelle partie
+ * - Gérer les actions du joueur (valider, passer, indice, solution)
+ * - Calculer le nombre d'énigmes selon durée et locomotion
+ * - Sélectionner les lieux selon classement mairie
+ */
+class GameplayService
+{
+    /**
+     * Service de validation GPS (injection de dépendance)
+     */
+    protected GpsValidationService $gpsService;
+
+    public function __construct(GpsValidationService $gpsService)
+    {
+        $this->gpsService = $gpsService;
+    }
+
+    /**
+     * Initialise une nouvelle partie
+     * - Calcule le nombre d'énigmes
+     * - Sélectionne les lieux
+     * - Crée la progression
+     * 
+     * @param Partie $partie La partie à initialiser
+     * @return ProgressionPartie La progression créée
+     */
+    public function initialiserPartie(Partie $partie): ProgressionPartie
+    {
+        \Log::info('GameplayService: Début initialisation progression', ['partie_id' => $partie->id]);
+
+        // Récupère les paramètres de la partie
+        $parametres = $partie->parametres;
+        $dureeMinutes = (int)($parametres['duree'] ?? 60);
+        $locomotion = $parametres['locomotion'] ?? 'pied';
+        $difficulte = (int)($parametres['difficulte'] ?? 2);
+
+        \Log::info('GameplayService: Paramètres extraits', [
+            'duree' => $dureeMinutes,
+            'locomotion' => $locomotion,
+            'difficulte' => $difficulte
+        ]);
+
+        // === ÉTAPE 1 : Calcul du nombre d'énigmes ===
+        $nbEnigmes = $this->calculerNombreEnigmes($dureeMinutes, $locomotion);
+        \Log::info('GameplayService: Nombre d\'énigmes calculé', ['count' => $nbEnigmes]);
+
+        // === ÉTAPE 2 : Sélection des lieux ===
+        $lieux = $this->selectionnerLieux($partie->environnement_id, $nbEnigmes, $difficulte);
+        \Log::info('GameplayService: Lieux sélectionnés', ['count' => $lieux->count(), 'ids' => $lieux->pluck('id')]);
+
+        if ($lieux->isEmpty()) {
+            \Log::error('GameplayService: Aucun lieu trouvé pour cet environnement');
+            throw new \Exception("Aucun lieu avec énigme n'a été trouvé pour cet environnement.");
+        }
+
+        // === ÉTAPE 3 : Déterminer l'énigme de départ ===
+        $premierLieu = $lieux->first();
+        $typeEnigme = match ($difficulte) {
+            1 => 'force1',
+            2 => 'force2',
+            3 => 'force3',
+            default => 'force2',
+        };
+
+        $enigmeDepart = $premierLieu->enigmes()->where('type', $typeEnigme)->where('actif', true)->first() 
+                        ?? $premierLieu->enigmes()->where('actif', true)->first();
+
+        if (!$enigmeDepart) {
+            \Log::error('GameplayService: Aucune énigme active trouvée pour le premier lieu', ['lieu_id' => $premierLieu->id]);
+            throw new \Exception("Le premier lieu de ce parcours ne contient aucune énigme active.");
+        }
+
+        \Log::info('GameplayService: Énigme de départ identifiée', ['id' => $enigmeDepart->id]);
+
+        // === ÉTAPE 4 : Création de la progression ===
+        $lieuxIds = $lieux->pluck('id')->toArray();
+        $lieuxRestants = $lieuxIds;
+        array_shift($lieuxRestants); // Le premier est déjà en cours
+
+        $progression = ProgressionPartie::create([
+            'partie_id' => $partie->id,
+            'lieux_a_visiter' => $lieuxIds,
+            'lieux_decouverts' => [],
+            'lieux_restants' => $lieuxRestants,
+            'enigme_courante_id' => $enigmeDepart->id,
+            'temps_restant' => $dureeMinutes * 60,
+            'score' => 0,
+            'statut' => 'en_cours',
+        ]);
+
+        \Log::info('GameplayService: Progression créée', ['id' => $progression->id]);
+
+        // Démarre la partie
+        $partie->update([
+            'statut' => 'en_cours',
+            'started_at' => now(),
+        ]);
+
+        \Log::info('GameplayService: Partie marquée comme en cours');
+
+        return $progression;
+    }
+
+    /**
+     * Sélectionne les lieux pour une partie
+     */
+    private function selectionnerLieux(int $environnementId, int $nbEnigmes, int $difficulte)
+    {
+        // On cherche d'abord les lieux qui ont l'énigme de la difficulté demandée
+        $typeEnigme = match ($difficulte) {
+            1 => 'force1',
+            2 => 'force2',
+            3 => 'force3',
+            default => 'force2',
+        };
+
+        $lieux = Lieu::where('environnement_id', $environnementId)
+            ->where('actif', true)
+            ->whereHas('enigmes', function ($query) use ($typeEnigme) {
+                $query->where('type', $typeEnigme)->where('actif', true);
+            })
+            ->orderBy('ordre', 'asc')
+            ->limit($nbEnigmes)
+            ->get();
+
+        // Si on n'en a pas assez, on complète avec n'importe quel lieu ayant au moins une énigme active
+        if ($lieux->count() < $nbEnigmes) {
+            $idsExistants = $lieux->pluck('id')->toArray();
+            
+            $lieuxComplementaires = Lieu::where('environnement_id', $environnementId)
+                ->where('actif', true)
+                ->whereNotIn('id', $idsExistants)
+                ->whereHas('enigmes', function ($query) {
+                    $query->where('actif', true);
+                })
+                ->orderBy('ordre', 'asc')
+                ->limit($nbEnigmes - $lieux->count())
+                ->get();
+
+            $lieux = $lieux->concat($lieuxComplementaires)->sortBy('ordre');
+        }
+
+        return $lieux;
+    }
+
+    /**
+     * Calcule le nombre d'énigmes selon durée et locomotion
+     */
+    private function calculerNombreEnigmes(int $dureeMinutes, string $locomotion): int
+    {
+        // Temps moyen par énigme selon le mode de transport (en minutes)
+        $tempsParEnigme = match ($locomotion) {
+            'velo' => 7,
+            'voiture' => 5,
+            'moto' => 5,
+            default => 10, // 'pied' et fallback
+        };
+
+        // Calcul de base
+        $nbEnigmes = (int) floor($dureeMinutes / $tempsParEnigme);
+
+        // Limites de sécurité
+        $minEnigmes = 3;   // Minimum pour une partie intéressante
+        $maxEnigmes = match ($locomotion) {
+            'voiture', 'moto' => 15,
+            default => 10,
+        };
+
+        return max($minEnigmes, min($nbEnigmes, $maxEnigmes));
+    }
+
+    /**
+     * Action : valider la position GPS du joueur
+     * 
+     * @param Partie $partie La partie en cours
+     * @param float $lat Latitude du joueur
+     * @param float $lng Longitude du joueur
+     * @param float|null $precision Précision GPS
+     * @return array Résultat de la validation
+     */
+    public function validerGps(Partie $partie, float $lat, float $lng, ?float $precision): array
+    {
+        $progression = $partie->progression;
+
+        // Vérifie que la partie est active
+        if ($progression->estTerminee()) {
+            return ['succes' => false, 'message' => 'La partie est terminée.'];
+        }
+
+        // Récupère le lieu de l'énigme courante
+        $enigme = $progression->enigmeCourante;
+        if (!$enigme) {
+            return ['succes' => false, 'message' => 'Aucune énigme en cours.'];
+        }
+
+        $lieu = $enigme->lieu;
+
+        // Validation GPS via le service dédié
+        $resultat = $this->gpsService->validerPosition($lat, $lng, $precision, $lieu);
+
+        // Si succès, marque l'énigme comme résolue
+        if ($resultat['succes']) {
+            $progression->resoudreEnigmeCourante();
+
+            // Passe à l'énigme suivante
+            $aSuivante = $progression->passerEnigmeSuivante();
+
+            $resultat['enigme_resolue'] = true;
+            $resultat['partie_terminee'] = !$aSuivante;
+        }
+
+        return $resultat;
+    }
+
+    /**
+     * Action : passer l'énigme courante (sans la résoudre)
+     * 
+     * @param Partie $partie La partie en cours
+     * @return array Résultat de l'action
+     */
+    public function passerEnigme(Partie $partie): array
+    {
+        $progression = $partie->progression;
+
+        if ($progression->estTerminee()) {
+            return ['succes' => false, 'message' => 'La partie est terminée.'];
+        }
+
+        $aSuivante = $progression->passerEnigmeSuivante();
+
+        return [
+            'succes' => true,
+            'message' => $aSuivante
+                ? 'Énigme passée. Voici la suivante.'
+                : 'Plus d\'énigmes. Partie terminée.',
+            'partie_terminee' => !$aSuivante,
+        ];
+    }
+
+    /**
+     * Action : demander un indice pour l'énigme courante
+     * 
+     * @param Partie $partie La partie en cours
+     * @return array Indice et pénalité éventuelle
+     */
+    public function demanderIndice(Partie $partie): array
+    {
+        $progression = $partie->progression;
+        $enigme = $progression->enigmeCourante;
+
+        if (!$enigme) {
+            return ['succes' => false, 'message' => 'Aucune énigme en cours.'];
+        }
+
+        // Pour l'instant, retourne le texte de l'énigme comme "indice"
+        // TODO : ajouter un champ 'indice' séparé dans la table enigmes
+        return [
+            'succes' => true,
+            'indice' => $enigme->texte, // Texte de l'énigme comme indice
+            'message' => 'Voici un indice pour vous aider...',
+        ];
+    }
+
+    /**
+     * Action : révéler la solution de l'énigme courante
+     * Marque l'énigme comme non résolue et passe à la suivante
+     * 
+     * @param Partie $partie La partie en cours
+     * @return array Solution et statut
+     */
+    public function revelerSolution(Partie $partie): array
+    {
+        $progression = $partie->progression;
+        $enigme = $progression->enigmeCourante;
+
+        if (!$enigme) {
+            return ['succes' => false, 'message' => 'Aucune énigme en cours.'];
+        }
+
+        // Récupère la solution (pour l'instant, le texte de l'énigme)
+        // TODO : ajouter un champ 'solution' dans la table enigmes
+        $solution = $enigme->texte;
+
+        // Passe à l'énigme suivante sans incrémenter le score
+        $aSuivante = $progression->passerEnigmeSuivante();
+
+        return [
+            'succes' => true,
+            'solution' => $solution,
+            'message' => 'Solution révélée. L\'énigme est marquée comme non résolue.',
+            'partie_terminee' => !$aSuivante,
+        ];
+    }
+
+    /**
+     * Met la partie en pause
+     */
+    public function mettreEnPause(Partie $partie): void
+    {
+        $partie->progression->mettreEnPause();
+    }
+
+    /**
+     * Reprend une partie en pause
+     */
+    public function reprendre(Partie $partie): void
+    {
+        $partie->progression->reprendre();
+    }
+
+    /**
+     * Termine la partie (abandon ou fin normale)
+     */
+    public function terminerPartie(Partie $partie): void
+    {
+        $partie->progression->terminer();
+        $partie->statut = 'terminee';
+        $partie->ended_at = now();
+        $partie->save();
+    }
+}

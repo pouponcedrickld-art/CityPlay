@@ -12,7 +12,11 @@ class DatabaseSeeder extends Seeder
             VilleSeeder::class,
             EnvironnementSeeder::class,
             LieuSeeder::class,
-            EnigmeSeeder::class,
+            DemoSeeder::class,
+            UserSeeder::class,
         ]);
+
+        $this->command->info('');
+        $this->command->info('✅ Seed complet terminé !');
     }
 }
