@@ -6,7 +6,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import Checkbox from '@/Components/Checkbox.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { ref, onMounted, onUnmounted, inject } from 'vue';
+import { ref, computed, onMounted, onUnmounted, inject } from 'vue';
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import { useToast } from 'primevue/usetoast';
@@ -22,7 +22,10 @@ const props = defineProps({
     flash: Object,
     invitation_token: String,
     prefilled_email: String,
+    partie_invitation: Object,
 });
+
+const canRegister = computed(() => !!(props.invitation_token || props.partie_invitation));
 
 const registerCard = ref(null);
 const artImage = ref(null);
@@ -35,6 +38,9 @@ onMounted(() => {
     }
     if (props.flash?.error) {
         toast.add({ severity: 'error', summary: 'Erreur', detail: props.flash.error, life: 3000 });
+    }
+    if (props.flash?.info) {
+        toast.add({ severity: 'info', summary: 'Invitation', detail: props.flash.info, life: 5000 });
     }
 
     if (props.prefilled_email) {
@@ -170,14 +176,27 @@ const submit = () => {
 
             <!-- Alerte accès restreint — dans le flux, bien centrée au-dessus de la carte -->
             <div
-                v-if="!invitation_token"
+                v-if="partie_invitation"
+                class="w-full max-w-5xl mb-6 p-4 bg-orange-50 border border-orange-200 rounded-xl text-orange-900 text-sm"
+            >
+                <div class="flex items-center gap-2 mb-2 font-bold">
+                    <i class="pi pi-users"></i>
+                    <span>Invitation équipe</span>
+                </div>
+                Vous avez été invité à rejoindre le parcours
+                <strong>{{ partie_invitation.environnement || 'CityPlay' }}</strong>.
+                Créez votre compte pour intégrer l'équipe automatiquement.
+            </div>
+
+            <div
+                v-else-if="!invitation_token"
                 class="w-full max-w-5xl mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm"
             >
                 <div class="flex items-center gap-2 mb-2 font-bold">
                     <i class="pi pi-exclamation-circle"></i>
                     <span>Accès Restreint</span>
                 </div>
-                L'inscription à CityPlay se fait uniquement sur invitation. Veuillez utiliser le lien qui vous a été envoyé par l'administrateur.
+                L'inscription à CityPlay se fait uniquement sur invitation. Veuillez utiliser le lien qui vous a été envoyé par l'administrateur ou par votre coéquipier.
             </div>
 
             <!-- 3D PERSPECTIVE CARD -->
@@ -260,7 +279,7 @@ const submit = () => {
                     </div>
 
                     <!-- Form -->
-                    <form @submit.prevent="submit" class="space-y-3.5" :class="{ 'opacity-50 pointer-events-none': !invitation_token }">
+                    <form @submit.prevent="submit" class="space-y-3.5" :class="{ 'opacity-50 pointer-events-none': !canRegister }">
                         <input type="hidden" v-model="form.invitation_token" />
                         <InputError class="mt-2" :message="form.errors.invitation_token" />
 

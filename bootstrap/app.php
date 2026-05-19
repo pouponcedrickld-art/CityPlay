@@ -19,9 +19,18 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->redirectUsersTo(function () {
             $user = auth()->user();
+
+            if ($code = session('partie_invitation_code')) {
+                if (!$user->otp_verified_at) {
+                    return route('otp.show');
+                }
+                return route('parties.rejoindre', $code);
+            }
+
             if ($user && ($user->is_admin || $user->hasRole('admin'))) {
                 return route('admin.dashboard');
             }
+
             return route('dashboard');
         });
 

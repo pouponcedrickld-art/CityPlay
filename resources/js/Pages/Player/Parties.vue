@@ -1,29 +1,50 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Link } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
+import CavePlayLayout from '@/Layouts/CavePlayLayout.vue';
 
 defineProps({ parties: Array });
+
+const statutLabel = (s) => ({
+    en_attente: 'En attente',
+    en_cours: 'En mission',
+    terminee: 'Terminée',
+    pause: 'En pause',
+}[s] || s);
 </script>
 
 <template>
-    <AuthenticatedLayout>
-        <div class="p-6">
-            <h1 class="text-2xl font-bold mb-4">Mes parties</h1>
-            <Link :href="route('parties.create')" class="bg-blue-500 text-white px-4 py-2 rounded mb-4 inline-block">
-                + Créer une partie
+    <CavePlayLayout wide>
+        <Head title="Mes parties" />
+
+        <h2 class="cave-section-title">Mes parties</h2>
+
+        <div class="cave-btn-stack mb-6">
+            <Link :href="route('parties.web.create')" class="cave-btn" style="text-decoration:none">
+                <i class="cave-btn__icon pi pi-plus" />
+                <span class="cave-btn__label">Créer une partie</span>
             </Link>
-            <div v-if="parties.length === 0" class="text-gray-500">
-                Aucune partie. Créez votre première partie !
-            </div>
-            <div v-else class="space-y-4">
-                <div v-for="partie in parties" :key="partie.id" class="border rounded p-4">
-                    <h3 class="font-bold">Partie #{{ partie.id }}</h3>
-                    <p>Mode: {{ partie.mode }} | Statut: {{ partie.statut }}</p>
-                    <Link :href="route('parties.show', partie.id)" class="text-blue-500">
-                        Voir →
-                    </Link>
-                </div>
+        </div>
+
+        <div v-if="!parties?.length" class="cave-empty">
+            <i class="pi pi-inbox" />
+            <p class="font-bold uppercase text-sm">Aucune partie</p>
+            <p class="cave-hint">Lancez votre première aventure !</p>
+        </div>
+
+        <div v-else class="cave-levels-grid cave-levels-grid--multi">
+            <div v-for="partie in parties" :key="partie.id" class="cave-mission-card">
+                <span class="cave-mission-card__status cave-mission-card__status--active">
+                    {{ statutLabel(partie.statut) }}
+                </span>
+                <h3 class="cave-mission-card__title">Partie #{{ partie.id }}</h3>
+                <p class="text-xs font-bold uppercase opacity-60 mb-3">
+                    {{ partie.mode }} · {{ partie.environnement?.nom || 'Parcours' }}
+                </p>
+                <Link :href="route('parties.web.show', partie.id)" class="cave-btn cave-btn--sm" style="text-decoration:none">
+                    <i class="cave-btn__icon pi pi-arrow-right" />
+                    <span class="cave-btn__label">Continuer</span>
+                </Link>
             </div>
         </div>
-    </AuthenticatedLayout>
+    </CavePlayLayout>
 </template>

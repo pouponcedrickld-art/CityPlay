@@ -1,83 +1,176 @@
 <script setup>
-import { Head, Link, useForm, router } from '@inertiajs/vue3';
-import { onMounted, onUnmounted, ref, computed } from 'vue';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import Button from 'primevue/button';
+import { Head, useForm, router, usePage } from '@inertiajs/vue3';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import CaveGameLayout from '@/Layouts/CaveGameLayout.vue';
 import InputText from 'primevue/inputtext';
 import Dialog from 'primevue/dialog';
-import ProgressSpinner from 'primevue/progressspinner';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
 
 const props = defineProps({
     partie: Object,
     progression: Object,
     enigme: Object,
-    flash: Object
 });
+
+const page = usePage();
 
 const form = useForm({
     reponse: '',
     latitude: null,
     longitude: null,
-    distance_metres: null
+    precision: null,
 });
 
 const showHint = ref(false);
 const showSolution = ref(false);
 const showSkipConfirm = ref(false);
-const showPauseConfirm = ref(false);
 const showAbandonConfirm = ref(false);
+const showTimeExpired = ref(false);
+const revealedSolution = ref(null);
+const isRequestingSolution = ref(false);
 const isLocating = ref(false);
 const isOffline = ref(!navigator.onLine);
+const gpsMessage = ref(null);
+const lastGpsCheck = ref(null);
 
-// Gestion de l'état offline
 const updateOnlineStatus = () => {
     isOffline.value = !navigator.onLine;
 };
 
+const gpsDisponible = computed(() => props.enigme?.lieu?.gps_disponible === true);
+const pointsEnigme = computed(() => (props.enigme?.points > 0 ? props.enigme.points : 10));
+const scoreActuel = computed(() => props.progression?.score ?? 0);
+
+const applyFlash = () => {
+    const flash = page.props.flash;
+    if (flash?.error) {
+        gpsMessage.value = { type: 'error', text: flash.error };
+    }
+    if (flash?.gps_validation) {
+        lastGpsCheck.value = flash.gps_validation;
+    }
+    if (flash?.solution_revelee) {
+        revealedSolution.value = flash.solution_revelee;
+        showTimeExpired.value = false;
+        showSolution.value = false;
+    }
+};
+
+watch(() => page.props.flash, applyFlash, { deep: true });
+
+watch(
+    () => [props.enigme?.id, props.progression?.temps_restant],
+    ([enigmeId, temps]) => {
+        if (temps != null) {
+            timeLeft.value = temps;
+        }
+        if (enigmeId) {
+            showTimeExpired.value = false;
+            revealedSolution.value = null;
+        }
+    },
+);
+
 const checkLocation = () => {
     if (isOffline.value) {
-        alert("Vous semblez être hors-ligne. La vérification nécessite une connexion internet.");
+        alert('Vous semblez être hors-ligne. La vérification nécessite une connexion internet.');
         return;
     }
-
+    if (!gpsDisponible.value) {
+        gpsMessage.value = {
+            type: 'error',
+            text: 'La vérification GPS n\'est pas disponible pour cette énigme. Contactez l\'organisateur.',
+        };
+        return;
+    }
     if (!navigator.geolocation) {
         alert("La géolocalisation n'est pas supportée par votre navigateur.");
         return;
     }
 
     isLocating.value = true;
+    gpsMessage.value = null;
+
     navigator.geolocation.getCurrentPosition(
         (position) => {
-            const { latitude, longitude } = position.coords;
-            form.latitude = latitude;
-            form.longitude = longitude;
-
-            // Vérification directe sans carte (anti-triche)
-            if (props.enigme?.lieu?.latitude && props.enigme?.lieu?.longitude) {
-                // Utilisation d'un helper pour la distance ou envoi direct au serveur
-                submitLocationAnswer();
-            }
-            isLocating.value = false;
+            form.latitude = position.coords.latitude;
+            form.longitude = position.coords.longitude;
+            form.precision = position.coords.accuracy ?? null;
+            submitLocationAnswer();
         },
         (error) => {
             isLocating.value = false;
-            let msg = "Erreur de localisation.";
-            if (error.code === 1) msg = "Veuillez autoriser l'accès à votre position.";
-            alert(msg);
+            gpsMessage.value = {
+                type: 'error',
+                text: error.code === 1
+                    ? "Veuillez autoriser l'accès à votre position."
+                    : 'Erreur de localisation. Réessayez en plein air.',
+            };
         },
-        { enableHighAccuracy: true, timeout: 10000 }
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
     );
 };
 
 const submitLocationAnswer = () => {
-    form.post(route('progression.submit', props.partie.id));
+    form.post(route('progression.submit', props.partie.id), {
+        preserveScroll: true,
+        onFinish: () => {
+            isLocating.value = false;
+        },
+    });
 };
 
 const submitTextAnswer = () => {
-    if (!form.reponse) return;
-    form.post(route('progression.submit', props.partie.id));
+    if (form.reponse) {
+        form.post(route('progression.submit', props.partie.id));
+    }
+};
+
+// const confirmAbandon = () => {
+//     showAbandonConfirm.value = false;
+//     router.post(route('parties.web.abandon', props.partie.id));
+// };
+
+const confirmSkip = () => {
+    showSkipConfirm.value = false;
+    showSolution.value = false;
+    showTimeExpired.value = false;
+    revealedSolution.value = null;
+    router.post(route('progression.next', props.partie.id));
+};
+
+const skipAfterTimeout = () => {
+    showTimeExpired.value = false;
+    confirmSkip();
+};
+
+const requestSolutionAfterTimeout = () => {
+    isRequestingSolution.value = true;
+    router.post(route('progression.solution', props.partie.id), {}, {
+        preserveScroll: true,
+        onFinish: () => {
+            isRequestingSolution.value = false;
+        },
+    });
+};
+
+const continueAfterSolution = () => {
+    revealedSolution.value = null;
+    router.post(route('progression.next', props.partie.id));
+};
+
+const requestSolutionManual = () => {
+    isRequestingSolution.value = true;
+    router.post(route('progression.solution', props.partie.id), {}, {
+        preserveScroll: true,
+        onFinish: () => {
+            isRequestingSolution.value = false;
+            showSolution.value = false;
+        },
+    });
+};
+
+const togglePause = () => {
+    router.post(route('parties.web.pause', props.partie.id));
 };
 
 const confirmAbandon = () => {
@@ -85,15 +178,8 @@ const confirmAbandon = () => {
     router.post(route('parties.web.abandon', props.partie.id));
 };
 
-const confirmSkip = () => {
-    showSkipConfirm.value = false;
-    router.post(route('progression.next', props.partie.id));
-};
-
-const togglePause = () => {
-    showPauseConfirm.value = false;
-    router.post(route('parties.web.pause', props.partie.id));
-};
+const timeLeft = ref(props.progression?.temps_restant || 3600);
+let timerInterval = null;
 
 const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -101,17 +187,32 @@ const formatTime = (seconds) => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
+const onTimerExpired = () => {
+    if (showTimeExpired.value || revealedSolution.value || props.progression?.statut !== 'en_cours') {
+        return;
+    }
+    showTimeExpired.value = true;
+    timeLeft.value = 0;
+    window.axios.post(route('progression.store', props.partie.id), {
+        temps_restant: 0,
+    }).catch(() => {});
+};
+
 const startTimer = () => {
     if (timerInterval) return;
     timerInterval = setInterval(() => {
-        if (props.progression?.statut === 'en_cours' && timeLeft.value > 0) {
+        if (props.progression?.statut !== 'en_cours') {
+            return;
+        }
+        if (timeLeft.value > 0) {
             timeLeft.value--;
-            
-            if (timeLeft.value % 30 === 0) {
-                router.post(route('progression.store', props.partie.id), {
-                    temps_restant: timeLeft.value
-                }, { preserveScroll: true, preserveState: true });
+            if (timeLeft.value > 0 && timeLeft.value % 30 === 0) {
+                window.axios.post(route('progression.store', props.partie.id), {
+                    temps_restant: timeLeft.value,
+                }).catch(() => {});
             }
+        } else if (!showTimeExpired.value && !revealedSolution.value) {
+            onTimerExpired();
         }
     }, 1000);
 };
@@ -119,19 +220,11 @@ const startTimer = () => {
 onMounted(() => {
     window.addEventListener('online', updateOnlineStatus);
     window.addEventListener('offline', updateOnlineStatus);
+    applyFlash();
     startTimer();
-
-    // GSAP Animations
-    gsap.set('.gsap-hud', { y: -50, opacity: 0 });
-    gsap.set('.gsap-main-card', { y: 100, opacity: 0, rotationZ: -2 });
-    gsap.set('.gsap-action-card', { y: 50, opacity: 0, scale: 0.95 });
-    gsap.set('.gsap-token', { scale: 0, opacity: 0, rotation: -90 });
-
-    const tl = gsap.timeline();
-    tl.to('.gsap-hud', { y: 0, opacity: 1, duration: 0.6, ease: 'power2.out' })
-      .to('.gsap-main-card', { y: 0, opacity: 1, rotationZ: 0, duration: 0.8, ease: 'back.out(1.2)' }, '-=0.2')
-      .to('.gsap-action-card', { y: 0, opacity: 1, scale: 1, duration: 0.6, stagger: 0.15, ease: 'power2.out' }, '-=0.4')
-      .to('.gsap-token', { scale: 1, opacity: 1, rotation: 0, duration: 0.5, stagger: 0.1, ease: 'back.out(2)' }, '-=0.4');
+    if (props.progression?.statut === 'en_cours' && timeLeft.value <= 0) {
+        onTimerExpired();
+    }
 });
 
 onUnmounted(() => {
@@ -142,294 +235,255 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <AuthenticatedLayout>
-        <Head :title="'Quête - ' + (partie?.environnement?.nom || 'En cours')" />
+    <CaveGameLayout>
+        <Head :title="'Énigme - ' + (partie?.environnement?.nom || 'En cours')" />
 
-        <!-- PAUSE OVERLAY -->
-        <div v-if="progression?.statut === 'pause'" class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-6">
-            <div class="w-full max-w-md game-board rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-[#5c4033] animate-fade-in-up">
-                <div class="bg-[#1f140e] p-12 text-center relative border-b-2 border-[#5c4033]">
-                    <div class="absolute inset-0 opacity-20" :style="{ backgroundImage: 'radial-gradient(circle at 2px 2px, #FF9500 1.5px, transparent 0)', backgroundSize: '32px 32px' }"></div>
-                    <div class="relative z-10">
-                        <div class="w-20 h-20 bg-[#2a1c14] rounded-full border-4 border-[#FF9500] flex items-center justify-center mx-auto mb-6 shadow-[0_0_20px_rgba(255,149,0,0.5)]">
-                            <i class="pi pi-pause text-[#FF9500] text-3xl"></i>
-                        </div>
-                        <h2 class="card-title text-3xl text-[#f5e8c7]">Partie en Pause</h2>
-                    </div>
+        <div v-if="showTimeExpired && !revealedSolution" class="cave-overlay">
+            <div class="cave-overlay__card">
+                <div class="cave-overlay__header">
+                    <div class="cave-logo-icon" style="width:64px;height:64px;margin:0 auto 12px"><i class="pi pi-clock text-2xl" /></div>
+                    <h2 class="cave-result-title" style="font-size:1.25rem">Temps écoulé !</h2>
                 </div>
-                
-                <div class="bg-[#2a1c14] p-10 space-y-4">
-                    <p class="text-center font-bold text-[#f5e8c7]/70 mb-8 italic font-serif">
-                        {{ partie.environnement?.message_pause || 'L\'aventure est suspendue. Que souhaitez-vous faire ?' }}
+                <div class="cave-overlay__body cave-btn-stack">
+                    <p class="cave-hint text-center">
+                        Le chrono est terminé pour cette énigme. Que souhaitez-vous faire ?
                     </p>
-                    
-                    <button @click="togglePause" class="w-full p-4 bg-[#FF9500] text-[#1f140e] rounded-xl font-black uppercase tracking-widest flex items-center justify-center gap-4 shadow-[0_5px_0_#cc7a00] active:translate-y-[5px] active:shadow-none transition-all">
-                        <i class="pi pi-play-fill text-xl"></i>
-                        Reprendre la partie
+                    <button type="button" class="cave-btn" @click="skipAfterTimeout">
+                        <i class="cave-btn__icon pi pi-fast-forward" />
+                        <span class="cave-btn__label">Passer l'énigme</span>
                     </button>
+                    <button
+                        type="button"
+                        class="cave-btn cave-btn--survival"
+                        :disabled="isRequestingSolution"
+                        @click="requestSolutionAfterTimeout"
+                    >
+                        <i class="cave-btn__icon" :class="isRequestingSolution ? 'pi pi-spin pi-spinner' : 'pi pi-eye'" />
+                        <span class="cave-btn__label">{{ isRequestingSolution ? 'Chargement...' : 'Voir la solution' }}</span>
+                    </button>
+                    <p class="cave-hint text-center" style="font-size:0.7rem">
+                        Passer ou voir la solution : aucun point pour ce défi.
+                    </p>
+                </div>
+            </div>
+        </div>
 
-                    <button @click="router.get(route('dashboard'))" class="w-full p-4 bg-[#1f140e] text-[#f5e8c7] rounded-xl font-black uppercase tracking-widest flex items-center justify-center gap-4 border border-[#5c4033] hover:border-[#FF9500]/50 transition-all">
-                        <i class="pi pi-home text-xl"></i>
-                        Quitter la table
+        <div v-if="revealedSolution" class="cave-overlay">
+            <div class="cave-overlay__card">
+                <div class="cave-overlay__header">
+                    <div class="cave-logo-icon" style="width:64px;height:64px;margin:0 auto 12px"><i class="pi pi-eye text-2xl" /></div>
+                    <h2 class="cave-result-title" style="font-size:1.25rem">Solution</h2>
+                </div>
+                <div class="cave-overlay__body cave-btn-stack">
+                    <p class="cave-panel__text text-center" style="margin:0">{{ revealedSolution }}</p>
+                    <p class="cave-flash cave-flash--error" style="margin:0">Aucun point ne sera attribué pour cette énigme.</p>
+                    <button type="button" class="cave-btn w-full" @click="continueAfterSolution">
+                        <i class="cave-btn__icon pi pi-arrow-right" />
+                        <span class="cave-btn__label">Continuer la mission</span>
                     </button>
                 </div>
             </div>
         </div>
 
-        <div class="play-mat min-h-screen pb-24 transition-opacity duration-300 relative" :class="{ 'opacity-50 pointer-events-none': isOffline || progression?.statut === 'pause' }">
-            <!-- OFFLINE BANNER -->
-            <div v-if="isOffline" class="bg-red-900 border-b-2 border-red-600 text-red-200 card-badge text-[10px] p-2 text-center sticky top-0 z-50 shadow-lg">
-                <i class="pi pi-wifi mr-2"></i> Connexion perdue • Mode Hors-Ligne
+        <div v-if="progression?.statut === 'pause'" class="cave-overlay">
+            <div class="cave-overlay__card">
+                <div class="cave-overlay__header">
+                    <div class="cave-logo-icon" style="width:64px;height:64px;margin:0 auto 12px"><i class="pi pi-pause text-2xl" /></div>
+                    <h2 class="cave-result-title" style="font-size:1.25rem">Partie en pause</h2>
+                </div>
+                <div class="cave-overlay__body cave-btn-stack">
+                    <p class="cave-hint text-center">{{ partie.environnement?.message_pause || 'Que souhaitez-vous faire ?' }}</p>
+                    <button type="button" class="cave-btn" @click="togglePause">
+                        <i class="cave-btn__icon pi pi-play" /><span class="cave-btn__label">Reprendre</span>
+                    </button>
+                    <button type="button" class="cave-btn cave-btn--ghost" @click="router.get(route('dashboard'))">
+                        <i class="cave-btn__icon pi pi-home" /><span class="cave-btn__label">Retour au camp</span>
+                    </button>
+                    <button type="button" class="cave-btn cave-btn--danger" @click="showAbandonConfirm = true">
+                        <i class="cave-btn__icon pi pi-flag" /><span class="cave-btn__label">Terminer la quête</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div
+            class="transition-opacity duration-300"
+            :class="{ 'opacity-50 pointer-events-none': isOffline || progression?.statut === 'pause' || showTimeExpired || revealedSolution }"
+        >
+            <div v-if="isOffline" class="cave-offline-banner sticky top-0 z-50">
+                <i class="pi pi-wifi mr-2" /> Connexion perdue
             </div>
 
-            <!-- GAME HUD (Top Bar as a wooden plaque) -->
-            <div class="gsap-hud bg-[#1f140e] text-[#f5e8c7] p-3 flex justify-between items-center sticky top-0 z-40 border-b-[4px] border-[#5c4033] shadow-[0_5px_15px_rgba(0,0,0,0.5)]">
-                <div class="flex items-center gap-4">
-                    <!-- Progress Token -->
-                    <div class="relative w-12 h-12 bg-[#2a1c14] border-2 border-[#5c4033] rounded-full shadow-inner flex items-center justify-center">
-                        <svg class="absolute inset-0 w-full h-full -rotate-90">
-                            <circle cx="24" cy="24" r="20" stroke="rgba(255,149,0,0.1)" stroke-width="3" fill="transparent" />
-                            <circle cx="24" cy="24" r="20" stroke="#FF9500" stroke-width="3" fill="transparent" :stroke-dasharray="125.6" :stroke-dashoffset="125.6 * (1 - (progression?.lieux_decouverts?.length + 1) / ((progression?.lieux_restants?.length || 0) + (progression?.lieux_decouverts?.length || 0) + 1))" class="transition-all duration-1000" />
+            <header class="cave-hud">
+                <div class="flex items-center gap-3">
+                    <div class="cave-step-ring">
+                        <svg class="w-12 h-12 -rotate-90" viewBox="0 0 48 48">
+                            <circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="4" fill="transparent" opacity="0.2" />
+                            <circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="4" fill="transparent"
+                                :stroke-dasharray="125.6"
+                                :stroke-dashoffset="125.6 * (1 - (progression?.lieux_decouverts?.length + 1) / ((progression?.lieux_restants?.length || 0) + (progression?.lieux_decouverts?.length || 0) + 1))" />
                         </svg>
-                        <div class="text-[12px] card-title text-[#FF9500] drop-shadow-md">
-                            {{ (progression?.lieux_decouverts?.length || 0) + 1 }}
-                        </div>
+                        <span class="cave-step-ring__label">{{ (progression?.lieux_decouverts?.length || 0) + 1 }}</span>
                     </div>
                     <div>
-                        <h1 class="card-badge text-[9px] text-[#FF9500]/70">Quête Actuelle</h1>
-                        <p class="card-title text-sm truncate max-w-[150px] md:max-w-[300px]">
-                            {{ partie?.environnement?.nom }}
+                        <p class="cave-hud__mission">Mission</p>
+                        <p class="cave-hud__title truncate max-w-[120px] lg:max-w-xs">{{ partie?.environnement?.nom }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="cave-hud__score" :title="scoreActuel + ' points au total'">
+                        <i class="pi pi-star-fill" />
+                        <span>{{ scoreActuel }}</span>
+                    </div>
+                    <div class="cave-hud__timer" :class="{ 'cave-hud__timer--urgent': timeLeft < 300 }">
+                        <span>{{ formatTime(timeLeft) }}</span>
+                        <i class="pi pi-clock" />
+                    </div>
+                    <button type="button" class="cave-hud__btn" @click="togglePause"><i class="pi pi-pause" /></button>
+                </div>
+            </header>
+
+            <main class="cave-game-content cave-game-content--split">
+                <article class="cave-panel">
+                    <div v-if="enigme?.lieu?.photos?.length || enigme?.image_url" class="relative">
+                        <img :src="enigme?.lieu?.photos?.length ? enigme.lieu.photos[0].url : enigme.image_url" class="cave-panel__img" :alt="enigme?.titre">
+                        <div class="cave-level-card__overlay absolute inset-0" />
+                    </div>
+                    <div class="cave-panel__body">
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            <span class="cave-badge cave-badge--gold">{{ enigme?.type }}</span>
+                            <span class="cave-badge cave-badge--pts">+{{ pointsEnigme }} pts si réussi</span>
+                        </div>
+                        <h2 class="cave-panel__title">{{ enigme?.titre || 'Défi secret' }}</h2>
+                        <p class="cave-panel__text">
+                            <i class="pi pi-info-circle mr-2 opacity-50" />
+                            "{{ enigme?.texte || 'Pas de description pour cette énigme.' }}"
                         </p>
                     </div>
-                </div>
-                
-                <div class="flex items-center gap-3">
-                    <div class="px-3 py-1.5 bg-[#2a1c14] rounded-lg border border-[#5c4033] flex items-center gap-2 shadow-inner">
-                        <i class="pi pi-clock text-[#FF9500] text-sm"></i>
-                        <span class="card-badge text-sm" :class="{ 'text-red-500 animate-pulse': timeLeft < 300 }">{{ formatTime(timeLeft) }}</span>
-                    </div>
-                    <button @click="togglePause" class="w-10 h-10 bg-[#2a1c14] rounded-lg flex items-center justify-center hover:bg-[#3f2a1e] active:scale-95 transition-all border border-[#5c4033] shadow-[0_2px_0_#1f140e]">
-                        <i class="pi pi-pause text-[#FF9500]"></i>
-                    </button>
-                </div>
-            </div>
+                </article>
 
-            <main class="p-4 md:p-8 max-w-3xl mx-auto space-y-8">
-                <!-- MISSION CARD (The active play card) -->
-                <div class="board-card gsap-main-card">
-                    <div v-if="enigme?.lieu?.photos?.length || enigme?.image_url" class="relative h-64 border-b-2 border-[#5c4033]">
-                        <img :src="enigme?.lieu?.photos?.length ? enigme.lieu.photos[0].url : enigme.image_url" class="w-full h-full object-cover opacity-90">
-                        <div class="absolute inset-0 bg-gradient-to-t from-[#2a1c14] to-transparent"></div>
-                    </div>
-                    <div v-else class="h-32 bg-[url('/img/pattern-wood.png')] bg-cover border-b-2 border-[#5c4033] flex items-center justify-center">
-                        <i class="pi pi-map text-5xl text-black/20"></i>
-                    </div>
-                    
-                    <div class="p-8 relative bg-[#2a1c14]">
-                        <div class="flex flex-wrap items-center gap-2 mb-4">
-                            <span class="px-3 py-1 bg-[#FF9500] text-[#1f140e] text-[9px] card-badge rounded-md">
-                                Épreuve: {{ enigme?.type }}
-                            </span>
-                            <span class="px-3 py-1 bg-[#1f140e] border border-[#5c4033] text-[#f5e8c7] text-[9px] card-badge rounded-md">
-                                Récompense: +{{ enigme?.points || 0 }} PTS
-                            </span>
-                        </div>
-                        <h2 class="card-title text-3xl md:text-4xl text-[#f5e8c7] mb-6 drop-shadow-md">
-                            {{ enigme?.titre || 'Défi Secret' }}
-                        </h2>
-                        <div class="bg-[#1f140e] p-6 rounded-xl border border-[#3f2a1e] text-lg text-[#f5e8c7]/90 leading-relaxed font-serif shadow-inner">
-                            <p class="first-letter:text-5xl first-letter:font-black first-letter:text-[#FF9500] first-letter:mr-3 first-letter:float-left">
-                                {{ enigme?.texte || 'Pas de description pour cette énigme.' }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- RADAR / GEOLOCALISATION CARD -->
-                <div class="board-card gsap-action-card p-6 bg-[#2a1c14] border-2 border-[#5c4033]">
-                    <div class="flex items-center gap-6">
-                        <div class="relative">
-                            <div class="radar-pulse absolute inset-0 bg-[#FF9500]/20 rounded-full" :class="{ 'animating': isLocating }"></div>
-                            <div class="w-16 h-16 rounded-full bg-[#1f140e] border-2 border-[#FF9500] flex items-center justify-center relative z-10 shadow-[0_0_15px_rgba(255,149,0,0.3)]">
-                                <i class="pi pi-compass text-2xl text-[#FF9500]" :class="{ 'animate-spin': isLocating }"></i>
+                <div class="cave-game-sidebar-col">
+                    <div class="cave-panel cave-radar-box">
+                        <div class="cave-radar-pulse absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full" :class="{ 'cave-radar-pulse--active': isLocating }" />
+                        <div class="relative z-10 flex flex-col items-center text-center gap-3 py-4">
+                            <div class="cave-tool-btn__icon" style="width:56px;height:56px;font-size:1.5rem">
+                                <i class="pi pi-map-marker" :class="{ 'animate-ping': isLocating }" />
                             </div>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="card-title text-lg text-[#f5e8c7] mb-1">Boussole de Validation</h3>
-                            <p class="card-badge text-[9px] text-[#FF9500]/70 mb-3">Rendez-vous sur place (10m max)</p>
-                            
-                            <button
-                                @click="checkLocation"
-                                class="w-full p-3 rounded-lg bg-[#5c4033] text-[#f5e8c7] card-badge text-[10px] hover:bg-[#FF9500] hover:text-[#1f140e] active:scale-95 transition-all flex items-center justify-center gap-2 border border-[#3f2a1e] shadow-[0_4px_0_#1f140e] active:translate-y-[4px] active:shadow-none disabled:opacity-50"
-                                :disabled="isLocating || isOffline"
-                            >
-                                <i :class="isLocating ? 'pi pi-spin pi-spinner' : 'pi pi-map-marker'" class="text-sm"></i>
-                                {{ isLocating ? 'Analyse...' : 'Prouver ma présence' }}
-                            </button>
+                            <h3 class="cave-section-title" style="font-size:0.75rem;margin:0">Scanner GPS</h3>
+                            <p v-if="gpsDisponible" class="cave-hint">
+                                Rendez-vous sur la zone de l'énigme, puis vérifiez votre position pour gagner les points.
+                            </p>
+                            <p v-else class="cave-hint cave-hint--warn">Vérification GPS indisponible</p>
                         </div>
                     </div>
-                </div>
 
-                <!-- ANSWER FORM CARD -->
-                <div class="board-card gsap-action-card p-6 bg-[#2a1c14] border-2 border-[#5c4033]">
-                    <h3 class="card-title text-lg text-[#f5e8c7] mb-4 flex items-center gap-2">
-                        <i class="pi pi-key text-[#FF9500]"></i> Formule de Réponse
-                    </h3>
-                    <form @submit.prevent="submitTextAnswer" class="relative">
-                        <InputText
-                            v-model="form.reponse"
-                            placeholder="Saisissez la réponse trouvée..."
-                            class="w-full p-4 bg-[#1f140e] border-2 border-[#3f2a1e] rounded-xl text-[#f5e8c7] font-black placeholder:text-[#f5e8c7]/30 focus:border-[#FF9500] transition-all shadow-inner"
-                            :disabled="form.processing || isOffline"
-                        />
-                        <button 
-                            v-if="form.reponse"
-                            type="submit"
-                            class="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-[#FF9500] text-[#1f140e] rounded-lg flex items-center justify-center shadow-lg active:scale-90 transition-all hover:bg-[#ffaa33]"
-                            :disabled="form.processing"
-                        >
-                            <i class="pi text-lg" :class="form.processing ? 'pi-spin pi-spinner' : 'pi-send'"></i>
+                    <div v-if="gpsMessage" class="cave-flash" :class="gpsMessage.type === 'error' ? 'cave-flash--error' : 'cave-flash--info'">
+                        {{ gpsMessage.text }}
+                    </div>
+
+                    <div v-if="lastGpsCheck && lastGpsCheck.distance != null" class="cave-gps-result">
+                        <p>
+                            Vous êtes à environ <strong>{{ lastGpsCheck.distance }} m</strong> de la zone.
+                            Rapprochez-vous et réessayez.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="cave-btn w-full"
+                        :disabled="isLocating || isOffline || !gpsDisponible || form.processing"
+                        @click="checkLocation"
+                    >
+                        <i class="cave-btn__icon" :class="isLocating || form.processing ? 'pi pi-spin pi-spinner' : 'pi pi-compass'" />
+                        <span class="cave-btn__label">{{ isLocating || form.processing ? 'Vérification...' : 'Vérifier ma position' }}</span>
+                    </button>
+
+                    <div class="cave-panel cave-panel__body space-y-3">
+                        <h3 class="cave-section-title" style="font-size:0.75rem;margin:0">Réponse texte</h3>
+                        <form class="relative" @submit.prevent="submitTextAnswer">
+                            <InputText v-model="form.reponse" placeholder="Code ou réponse..." class="cave-game-input w-full" :disabled="form.processing || isOffline" />
+                            <button v-if="form.reponse" type="submit" class="cave-copy-btn absolute right-2 top-1/2 -translate-y-1/2" :disabled="form.processing">
+                                <i :class="form.processing ? 'pi pi-spin pi-spinner' : 'pi pi-send'" />
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="cave-tool-grid">
+                        <button type="button" class="cave-tool-btn" @click="showHint = true">
+                            <div class="icon-box"><i class="pi pi-question" /></div>
+                            <span class="label">Indice</span>
                         </button>
-                    </form>
-                </div>
-
-                <!-- GAME TOOLS (Tokens) -->
-                <div class="grid grid-cols-4 gap-4 mt-8">
-                    <button @click="showHint = true" class="gsap-token tool-token group">
-                        <div class="token-inner bg-[#1f140e] border-2 border-[#5c4033] group-hover:border-[#FF9500]">
-                            <i class="pi pi-question text-xl text-[#FF9500] group-hover:drop-shadow-[0_0_5px_#FF9500]"></i>
-                        </div>
-                        <span class="card-badge text-[9px] text-[#f5e8c7]/50 mt-2 block">Indice</span>
-                    </button>
-                    <button @click="showSolution = true" class="gsap-token tool-token group">
-                        <div class="token-inner bg-[#1f140e] border-2 border-[#5c4033] group-hover:border-[#FF9500]">
-                            <i class="pi pi-eye text-xl text-[#FF9500] group-hover:drop-shadow-[0_0_5px_#FF9500]"></i>
-                        </div>
-                        <span class="card-badge text-[9px] text-[#f5e8c7]/50 mt-2 block">Solution</span>
-                    </button>
-                    <button @click="showSkipConfirm = true" class="gsap-token tool-token group">
-                        <div class="token-inner bg-[#1f140e] border-2 border-[#5c4033] group-hover:border-red-500">
-                            <i class="pi pi-fast-forward text-xl text-red-500 group-hover:drop-shadow-[0_0_5px_red]"></i>
-                        </div>
-                        <span class="card-badge text-[9px] text-red-400/50 mt-2 block">Passer</span>
-                    </button>
-                    <button @click="showAbandonConfirm = true" class="gsap-token tool-token group">
-                        <div class="token-inner bg-[#1f140e] border-2 border-[#5c4033] group-hover:border-red-500">
-                            <i class="pi pi-power-off text-xl text-red-500 group-hover:drop-shadow-[0_0_5px_red]"></i>
-                        </div>
-                        <span class="card-badge text-[9px] text-red-400/50 mt-2 block">Quitter</span>
-                    </button>
+                        <button type="button" class="cave-tool-btn" @click="showSolution = true">
+                            <div class="icon-box"><i class="pi pi-eye" /></div>
+                            <span class="label">Solution</span>
+                        </button>
+                        <button type="button" class="cave-tool-btn cave-tool-btn--danger" @click="showSkipConfirm = true">
+                            <div class="icon-box"><i class="pi pi-fast-forward" /></div>
+                            <span class="label">Passer</span>
+                        </button>
+                        <button type="button" class="cave-tool-btn cave-tool-btn--danger" @click="showAbandonConfirm = true">
+                            <div class="icon-box"><i class="pi pi-power-off" /></div>
+                            <span class="label">Quitter</span>
+                        </button>
+                    </div>
                 </div>
             </main>
 
-            <!-- MODALS (Styled for Game) -->
-            <Dialog v-model:visible="showHint" modal header="Carte Indice" :style="{ width: '90vw', maxWidth: '400px' }" class="game-dialog">
-                <div class="p-6 space-y-4 text-center">
-                    <i class="pi pi-question-circle text-4xl text-[#FF9500] mb-2 drop-shadow-[0_0_10px_#FF9500]"></i>
-                    <p class="text-[#f5e8c7]/80 font-serif italic text-lg">
-                        "L'indice sera implémenté prochainement pour vous aider à résoudre ce mystère !"
-                    </p>
-                </div>
+            <Dialog v-model:visible="showHint" modal header="Indice" :style="{ width: '90vw', maxWidth: '420px' }" class="cave-game-dialog">
+                <p class="cave-panel__text" style="margin:0">L'indice sera bientôt disponible pour vous aider.</p>
                 <template #footer>
-                    <button @click="showHint = false" class="w-full p-4 rounded-xl bg-[#1f140e] text-[#f5e8c7] card-badge border border-[#5c4033] hover:border-[#FF9500] transition-colors">
-                        Remettre la carte
-                    </button>
+                    <button type="button" class="cave-btn w-full" @click="showHint = false">Fermer</button>
                 </template>
             </Dialog>
 
-            <Dialog v-model:visible="showSolution" modal header="Carte Solution" :style="{ width: '90vw', maxWidth: '400px' }" class="game-dialog">
-                <div class="p-6 space-y-6">
-                    <div class="bg-[#1f140e] border border-red-900/50 p-4 rounded-xl text-center">
-                        <i class="pi pi-exclamation-triangle text-red-500 text-2xl mb-2"></i>
-                        <p class="card-badge text-[9px] text-red-400">
-                            ALERTE : Lire cette carte annulera vos points.
-                        </p>
-                    </div>
-                    <div v-if="enigme?.solution" class="bg-[#1f140e] p-6 rounded-xl border border-[#5c4033] font-serif italic text-[#f5e8c7] text-center">
-                        {{ enigme.solution }}
-                    </div>
-                    <div v-else class="bg-[#1f140e] p-6 rounded-xl border border-[#5c4033] font-serif italic text-[#f5e8c7] text-center">
-                        La réponse est : <span class="text-[#FF9500] card-title text-xl block mt-3">{{ enigme?.reponse || 'Non définie' }}</span>
-                    </div>
-                </div>
+            <Dialog v-model:visible="showSolution" modal header="Solution" :style="{ width: '90vw', maxWidth: '420px' }" class="cave-game-dialog">
+                <p class="cave-flash cave-flash--error mb-3">Voir la solution annule vos points pour ce défi.</p>
+                <p class="cave-panel__text text-center" style="margin:0">
+                    La réponse vous sera affichée. Vous pourrez ensuite passer à l'énigme suivante.
+                </p>
                 <template #footer>
-                    <div class="flex gap-3 w-full px-6 pb-6">
-                        <button @click="showSolution = false" class="flex-1 p-3 rounded-xl bg-[#1f140e] border border-[#5c4033] text-[#f5e8c7]/50 card-badge hover:text-[#f5e8c7]">Garder secrète</button>
-                        <button @click="confirmSkip" class="flex-1 p-3 rounded-xl bg-red-900/80 text-red-100 card-badge shadow-inner">Révéler & Passer</button>
+                    <div class="flex gap-2">
+                        <button type="button" class="cave-btn cave-btn--ghost flex-1" @click="showSolution = false">Annuler</button>
+                        <button
+                            type="button"
+                            class="cave-btn cave-btn--danger flex-1"
+                            :disabled="isRequestingSolution"
+                            @click="requestSolutionManual"
+                        >
+                            {{ isRequestingSolution ? 'Chargement...' : 'Voir la solution' }}
+                        </button>
                     </div>
                 </template>
             </Dialog>
 
-            <Dialog v-model:visible="showSkipConfirm" modal header="Défausser la Quête ?" :style="{ width: '90vw', maxWidth: '400px' }" class="game-dialog">
-                <div class="p-6 space-y-4 text-center">
-                    <i class="pi pi-forward text-4xl text-red-500/80 mb-2"></i>
-                    <p class="text-[#f5e8c7]/80 font-serif italic">
-                        "Voulez-vous vraiment passer ce défi ? Vous ne gagnerez aucun point pour cette étape."
-                    </p>
-                </div>
+            <Dialog v-model:visible="showSkipConfirm" modal header="Passer ?" :style="{ width: '90vw', maxWidth: '420px' }" class="cave-game-dialog">
+                <p class="cave-panel__text" style="margin:0">Passer ce défi sans gagner de points ?</p>
                 <template #footer>
-                    <div class="flex gap-3 w-full px-6 pb-6">
-                        <button @click="showSkipConfirm = false" class="flex-1 p-3 rounded-xl bg-[#1f140e] border border-[#5c4033] text-[#f5e8c7]/50 card-badge hover:text-[#f5e8c7]">Annuler</button>
-                        <button @click="confirmSkip" class="flex-1 p-3 rounded-xl bg-[#5c4033] text-[#FF9500] border border-[#FF9500]/30 card-badge hover:bg-[#FF9500] hover:text-[#1f140e]">Confirmer</button>
+                    <div class="flex gap-2">
+                        <button type="button" class="cave-btn cave-btn--ghost flex-1" @click="showSkipConfirm = false">Non</button>
+                        <button type="button" class="cave-btn flex-1" @click="confirmSkip">Oui</button>
                     </div>
                 </template>
             </Dialog>
 
-            <Dialog v-model:visible="showAbandonConfirm" modal header="Ranger le Plateau ?" :style="{ width: '90vw', maxWidth: '400px' }" class="game-dialog">
-                <div class="p-6 space-y-4 text-center">
-                    <i class="pi pi-ban text-4xl text-red-500/80 mb-2"></i>
-                    <p class="text-[#f5e8c7]/80 font-serif italic">
-                        "Êtes-vous certain de vouloir abandonner ? Votre progression actuelle sera sauvegardée mais la mission s'arrêtera ici."
-                    </p>
-                </div>
+            <Dialog v-model:visible="showAbandonConfirm" modal header="Abandonner ?" :style="{ width: '90vw', maxWidth: '420px' }" class="cave-game-dialog">
+                <p class="cave-panel__text" style="margin:0">Votre progression sera sauvegardée mais la mission s'arrête ici.</p>
                 <template #footer>
-                    <div class="flex gap-3 w-full px-6 pb-6">
-                        <button @click="showAbandonConfirm = false" class="flex-1 p-3 rounded-xl bg-[#1f140e] border border-[#5c4033] text-[#f5e8c7]/50 card-badge hover:text-[#f5e8c7]">Non, continuer</button>
-                        <button @click="confirmAbandon" class="flex-1 p-3 rounded-xl bg-red-900/80 text-red-100 card-badge shadow-inner">Oui, abandonner</button>
+                    <div class="flex gap-2">
+                        <button type="button" class="cave-btn cave-btn--ghost flex-1" @click="showAbandonConfirm = false">Continuer</button>
+                        <button type="button" class="cave-btn cave-btn--danger flex-1" @click="confirmAbandon">Abandonner</button>
                     </div>
                 </template>
             </Dialog>
         </div>
-    </AuthenticatedLayout>
+    </CaveGameLayout>
 </template>
 
 <style scoped>
-/* Reset & Overrides handled by app.css mostly */
-
-/* Radar Animation */
-.radar-pulse.animating {
-    animation: pulse-radar 1.5s infinite ease-out;
+.cave-level-card__overlay {
+    background: linear-gradient(to top, rgba(61, 34, 16, 0.75), transparent 55%);
 }
-
-@keyframes pulse-radar {
-    0% { transform: scale(0.8); opacity: 0.8; }
-    100% { transform: scale(2); opacity: 0; }
-}
-
-/* Tool Tokens */
-.tool-token {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-}
-.tool-token .token-inner {
-    width: 4rem;
-    height: 4rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5), inset 0 2px 5px rgba(255,255,255,0.05);
-}
-.tool-token:hover .token-inner {
-    transform: translateY(-5px) scale(1.1);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.6), inset 0 2px 5px rgba(255,255,255,0.1);
-}
-.tool-token:active .token-inner {
-    transform: translateY(2px) scale(0.95);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+.cave-step-ring svg circle:last-child {
+    stroke: var(--cave-btn-primary);
 }
 </style>

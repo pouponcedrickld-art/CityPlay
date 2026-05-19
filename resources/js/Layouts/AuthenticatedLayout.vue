@@ -64,8 +64,20 @@ window.addEventListener('resize', () => {
 const menuItems = [
     { label: 'Dashboard', icon: 'pi pi-home', route: 'dashboard' },
     { label: 'Parcours', icon: 'pi pi-map', route: 'parties.web.create' },
+    { label: 'Rejoindre', icon: 'pi pi-link', route: 'parties.web.create', query: { tab: 'join' } },
     { label: 'Mon Profil', icon: 'pi pi-user', route: 'profile.edit' },
 ];
+
+const menuItemHref = (item) => {
+    const base = route(item.route);
+    if (!item.query) {
+        return base;
+    }
+    const params = Object.entries(item.query)
+        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+        .join('&');
+    return `${base}?${params}`;
+};
 </script>
 
 <template>
@@ -92,8 +104,8 @@ const menuItems = [
             <nav class="flex-1 space-y-2">
                 <Link 
                     v-for="item in menuItems" 
-                    :key="item.route"
-                    :href="route(item.route)"
+                    :key="item.label"
+                    :href="menuItemHref(item)"
                     class="flex items-center gap-4 p-4 rounded-2xl transition-all duration-300 group"
                     :class="route().current(item.route) 
                       ? (isDark ? 'bg-orange-50 text-orange-950 shadow-inner' : 'bg-[#059669]/10 text-[#1a1208] border border-[#059669]/30 shadow-inner') 
@@ -184,12 +196,10 @@ const menuItems = [
                : 'bg-[#faf6ee] border-t border-[#c8a96e]/40 shadow-[0_-2px_15px_rgba(139,105,20,0.08)]'">
             <Link 
                 v-for="item in menuItems" 
-                :key="item.route"
-                :href="route(item.route)"
-                class="flex flex-col items-center gap-1 transition-colors"
-                :class="route().current(item.route) 
-                  ? (isDark ? 'text-orange-600' : 'text-[#059669]') 
-                  : (isDark ? 'text-orange-300' : 'text-[#c8a96e]')"
+                :key="item.label"
+                :href="menuItemHref(item)"
+                class="flex flex-col items-center gap-1"
+                :class="route().current(item.route) ? 'text-orange-600' : 'text-orange-300'"
             >
                 <i :class="item.icon" class="text-xl"></i>
                 <span class="text-[8px] font-black uppercase tracking-widest">{{ item.label }}</span>

@@ -1,0 +1,1870 @@
+/* ============================================================
+   CAVE BOY ESCAPE — Play Hub Theme (CityPlay)
+   Section JOUER : préhistoire cartoon 2D
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Bungee&display=swap');
+
+/* ── Custom Properties ───────────────────────────────────── */
+.cave-play-hub {
+  --cave-sky-top: #87CEEB;
+  --cave-sky-mid: #E8F4FC;
+  --cave-sky-bottom: #F4A44A;
+  --cave-btn-primary-top: #C5D96A;
+  --cave-btn-primary-bottom: #8FA83A;
+  --cave-btn-primary: #A8B845;
+  --cave-btn-survival-top: #A84A3A;
+  --cave-btn-survival-bottom: #6B2A1E;
+  --cave-btn-survival: #8B3A2A;
+  --cave-btn-text: #FFF5DC;
+  --cave-border-dark: #5C3317;
+  --cave-border-darker: #3D2210;
+  --cave-rock: #D4B483;
+  --cave-rock-dark: #B8956A;
+  --cave-rock-light: #E8D4B0;
+  --cave-gold: #FFD700;
+  --cave-gold-dark: #B8860B;
+  --cave-grass: #5A8F3C;
+  --cave-grass-dark: #3D6B28;
+  --cave-shadow: rgba(92, 51, 23, 0.55);
+  --cave-shadow-lg: rgba(61, 34, 16, 0.7);
+  --cave-font-title: 'Bungee', 'Fredoka', cursive, sans-serif;
+  --cave-font-body: 'Fredoka', sans-serif;
+  --cave-max-width: 420px;
+  --cave-btn-radius: 24px;
+  --cave-btn-gap: 15px;
+  --cave-padding-x: 24px;
+}
+
+/* ── Hub container ───────────────────────────────────────── */
+.cave-play-hub {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  font-family: var(--cave-font-body);
+  color: var(--cave-border-dark);
+  overflow-x: hidden;
+  padding-bottom: 100px;
+  background: linear-gradient(
+    180deg,
+    var(--cave-sky-top) 0%,
+    var(--cave-sky-mid) 38%,
+    #FFF8EE 62%,
+    var(--cave-sky-bottom) 100%
+  );
+}
+
+/* ── Decorative cliffs ───────────────────────────────────── */
+.cave-play-hub::before,
+.cave-play-hub::after {
+  content: '';
+  position: fixed;
+  bottom: 80px;
+  width: 28%;
+  max-width: 140px;
+  height: 45vh;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.85;
+}
+
+.cave-play-hub::before {
+  left: -4%;
+  background:
+    linear-gradient(135deg, var(--cave-rock-light) 0%, var(--cave-rock) 40%, var(--cave-rock-dark) 100%);
+  border-radius: 0 60% 20% 0;
+  border: 4px solid var(--cave-border-dark);
+  box-shadow: 6px 0 20px var(--cave-shadow);
+  filter: blur(0.5px);
+}
+
+.cave-play-hub::after {
+  right: -4%;
+  background:
+    linear-gradient(225deg, var(--cave-rock-light) 0%, var(--cave-rock) 40%, var(--cave-rock-dark) 100%);
+  border-radius: 60% 0 0 20%;
+  border: 4px solid var(--cave-border-dark);
+  box-shadow: -6px 0 20px var(--cave-shadow);
+}
+
+/* ── Falling leaves (particles) ──────────────────────────── */
+.cave-leaves {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.cave-leaf {
+  position: absolute;
+  top: -20px;
+  width: 12px;
+  height: 14px;
+  background: var(--cave-grass);
+  border-radius: 0 80% 0 80%;
+  opacity: 0.5;
+  animation: caveLeafFall linear infinite;
+}
+
+.cave-leaf:nth-child(1) { left: 10%; animation-duration: 9s; animation-delay: 0s; }
+.cave-leaf:nth-child(2) { left: 25%; animation-duration: 11s; animation-delay: 2s; width: 10px; }
+.cave-leaf:nth-child(3) { left: 45%; animation-duration: 8s; animation-delay: 4s; }
+.cave-leaf:nth-child(4) { left: 65%; animation-duration: 12s; animation-delay: 1s; }
+.cave-leaf:nth-child(5) { left: 80%; animation-duration: 10s; animation-delay: 3s; width: 14px; }
+.cave-leaf:nth-child(6) { left: 90%; animation-duration: 13s; animation-delay: 5s; }
+
+/* ── Inner content wrapper ───────────────────────────────── */
+.cave-play-inner {
+  position: relative;
+  z-index: 2;
+  max-width: var(--cave-max-width);
+  margin: 0 auto;
+  padding: 16px var(--cave-padding-x) 24px;
+}
+
+/* Mobile : contenu centré type app */
+@media (max-width: 1023px) {
+  .cave-play-hub--standard {
+    max-width: 100%;
+  }
+}
+
+/* ── Logo & mascot ───────────────────────────────────────── */
+.cave-logo-wrap {
+  text-align: center;
+  padding: 12px 0 20px;
+  animation: caveBounce 2.5s ease-in-out infinite;
+}
+
+.cave-logo-icon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 8px;
+  background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock));
+  border: 4px solid var(--cave-border-dark);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 6px 0 var(--cave-border-darker),
+    0 8px 20px var(--cave-shadow);
+  font-size: 2rem;
+}
+
+.cave-logo-title {
+  font-family: var(--cave-font-title);
+  font-size: clamp(1.75rem, 7vw, 2.25rem);
+  color: var(--cave-btn-text);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+  text-shadow:
+    0 1px 0 #fff,
+    0 3px 0 var(--cave-border-dark),
+    0 5px 0 var(--cave-border-darker),
+    0 7px 12px var(--cave-shadow-lg);
+}
+
+.cave-logo-sub {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--cave-border-dark);
+  opacity: 0.7;
+  margin-top: 6px;
+}
+
+/* ── 3D stone title ──────────────────────────────────────── */
+.cave-section-title {
+  font-family: var(--cave-font-title);
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--cave-btn-text);
+  text-align: center;
+  margin-bottom: 14px;
+  text-shadow:
+    0 1px 0 rgba(255,255,255,0.6),
+    0 2px 0 var(--cave-border-dark),
+    0 4px 8px var(--cave-shadow);
+}
+
+/* ── Score / lives counter ───────────────────────────────── */
+.cave-lives-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 8px 16px;
+  background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock));
+  border: 3px solid var(--cave-border-dark);
+  border-radius: 16px;
+  box-shadow: 0 4px 0 var(--cave-border-darker);
+}
+
+.cave-lives-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--cave-border-dark);
+}
+
+.cave-score-value {
+  font-family: var(--cave-font-title);
+  font-size: 1.1rem;
+  color: var(--cave-gold);
+  text-shadow:
+    0 1px 0 var(--cave-gold-dark),
+    0 2px 0 var(--cave-border-dark);
+}
+
+.cave-score-value .star {
+  color: var(--cave-gold);
+  filter: drop-shadow(0 1px 2px var(--cave-border-dark));
+}
+
+/* ── Stone buttons (primary) ─────────────────────────────── */
+.cave-btn-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cave-btn-gap);
+  width: 100%;
+}
+
+.cave-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 56px;
+  padding: 14px 20px;
+  border: 4px solid var(--cave-border-dark);
+  border-radius: var(--cave-btn-radius);
+  font-family: var(--cave-font-body);
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--cave-btn-text);
+  cursor: pointer;
+  text-decoration: none;
+  background: linear-gradient(180deg, var(--cave-btn-primary-top) 0%, var(--cave-btn-primary-bottom) 100%);
+  box-shadow:
+    0 6px 0 var(--cave-border-darker),
+    0 8px 16px var(--cave-shadow);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  animation: caveSlideInUp 0.5s ease backwards, caveWobble 4s ease-in-out infinite;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cave-btn:nth-child(1) { animation-delay: 0.05s, 0s; }
+.cave-btn:nth-child(2) { animation-delay: 0.15s, 0.5s; }
+.cave-btn:nth-child(3) { animation-delay: 0.25s, 1s; }
+.cave-btn:nth-child(4) { animation-delay: 0.35s, 1.5s; }
+.cave-btn:nth-child(5) { animation-delay: 0.45s, 2s; }
+
+.cave-btn::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 12%;
+  right: 12%;
+  height: 35%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.35), transparent);
+  border-radius: 12px 12px 50% 50%;
+  pointer-events: none;
+}
+
+.cave-btn:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow:
+    0 9px 0 var(--cave-border-darker),
+    0 12px 24px var(--cave-shadow-lg);
+}
+
+.cave-btn:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow:
+    0 3px 0 var(--cave-border-darker),
+    0 4px 8px var(--cave-shadow);
+}
+
+.cave-btn:disabled,
+.cave-btn--locked {
+  background: linear-gradient(180deg, #7A5A4A 0%, var(--cave-btn-survival-bottom) 100%);
+  cursor: not-allowed;
+  opacity: 0.92;
+  animation: caveSlideInUp 0.5s ease backwards;
+}
+
+.cave-btn--survival {
+  background: linear-gradient(180deg, var(--cave-btn-survival-top) 0%, var(--cave-btn-survival-bottom) 100%);
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 8px,
+      rgba(0,0,0,0.04) 8px,
+      rgba(0,0,0,0.04) 10px
+    ),
+    linear-gradient(180deg, var(--cave-btn-survival-top) 0%, var(--cave-btn-survival-bottom) 100%);
+}
+
+.cave-btn__icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  filter: drop-shadow(0 1px 2px var(--cave-border-dark));
+}
+
+.cave-btn__content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  flex: 1;
+}
+
+.cave-btn__content--center {
+  align-items: center;
+  text-align: center;
+}
+
+.cave-btn__label {
+  line-height: 1.2;
+  text-shadow: 0 1px 2px var(--cave-border-dark);
+}
+
+.cave-btn__sub {
+  font-size: 0.65rem;
+  font-weight: 600;
+  font-style: normal;
+  color: var(--cave-gold);
+  text-shadow: 0 1px 0 var(--cave-border-dark);
+  margin-top: 2px;
+  letter-spacing: 0.05em;
+}
+
+/* ── Tab switcher (2 stone pills) ────────────────────────── */
+.cave-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.cave-tab {
+  flex: 1;
+  padding: 12px 8px;
+  border: 3px solid var(--cave-border-dark);
+  border-radius: 18px;
+  font-family: var(--cave-font-body);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--cave-border-dark);
+  background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock));
+  box-shadow: 0 4px 0 var(--cave-border-darker);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.cave-tab--active {
+  background: linear-gradient(180deg, var(--cave-btn-primary-top), var(--cave-btn-primary-bottom));
+  color: var(--cave-btn-text);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 var(--cave-border-darker);
+}
+
+/* ── Level / environment cards grid ────────────────────── */
+.cave-levels-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cave-btn-gap);
+}
+
+.cave-level-card {
+  position: relative;
+  border: 4px solid var(--cave-border-dark);
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--cave-rock-light);
+  box-shadow: 0 6px 0 var(--cave-border-darker), 0 8px 20px var(--cave-shadow);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  animation: caveSlideInUp 0.55s ease backwards;
+}
+
+.cave-level-card:nth-child(1) { animation-delay: 0.1s; }
+.cave-level-card:nth-child(2) { animation-delay: 0.2s; }
+.cave-level-card:nth-child(3) { animation-delay: 0.3s; }
+.cave-level-card:nth-child(4) { animation-delay: 0.4s; }
+
+.cave-level-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 9px 0 var(--cave-border-darker), 0 14px 28px var(--cave-shadow-lg);
+}
+
+.cave-level-card:active {
+  transform: translateY(2px);
+  box-shadow: 0 3px 0 var(--cave-border-darker);
+}
+
+.cave-level-card__img-wrap {
+  position: relative;
+  height: 120px;
+  overflow: hidden;
+}
+
+.cave-level-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cave-level-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(61,34,16,0.75) 0%, transparent 55%);
+}
+
+.cave-level-card__badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 4px 10px;
+  background: var(--cave-gold);
+  border: 2px solid var(--cave-border-dark);
+  border-radius: 12px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--cave-border-dark);
+  text-transform: uppercase;
+}
+
+.cave-level-card__title {
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+  right: 12px;
+  font-family: var(--cave-font-title);
+  font-size: 1rem;
+  color: var(--cave-btn-text);
+  text-shadow: 0 2px 4px var(--cave-border-darker);
+  text-transform: uppercase;
+}
+
+.cave-level-card__body {
+  padding: 12px 14px 14px;
+  background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock));
+}
+
+.cave-level-card__meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--cave-border-dark);
+  margin-bottom: 10px;
+}
+
+.cave-level-card__stars {
+  display: flex;
+  gap: 3px;
+}
+
+.cave-level-card__stars span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cave-rock-dark);
+  border: 1px solid var(--cave-border-dark);
+}
+
+.cave-level-card__stars span.filled {
+  background: var(--cave-gold);
+  box-shadow: 0 0 4px var(--cave-gold);
+}
+
+/* ── Join code panel (stone tablet) ──────────────────────── */
+.cave-tablet {
+  background: linear-gradient(180deg, var(--cave-rock-light) 0%, var(--cave-rock) 100%);
+  border: 4px solid var(--cave-border-dark);
+  border-radius: 24px;
+  padding: 24px 20px;
+  box-shadow: 0 8px 0 var(--cave-border-darker), 0 12px 30px var(--cave-shadow);
+  animation: caveSlideInUp 0.5s ease;
+}
+
+.cave-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 3px solid var(--cave-border-dark);
+  border-radius: 16px;
+  background: rgba(255, 245, 220, 0.9);
+  font-family: var(--cave-font-title);
+  font-size: 1.25rem;
+  letter-spacing: 0.2em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--cave-border-dark);
+  outline: none;
+  box-shadow: inset 0 3px 6px rgba(61,34,16,0.15);
+}
+
+.cave-input:focus {
+  border-color: var(--cave-gold-dark);
+  box-shadow: inset 0 3px 6px rgba(61,34,16,0.15), 0 0 0 3px rgba(255, 215, 0, 0.35);
+}
+
+.cave-input-label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--cave-border-dark);
+  margin-bottom: 8px;
+  opacity: 0.8;
+}
+
+.cave-hint {
+  font-size: 0.65rem;
+  text-align: center;
+  color: var(--cave-border-dark);
+  opacity: 0.65;
+  margin-top: 8px;
+}
+
+/* ── Mission card (dashboard) ────────────────────────────── */
+.cave-mission-card {
+  border: 4px solid var(--cave-border-dark);
+  border-radius: 20px;
+  padding: 16px;
+  background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock));
+  box-shadow: 0 5px 0 var(--cave-border-darker);
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: transform 0.15s ease;
+  animation: caveSlideInUp 0.5s ease backwards;
+}
+
+.cave-mission-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 0 var(--cave-border-darker);
+}
+
+.cave-mission-card__status {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 0.55rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: 2px solid var(--cave-border-dark);
+  margin-bottom: 8px;
+}
+
+.cave-mission-card__status--active {
+  background: linear-gradient(180deg, #7EC8E3, #4A9BB5);
+  color: var(--cave-btn-text);
+}
+
+.cave-mission-card__status--waiting {
+  background: var(--cave-gold);
+  color: var(--cave-border-dark);
+}
+
+.cave-mission-card__title {
+  font-family: var(--cave-font-title);
+  font-size: 0.95rem;
+  color: var(--cave-border-dark);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.cave-progress-track {
+  height: 12px;
+  background: var(--cave-border-darker);
+  border-radius: 8px;
+  border: 2px solid var(--cave-border-dark);
+  overflow: hidden;
+  padding: 2px;
+}
+
+.cave-progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--cave-gold), #FFA500);
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+  transition: width 0.6s ease;
+}
+
+/* ── Team invite mini blocks ─────────────────────────────── */
+.cave-invite-block {
+  margin-top: 10px;
+  padding: 10px;
+  background: rgba(255, 245, 220, 0.5);
+  border: 2px dashed var(--cave-border-dark);
+  border-radius: 12px;
+}
+
+.cave-invite-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.cave-invite-code {
+  flex: 1;
+  text-align: center;
+  font-family: var(--cave-font-title);
+  font-size: 0.9rem;
+  letter-spacing: 0.15em;
+  color: var(--cave-gold-dark);
+  text-shadow: 0 1px 0 var(--cave-border-dark);
+}
+
+.cave-copy-btn {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--cave-border-dark);
+  border-radius: 10px;
+  background: linear-gradient(180deg, var(--cave-btn-primary-top), var(--cave-btn-primary-bottom));
+  color: var(--cave-btn-text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 0 var(--cave-border-darker);
+  transition: transform 0.1s ease;
+}
+
+.cave-copy-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--cave-border-darker);
+}
+
+/* ── Bottom stone nav bar ────────────────────────────────── */
+.cave-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--cave-max-width);
+  padding: 10px var(--cave-padding-x) 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  z-index: 50;
+  background: linear-gradient(to top, rgba(244, 164, 74, 0.95) 60%, transparent);
+}
+
+@media (min-width: 768px) {
+  .cave-bottom-nav {
+    max-width: 480px;
+  }
+}
+
+.cave-nav-stone {
+  flex: 1;
+  aspect-ratio: 1;
+  max-width: 56px;
+  max-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, var(--cave-rock-light) 0%, var(--cave-rock-dark) 100%);
+  border: 3px solid var(--cave-border-dark);
+  border-radius: 14px;
+  color: var(--cave-border-dark);
+  font-size: 1.1rem;
+  text-decoration: none;
+  box-shadow:
+    0 4px 0 var(--cave-border-darker),
+    inset 0 1px 0 rgba(255,255,255,0.4);
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.cave-nav-stone:hover {
+  transform: rotate(-4deg) scale(1.1);
+  color: var(--cave-btn-survival);
+}
+
+.cave-nav-stone--active {
+  background: linear-gradient(145deg, var(--cave-btn-primary-top), var(--cave-btn-primary-bottom));
+  color: var(--cave-btn-text);
+  transform: scale(1.05);
+}
+
+/* ── Flash messages ──────────────────────────────────────── */
+.cave-flash {
+  padding: 12px 16px;
+  border-radius: 16px;
+  border: 3px solid var(--cave-border-dark);
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-bottom: 14px;
+  animation: caveSlideInUp 0.35s ease;
+}
+
+.cave-flash--error {
+  background: #FDE8E8;
+  color: #8B2A2A;
+}
+
+.cave-flash--success {
+  background: #E8FDE8;
+  color: #2A6B2A;
+}
+
+/* ── Empty state ─────────────────────────────────────────── */
+.cave-empty {
+  text-align: center;
+  padding: 32px 16px;
+  border: 3px dashed var(--cave-border-dark);
+  border-radius: 20px;
+  background: rgba(255, 245, 220, 0.4);
+  opacity: 0.9;
+}
+
+.cave-empty i {
+  font-size: 2.5rem;
+  color: var(--cave-rock-dark);
+  margin-bottom: 12px;
+}
+
+/* ── Config modal overrides ──────────────────────────────── */
+.cave-dialog .p-dialog {
+  border: 4px solid var(--cave-border-dark) !important;
+  border-radius: 24px !important;
+  overflow: hidden;
+  box-shadow: 0 12px 0 var(--cave-border-darker), 0 20px 40px var(--cave-shadow-lg) !important;
+}
+
+.cave-dialog .p-dialog-header {
+  background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock)) !important;
+  border-bottom: 3px solid var(--cave-border-dark) !important;
+  padding: 1.25rem 1.5rem !important;
+}
+
+.cave-dialog .p-dialog-title {
+  font-family: var(--cave-font-title) !important;
+  font-size: 0.95rem !important;
+  color: var(--cave-border-dark) !important;
+  text-transform: uppercase;
+}
+
+.cave-dialog .p-dialog-content {
+  background: #FFF8EE !important;
+  padding: 1.25rem 1.5rem !important;
+}
+
+.cave-dialog .p-dialog-footer {
+  background: var(--cave-rock-light) !important;
+  border-top: 3px solid var(--cave-border-dark) !important;
+  padding: 1rem 1.5rem 1.25rem !important;
+}
+
+.cave-config-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--cave-border-dark);
+  opacity: 0.75;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.cave-loco-btn {
+  flex: 1;
+  padding: 12px 8px;
+  border: 3px solid var(--cave-border-dark);
+  border-radius: 14px;
+  background: #FFF8EE;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 0.55rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--cave-border-dark);
+}
+
+.cave-loco-btn--active {
+  background: linear-gradient(180deg, var(--cave-btn-primary-top), var(--cave-btn-primary-bottom));
+  color: var(--cave-btn-text);
+  box-shadow: 0 4px 0 var(--cave-border-darker);
+}
+
+.cave-dialog .p-slider-range {
+  background: var(--cave-btn-primary) !important;
+}
+
+.cave-dialog .p-slider-handle {
+  border: 3px solid var(--cave-border-dark) !important;
+  background: var(--cave-gold) !important;
+}
+
+/* ── Keyframes ───────────────────────────────────────────── */
+@keyframes caveSlideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes caveWobble {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-0.4deg); }
+  75% { transform: rotate(0.4deg); }
+}
+
+@keyframes caveBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes caveLeafFall {
+  0% {
+    transform: translateY(-20px) rotate(0deg);
+    opacity: 0;
+  }
+  10% { opacity: 0.6; }
+  90% { opacity: 0.4; }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Pause wobble on reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .cave-btn,
+  .cave-level-card,
+  .cave-logo-wrap,
+  .cave-leaf {
+    animation: none !important;
+  }
+}
+
+/* ============================================================
+   DESKTOP LAYOUT (≥1024px)
+   ============================================================ */
+@media (min-width: 1024px) {
+  .cave-play-hub {
+    --cave-max-width: 100%;
+    padding-bottom: 0;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  .cave-play-hub::before,
+  .cave-play-hub::after {
+    width: 12%;
+    max-width: 200px;
+    height: 55vh;
+    bottom: 0;
+    filter: blur(1px);
+  }
+
+  .cave-desktop-sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 280px;
+    flex-shrink: 0;
+    padding: 28px 20px;
+    background: linear-gradient(180deg, rgba(212, 180, 131, 0.95) 0%, rgba(184, 149, 106, 0.98) 100%);
+    border-right: 4px solid var(--cave-border-dark);
+    box-shadow: 8px 0 24px var(--cave-shadow);
+    z-index: 20;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  .cave-desktop-sidebar .cave-logo-wrap {
+    animation: none;
+    padding-bottom: 28px;
+    border-bottom: 3px dashed var(--cave-border-dark);
+    margin-bottom: 24px;
+  }
+
+  .cave-desktop-nav-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .cave-desktop-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 3px solid var(--cave-border-dark);
+    border-radius: 18px;
+    background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock));
+    color: var(--cave-border-dark);
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    box-shadow: 0 4px 0 var(--cave-border-darker);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .cave-desktop-nav-link:hover {
+    transform: translateX(4px);
+    box-shadow: 0 6px 0 var(--cave-border-darker);
+  }
+
+  .cave-desktop-nav-link--active {
+    background: linear-gradient(180deg, var(--cave-btn-primary-top), var(--cave-btn-primary-bottom));
+    color: var(--cave-btn-text);
+  }
+
+  .cave-desktop-nav-link i {
+    font-size: 1.2rem;
+    width: 28px;
+    text-align: center;
+  }
+
+  .cave-sidebar-footer {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 3px dashed var(--cave-border-dark);
+  }
+
+  .cave-desktop-nav-link--logout {
+    color: #8B2A2A;
+    background: linear-gradient(180deg, #F5D4D4, #E8B4B4);
+  }
+
+  .cave-desktop-nav-link--logout:hover {
+    color: #5C1A1A;
+  }
+
+  .cave-play-main {
+    flex: 1;
+    overflow-y: auto;
+    min-width: 0;
+  }
+
+  .cave-play-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 48px 48px;
+  }
+
+  .cave-play-inner--immersive {
+    max-width: 900px;
+    padding: 24px 40px 40px;
+  }
+
+  .cave-bottom-nav {
+    display: none;
+  }
+
+  .cave-levels-grid--multi {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .cave-dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .cave-dashboard-grid__full {
+    grid-column: 1 / -1;
+  }
+
+  .cave-team-setup {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    min-height: 420px;
+  }
+
+  .cave-team-invite-bar {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1280px) {
+  .cave-levels-grid--multi {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .cave-play-inner--wide {
+    max-width: 1200px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .cave-desktop-sidebar {
+    display: none;
+  }
+}
+
+/* ============================================================
+   GAME IMMERSIVE (énigme, succès, échec)
+   ============================================================ */
+.cave-game-hub {
+  --cave-max-width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-bottom: 32px;
+  background: linear-gradient(
+    180deg,
+    var(--cave-sky-top) 0%,
+    var(--cave-sky-mid) 30%,
+    #FFF8EE 55%,
+    var(--cave-sky-bottom) 100%
+  );
+  font-family: var(--cave-font-body);
+  color: var(--cave-border-dark);
+}
+
+.cave-game-hub .cave-leaves {
+  z-index: 1;
+}
+
+.cave-hud {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 20px;
+  background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock));
+  border-bottom: 4px solid var(--cave-border-dark);
+  box-shadow: 0 6px 0 var(--cave-border-darker);
+}
+
+.cave-hud__mission {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--cave-border-dark);
+  opacity: 0.7;
+}
+
+.cave-hud__title {
+  font-family: var(--cave-font-title);
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  color: var(--cave-border-dark);
+}
+
+.cave-hud__timer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: rgba(255, 245, 220, 0.6);
+  border: 3px solid var(--cave-border-dark);
+  border-radius: 14px;
+  font-family: var(--cave-font-title);
+  font-size: 0.9rem;
+  color: var(--cave-border-dark);
+}
+
+.cave-hud__timer--urgent {
+  color: #8B2A2A;
+  animation: cavePulse 1s ease infinite;
+}
+
+.cave-hud__btn {
+  width: 44px;
+  height: 44px;
+  border: 3px solid var(--cave-border-dark);
+  border-radius: 12px;
+  background: linear-gradient(180deg, var(--cave-btn-primary-top), var(--cave-btn-primary-bottom));
+  color: var(--cave-btn-text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 0 var(--cave-border-darker);
+  transition: transform 0.1s ease;
+}
+
+.cave-hud__btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--cave-border-darker);
+}
+
+.cave-hud__score {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 3px solid var(--cave-border-dark);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #FFF8C8, var(--cave-gold));
+  color: var(--cave-border-dark);
+  font-family: var(--cave-font-title);
+  font-size: 0.85rem;
+  font-weight: 700;
+  box-shadow: 0 4px 0 var(--cave-border-darker);
+}
+
+.cave-hud__score i {
+  color: var(--cave-gold-dark);
+  font-size: 0.9rem;
+}
+
+.cave-gps-result {
+  padding: 12px 14px;
+  border: 3px solid var(--cave-border-dark);
+  border-radius: 14px;
+  background: #FFF8EE;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--cave-border-dark);
+  line-height: 1.45;
+}
+
+.cave-gps-result strong {
+  font-weight: 800;
+  color: #8B2A2A;
+}
+
+.cave-flash--info {
+  background: #E8F4FD;
+  color: #1A4A6B;
+}
+
+.cave-hint--warn {
+  color: #8B2A2A !important;
+  font-weight: 700;
+}
+
+.cave-step-ring {
+  position: relative;
+  width: 48px;
+  height: 48px;
+}
+
+.cave-step-ring__label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--cave-font-title);
+  font-size: 0.75rem;
+  color: var(--cave-border-dark);
+}
+
+.cave-game-content {
+  position: relative;
+  z-index: 2;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px var(--cave-padding-x) 40px;
+}
+
+@media (min-width: 1024px) {
+  .cave-game-content {
+    max-width: 860px;
+    padding: 32px 40px 48px;
+  }
+
+  .cave-game-content--split {
+    max-width: 1100px;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 28px;
+    align-items: start;
+  }
+}
+
+.cave-panel {
+  background: linear-gradient(180deg, var(--cave-rock-light) 0%, var(--cave-rock) 100%);
+  border: 4px solid var(--cave-border-dark);
+  border-radius: 24px;
+  box-shadow: 0 8px 0 var(--cave-border-darker), 0 12px 28px var(--cave-shadow);
+  overflow: hidden;
+}
+
+.cave-panel__body {
+  padding: 24px;
+}
+
+.cave-panel__img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.cave-panel__title {
+  font-family: var(--cave-font-title);
+  font-size: 1.35rem;
+  text-transform: uppercase;
+  color: var(--cave-border-dark);
+  margin-bottom: 12px;
+  line-height: 1.15;
+}
+
+.cave-panel__text {
+  background: rgba(255, 248, 238, 0.7);
+  border: 2px solid var(--cave-border-dark);
+  border-radius: 16px;
+  padding: 16px;
+  font-style: italic;
+  line-height: 1.55;
+  color: var(--cave-border-dark);
+}
+
+.cave-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border: 2px solid var(--cave-border-dark);
+  border-radius: 12px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.cave-badge--gold {
+  background: var(--cave-gold);
+  color: var(--cave-border-dark);
+}
+
+.cave-badge--pts {
+  background: rgba(255, 248, 238, 0.8);
+  color: var(--cave-border-dark);
+}
+
+.cave-radar-box {
+  position: relative;
+  padding: 32px 24px;
+  text-align: center;
+  overflow: hidden;
+}
+
+.cave-radar-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200px;
+  height: 200px;
+  margin: -100px 0 0 -100px;
+  border-radius: 50%;
+  background: rgba(168, 184, 69, 0.15);
+  pointer-events: none;
+}
+
+.cave-radar-pulse--active {
+  animation: caveRadarPulse 2s ease-out infinite;
+}
+
+.cave-tool-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+@media (min-width: 1024px) {
+  .cave-tool-grid {
+    gap: 14px;
+  }
+}
+
+.cave-tool-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 8px;
+  border: 3px solid var(--cave-border-dark);
+  border-radius: 16px;
+  background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock-dark));
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  color: var(--cave-border-dark);
+}
+
+.cave-tool-btn:hover {
+  transform: translateY(-2px);
+}
+
+.cave-tool-btn__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(168, 184, 69, 0.35);
+  border: 2px solid var(--cave-border-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.cave-tool-btn--danger .cave-tool-btn__icon {
+  background: rgba(139, 58, 42, 0.2);
+  color: var(--cave-btn-survival);
+}
+
+.cave-tool-btn__label,
+.cave-tool-btn .label {
+  font-size: 0.55rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.cave-tool-btn .icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(168, 184, 69, 0.35);
+  border: 2px solid var(--cave-border-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.cave-tool-btn--danger .icon-box {
+  background: rgba(139, 58, 42, 0.2);
+  color: var(--cave-btn-survival);
+}
+
+.cave-logo-wrap--mobile-only {
+  display: block;
+}
+
+@media (min-width: 1024px) {
+  .cave-logo-wrap--mobile-only {
+    display: none;
+  }
+}
+
+.cave-game-sidebar-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (max-width: 1023px) {
+  .cave-game-content--split {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+.cave-game-input {
+  width: 100%;
+  padding: 16px 56px 16px 18px;
+  border: 3px solid var(--cave-border-dark);
+  border-radius: 16px;
+  background: #FFF8EE;
+  font-family: var(--cave-font-body);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--cave-border-dark);
+  box-shadow: inset 0 3px 8px rgba(61, 34, 16, 0.12);
+}
+
+.cave-game-input:focus {
+  outline: none;
+  border-color: var(--cave-gold-dark);
+  box-shadow: inset 0 3px 8px rgba(61, 34, 16, 0.12), 0 0 0 3px rgba(255, 215, 0, 0.35);
+}
+
+.cave-game-input::placeholder {
+  color: rgba(92, 51, 23, 0.4);
+  font-weight: 600;
+}
+
+.cave-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(61, 34, 16, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.cave-overlay__card {
+  width: 100%;
+  max-width: 440px;
+  background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock));
+  border: 4px solid var(--cave-border-dark);
+  border-radius: 28px;
+  box-shadow: 0 12px 0 var(--cave-border-darker), 0 24px 48px var(--cave-shadow-lg);
+  overflow: hidden;
+  animation: caveSlideInUp 0.4s ease;
+}
+
+.cave-overlay__header {
+  padding: 28px 24px;
+  text-align: center;
+  border-bottom: 3px solid var(--cave-border-dark);
+  background: rgba(255, 248, 238, 0.5);
+}
+
+.cave-overlay__body {
+  padding: 24px;
+}
+
+.cave-result-screen {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: linear-gradient(180deg, var(--cave-sky-top) 0%, var(--cave-sky-mid) 40%, var(--cave-sky-bottom) 100%);
+}
+
+@media (min-width: 1024px) {
+  .cave-result-screen {
+    padding: 48px;
+  }
+
+  .cave-result-card,
+  .cave-discovery-card {
+    max-width: 560px;
+  }
+}
+
+.cave-result-card {
+  width: 100%;
+  max-width: 520px;
+  background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock));
+  border: 4px solid var(--cave-border-dark);
+  border-radius: 28px;
+  padding: 40px 32px;
+  text-align: center;
+  box-shadow: 0 10px 0 var(--cave-border-darker), 0 20px 40px var(--cave-shadow-lg);
+  animation: caveSlideInUp 0.5s ease;
+}
+
+.cave-result-card--shake {
+  animation: caveSlideInUp 0.5s ease, caveShake 0.5s ease 0.5s;
+}
+
+.cave-result-icon {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  border: 4px solid var(--cave-border-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  box-shadow: 0 6px 0 var(--cave-border-darker);
+}
+
+.cave-result-icon--win {
+  background: linear-gradient(180deg, var(--cave-gold), var(--cave-gold-dark));
+}
+
+.cave-result-icon--fail {
+  background: linear-gradient(180deg, #C45A4A, var(--cave-btn-survival-bottom));
+  color: var(--cave-btn-text);
+}
+
+.cave-result-title {
+  font-family: var(--cave-font-title);
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  text-transform: uppercase;
+  color: var(--cave-border-dark);
+  text-shadow: 0 2px 0 rgba(255,255,255,0.4);
+  margin-bottom: 8px;
+}
+
+.cave-result-sub {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--cave-gold-dark);
+  margin-bottom: 20px;
+}
+
+.cave-result-message {
+  background: rgba(255, 248, 238, 0.8);
+  border: 2px solid var(--cave-border-dark);
+  border-radius: 16px;
+  padding: 16px;
+  font-style: italic;
+  color: var(--cave-border-dark);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.cave-discovery-card {
+  width: 100%;
+  max-width: 560px;
+  border: 4px solid var(--cave-border-dark);
+  border-radius: 24px;
+  overflow: hidden;
+  background: var(--cave-rock-light);
+  box-shadow: 0 8px 0 var(--cave-border-darker);
+  margin-bottom: 24px;
+  animation: caveSlideInUp 0.55s ease 0.15s backwards;
+}
+
+.cave-score-hero {
+  font-family: var(--cave-font-title);
+  font-size: clamp(3rem, 12vw, 5rem);
+  color: var(--cave-gold);
+  text-shadow:
+    0 2px 0 var(--cave-gold-dark),
+    0 4px 0 var(--cave-border-dark);
+  line-height: 1;
+}
+
+.cave-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (min-width: 1024px) {
+  .cave-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .cave-summary-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .cave-summary-layout__hero {
+    grid-column: 1 / -1;
+  }
+}
+
+.cave-stat-box {
+  padding: 20px;
+  text-align: center;
+  background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock));
+  border: 3px solid var(--cave-border-dark);
+  border-radius: 20px;
+  box-shadow: 0 5px 0 var(--cave-border-darker);
+}
+
+.cave-stat-box__value {
+  font-family: var(--cave-font-title);
+  font-size: 2rem;
+  color: var(--cave-border-dark);
+}
+
+.cave-stat-box__label {
+  font-size: 0.55rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0.65;
+  margin-top: 4px;
+}
+
+.cave-role-card {
+  border: 4px solid var(--cave-border-dark);
+  border-radius: 24px;
+  padding: 28px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 6px 0 var(--cave-border-darker);
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.cave-role-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 0 var(--cave-border-darker);
+}
+
+.cave-role-card--challenger {
+  background: linear-gradient(160deg, #6B8FC4 0%, #3D5A8F 100%);
+  color: var(--cave-btn-text);
+}
+
+.cave-role-card--participant {
+  background: linear-gradient(160deg, var(--cave-btn-primary-top) 0%, var(--cave-btn-primary-bottom) 100%);
+  color: var(--cave-btn-text);
+}
+
+.cave-role-card__icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  border: 3px solid rgba(255,255,255,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  background: rgba(0,0,0,0.15);
+}
+
+.cave-role-card__title {
+  font-family: var(--cave-font-title);
+  font-size: 1.25rem;
+  text-transform: uppercase;
+}
+
+.cave-game-dialog.p-dialog {
+  border: 4px solid var(--cave-border-dark) !important;
+  border-radius: 24px !important;
+  overflow: hidden;
+  box-shadow: 0 12px 0 var(--cave-border-darker) !important;
+}
+
+.cave-game-dialog .p-dialog-header {
+  background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock)) !important;
+  border-bottom: 3px solid var(--cave-border-dark) !important;
+  color: var(--cave-border-dark) !important;
+}
+
+.cave-game-dialog .p-dialog-title {
+  font-family: var(--cave-font-title) !important;
+  text-transform: uppercase !important;
+  font-size: 0.9rem !important;
+}
+
+.cave-game-dialog .p-dialog-content {
+  background: #FFF8EE !important;
+  color: var(--cave-border-dark) !important;
+}
+
+.cave-game-dialog .p-dialog-footer {
+  background: var(--cave-rock-light) !important;
+  border-top: 3px solid var(--cave-border-dark) !important;
+}
+
+.cave-btn--sm {
+  min-height: 44px;
+  padding: 10px 16px;
+  font-size: 0.75rem;
+}
+
+.cave-btn--danger {
+  background: linear-gradient(180deg, #C45A4A, var(--cave-btn-survival-bottom));
+}
+
+.cave-btn--ghost {
+  background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock-dark));
+  color: var(--cave-border-dark);
+}
+
+.cave-offline-banner {
+  background: var(--cave-btn-survival);
+  color: var(--cave-btn-text);
+  text-align: center;
+  padding: 8px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  border-bottom: 3px solid var(--cave-border-darker);
+}
+
+@keyframes caveRadarPulse {
+  0% { transform: scale(0.5); opacity: 0.8; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+@keyframes cavePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes caveShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+/* ============================================================
+   PROFIL UTILISATEUR
+   ============================================================ */
+.cave-profile-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 640px;
+}
+
+@media (min-width: 1024px) {
+  .cave-profile-stack {
+    max-width: 720px;
+  }
+}
+
+.cave-profile-section {
+  background: linear-gradient(180deg, var(--cave-rock-light) 0%, var(--cave-rock) 100%);
+  border: 4px solid var(--cave-border-dark);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 6px 0 var(--cave-border-darker), 0 10px 24px var(--cave-shadow);
+  animation: caveSlideInUp 0.45s ease backwards;
+}
+
+.cave-profile-section:nth-child(1) { animation-delay: 0.05s; }
+.cave-profile-section:nth-child(2) { animation-delay: 0.15s; }
+.cave-profile-section:nth-child(3) { animation-delay: 0.25s; }
+.cave-profile-section:nth-child(4) { animation-delay: 0.35s; }
+
+.cave-profile-section--logout {
+  text-align: center;
+}
+
+.cave-profile-section__title {
+  font-family: var(--cave-font-title);
+  font-size: 1rem;
+  text-transform: uppercase;
+  color: var(--cave-border-dark);
+  margin-bottom: 6px;
+}
+
+.cave-profile-section__desc {
+  font-size: 0.8rem;
+  color: var(--cave-border-dark);
+  opacity: 0.7;
+  margin-bottom: 18px;
+  line-height: 1.45;
+}
+
+.cave-field {
+  margin-bottom: 14px;
+}
+
+.cave-field-label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--cave-border-dark);
+  opacity: 0.8;
+  margin-bottom: 6px;
+}
+
+.cave-field-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 3px solid var(--cave-border-dark);
+  border-radius: 14px;
+  background: #FFF8EE;
+  font-family: var(--cave-font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--cave-border-dark);
+  box-shadow: inset 0 2px 6px rgba(61, 34, 16, 0.1);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cave-field-input:focus {
+  border-color: var(--cave-gold-dark);
+  box-shadow: inset 0 2px 6px rgba(61, 34, 16, 0.1), 0 0 0 3px rgba(255, 215, 0, 0.3);
+}
+
+.cave-field-error {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #8B2A2A;
+}
+
+.cave-profile-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.cave-profile-success {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--cave-grass-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.cave-profile-link {
+  color: var(--cave-btn-survival);
+  font-weight: 700;
+  text-decoration: underline;
+  font-size: 0.8rem;
+}
+
+.cave-profile-verify-ok {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--cave-grass-dark);
+}
+
+/* Modals thème Cave Boy */
+.cave-modal-backdrop {
+  background: rgba(61, 34, 16, 0.75) !important;
+  opacity: 1 !important;
+}
+
+.cave-modal-panel {
+  background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock)) !important;
+  border: 4px solid var(--cave-border-dark) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 10px 0 var(--cave-border-darker), 0 20px 40px var(--cave-shadow-lg) !important;
+}

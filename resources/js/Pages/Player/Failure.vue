@@ -1,49 +1,30 @@
 <template>
     <Head title="Échec de mission" />
 
-    <div class="play-mat min-h-screen text-[#f5e8c7] flex flex-col items-center justify-center p-6 relative overflow-hidden">
-        
-        <div class="gsap-fail-card max-w-md w-full bg-[#1f140e] p-10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(220,38,38,0.3)] border-2 border-red-900/50 text-center space-y-10 relative z-10">
-            <!-- ERROR ICON (Like a token) -->
-            <div class="relative inline-block">
-                <div class="absolute inset-0 bg-red-600 rounded-full blur-2xl opacity-20"></div>
-                <div class="w-24 h-24 bg-[#2a1c14] border-4 border-red-600 rounded-full flex items-center justify-center mx-auto shadow-[0_0_30px_rgba(220,38,38,0.4)] relative z-10">
-                    <i class="pi pi-times text-5xl text-red-500 drop-shadow-[0_0_10px_red]"></i>
-                </div>
+    <div class="cave-result-screen">
+        <div class="cave-leaves" aria-hidden="true">
+            <span v-for="n in 6" :key="n" class="cave-leaf" />
+        </div>
+
+        <div class="cave-result-card cave-result-card--shake relative z-10">
+            <div class="cave-result-icon cave-result-icon--fail">
+                <i class="pi pi-times" />
             </div>
-
-            <div class="space-y-3">
-                <h1 class="card-title text-4xl text-red-500 uppercase tracking-tighter leading-none drop-shadow-md">
-                    Mission Compromise
-                </h1>
-                <p class="card-badge text-[10px] text-red-400/80 uppercase tracking-[0.3em]">Code erroné • Malus appliqué</p>
-            </div>
-
-            <div class="bg-[#2a1c14] p-6 rounded-xl border border-red-900/30 italic text-[#f5e8c7]/80 text-lg font-serif shadow-inner">
-                <i class="pi pi-exclamation-triangle text-red-500/50 mr-2 text-sm"></i>
-                "{{ partie.environnement?.message_mauvaise_reponse || "Ce n'est pas la bonne réponse. Reprenez vos esprits, la vérité est peut-être juste sous vos yeux." }}"
-            </div>
-
-            <div class="space-y-4 pt-4">
-                <button
-                    @click="tryAgain"
-                    class="w-full p-5 rounded-xl bg-[#5c4033] text-[#f5e8c7] card-badge hover:bg-red-900/80 hover:text-white active:scale-95 transition-all flex items-center justify-center gap-3 border border-[#3f2a1e] shadow-[0_6px_0_#1f140e] active:translate-y-[6px] active:shadow-none"
-                >
-                    Reprendre l'Épreuve
-                    <i class="pi pi-refresh text-xl"></i>
-                </button>
-
-                <button
-                    @click="skip"
-                    class="w-full p-4 rounded-xl bg-transparent text-red-500/50 border border-red-900/30 card-badge text-[10px] hover:bg-red-900/20 hover:text-red-400 transition-all"
-                >
-                    Défausser cette carte
-                </button>
-            </div>
-
-            <p class="card-badge text-[9px] text-[#f5e8c7]/20 pt-4">
-                Chaque erreur vous rapproche de la vérité
+            <h1 class="cave-result-title">Mission compromise</h1>
+            <p class="cave-result-sub" style="color:var(--cave-btn-survival)">Code erroné</p>
+            <p class="cave-result-message">
+                "{{ partie.environnement?.message_mauvaise_reponse || 'Ce n\'est pas la bonne réponse. Reprenez vos esprits, l\'indice est peut-être juste sous vos yeux.' }}"
             </p>
+            <div class="cave-btn-stack">
+                <button type="button" class="cave-btn cave-btn--danger" @click="tryAgain">
+                    <i class="cave-btn__icon pi pi-refresh" />
+                    <span class="cave-btn__label">Réessayer</span>
+                </button>
+                <button type="button" class="cave-btn cave-btn--ghost" @click="skip">
+                    <span class="cave-btn__label">Passer l'énigme</span>
+                </button>
+            </div>
+            <p class="cave-hint mt-4">Chaque erreur vous rapproche du but</p>
         </div>
     </div>
 </template>
@@ -54,7 +35,7 @@ import { Head, router } from '@inertiajs/vue3';
 import { gsap } from 'gsap';
 
 const props = defineProps({
-    partie: Object
+    partie: Object,
 });
 
 const tryAgain = () => {
@@ -62,9 +43,7 @@ const tryAgain = () => {
 };
 
 const skip = () => {
-    if (confirm('Passer cette énigme ? Vous ne marquerez pas de points.')) {
-        router.post(route('progression.next', props.partie.id));
-    }
+    router.post(route('progression.next', props.partie.id));
 };
 
 onMounted(() => {
@@ -79,7 +58,3 @@ onMounted(() => {
       }, '+=0.2');
 });
 </script>
-
-<style scoped>
-/* Specific overrides if necessary */
-</style>

@@ -148,10 +148,17 @@ class ProgressionPartie extends Model
      * Marque l'énigme courante comme résolue
      * Ajoute le lieu aux découverts et incrémente le score
      */
-    public function resoudreEnigmeCourante(): void
+    /**
+     * Marque l'énigme courante comme résolue et crédite les points.
+     *
+     * @return int Points gagnés pour cette énigme (0 si aucune énigme en cours)
+     */
+    public function resoudreEnigmeCourante(): int
     {
         $enigme = $this->enigmeCourante;
-        if (!$enigme) return;
+        if (!$enigme) {
+            return 0;
+        }
 
         $lieuId = $enigme->lieu_id;
 
@@ -163,9 +170,13 @@ class ProgressionPartie extends Model
             }
         }
 
-        // On ajoute les points de l'énigme au score
-        $this->score += ($enigme->points > 0 ? $enigme->points : 10);
+        $points = $enigme->points > 0 ? (int) $enigme->points : 10;
+        $this->score += $points;
         $this->save();
+
+        $this->partie?->update(['score_total' => $this->score]);
+
+        return $points;
     }
 
     /**

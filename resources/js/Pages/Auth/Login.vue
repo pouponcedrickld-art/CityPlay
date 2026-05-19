@@ -21,7 +21,7 @@ const props = defineProps({
     status: {
         type: String,
     },
-    flash: Object,
+    flash: Object
 });
 
 const loginCard = ref(null);
@@ -45,6 +45,9 @@ onMounted(() => {
             detail: props.flash.error,
             life: 3000,
         });
+    }
+    if (props.flash?.info) {
+        toast.add({ severity: 'info', summary: 'Invitation', detail: props.flash.info, life: 5000 });
     }
 
     // 1. Initial GSAP set states (Hidden/offscreen for massive entry animation)
@@ -218,6 +221,22 @@ const submit = () => {
 <template>
     <GuestLayout>
         <Head title="Connexion - Bénin Quest" />
+
+        <div
+            v-if="partie_invitation"
+            class="max-w-5xl w-full mx-auto mb-6 p-4 bg-orange-50 border border-orange-200 rounded-xl text-orange-900 text-sm"
+        >
+            <div class="flex items-center gap-2 mb-2 font-bold">
+                <i class="pi pi-users"></i>
+                <span>Invitation équipe en attente</span>
+            </div>
+            Connectez-vous pour rejoindre le parcours
+            <strong>{{ partie_invitation.environnement || 'CityPlay' }}</strong>.
+            <span class="block mt-2">
+                Pas encore de compte ?
+                <Link :href="route('register')" class="font-bold underline">Créer un compte</Link>
+            </span>
+        </div>
 
         <!-- 3D PERSPECTIVE CARD WRAPPER -->
         <div

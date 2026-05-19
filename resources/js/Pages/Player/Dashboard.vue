@@ -1,141 +1,238 @@
 <template>
-    <AuthenticatedLayout>
-        <Head title="Plateau de Jeu" />
+    <CavePlayLayout wide>
+        <Head title="Tableau de Bord" />
 
-        <div class="player-dashboard py-10 px-4 min-h-screen play-mat">
-            
-            <div class="max-w-[1280px] mx-auto">
-                <!-- HEADER / WELCOME -->
-                <header class="gsap-header player-section-header relative py-12 px-8 overflow-hidden rounded-3xl shadow-2xl mb-12 border-[4px]">
-                    <div class="absolute inset-0 opacity-30" 
-                         :style="{ backgroundImage: 'radial-gradient(circle at 2px 2px, var(--accent-primary) 1.5px, transparent 0)', backgroundSize: '32px 32px' }"></div>
-                    <div class="relative z-10 flex flex-col items-center text-center">
-                        <div class="mb-4 inline-block px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest player-badge-accent">
-                            Zone de Commandement
+        <!-- Vies / score joueur -->
+        <div class="cave-lives-bar">
+            <span class="cave-lives-label">Missions</span>
+            <span class="cave-score-value">
+                {{ parties.length }} <span class="star">★</span>
+            </span>
+        </div>
+
+        <h2 class="cave-section-title">Camp de base</h2>
+        <p class="text-center text-sm font-bold mb-4" style="color: var(--cave-border-dark); opacity: 0.75">
+            Bonjour, <strong>{{ $page.props.auth.user.name }}</strong> !
+        </p>
+
+        <!-- Boutons principaux (stack pierre) -->
+        <div class="cave-btn-stack mb-6">
+            <Link :href="route('parties.web.create')" class="cave-btn" style="text-decoration:none">
+                <i class="cave-btn__icon pi pi-play" />
+                <span class="cave-btn__label">Nouvelle aventure</span>
+            </Link>
+            <Link
+                :href="route('parties.web.create') + '?tab=join'"
+                class="cave-btn"
+                style="text-decoration:none"
+            >
+                <i class="cave-btn__icon pi pi-key" />
+                <div class="cave-btn__content">
+                    <span class="cave-btn__label">Rejoindre une équipe</span>
+                    <span class="cave-btn__sub">Entrez un code d'invitation</span>
+                </div>
+            </Link>
+        </div>
+
+        <!-- Équipes créées -->
+        <section v-if="equipesCreees.length" class="mb-6">
+            <h3 class="cave-section-title" style="font-size:0.85rem">Mes équipes</h3>
+            <div class="cave-levels-grid cave-levels-grid--multi">
+                <div
+                    v-for="partie in equipesCreees"
+                    :key="'team-' + partie.id"
+                    class="cave-mission-card"
+                    style="animation-delay: 0.1s"
+                >
+                    <span
+                        class="cave-mission-card__status"
+                        :class="partie.statut === 'en_attente' ? 'cave-mission-card__status--waiting' : 'cave-mission-card__status--active'"
+                    >
+                        {{ getStatutLabel(partie.statut) }}
+                    </span>
+                    <h4 class="cave-mission-card__title">{{ partie.environnement?.nom }}</h4>
+                    <p class="text-[10px] font-bold uppercase mb-3" style="color: var(--cave-border-dark); opacity: 0.6">
+                        {{ partie.nb_membres || 1 }} / {{ partie.parametres?.nb_joueurs || 10 }} joueurs
+                    </p>
+
+                    <div class="cave-invite-block">
+                        <p class="text-[9px] font-bold uppercase" style="color: var(--cave-border-dark)">
+                            <i class="pi pi-link" /> Lien
+                        </p>
+                        <div class="cave-invite-row">
+                            <span class="text-[9px] truncate flex-1 opacity-70">{{ partie.lien_invitation }}</span>
+                            <button
+                                type="button"
+                                class="cave-copy-btn"
+                                @click="copyText(partie.lien_invitation, partie.id + '-link')"
+                            >
+                                <i :class="copiedId === partie.id + '-link' ? 'pi pi-check' : 'pi pi-copy'" />
+                            </button>
                         </div>
-                        <h1 class="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-none player-title" style="font-family: 'Cinzel', serif;">
-                            Aventurier <span class="player-accent-text">{{ $page.props.auth.user.name }}</span>
-                        </h1>
-                        <p class="text-xs font-black uppercase tracking-[0.4em] mt-4 player-muted-text" style="font-family: 'Share Tech Mono', monospace;">Prêt à jouer votre prochaine carte ?</p>
+                        <p class="text-[9px] font-bold uppercase mt-2" style="color: var(--cave-border-dark)">
+                            <i class="pi pi-key" /> Code
+                        </p>
+                        <div class="cave-invite-row">
+                            <span class="cave-invite-code">{{ partie.code_liaison }}</span>
+                            <button
+                                type="button"
+                                class="cave-copy-btn"
+                                @click="copyText(partie.code_liaison, partie.id + '-code')"
+                            >
+                                <i :class="copiedId === partie.id + '-code' ? 'pi pi-check' : 'pi pi-copy'" />
+                            </button>
+                        </div>
                     </div>
-                </header>
 
-                <div class="game-board gsap-board">
-                    <section class="mb-12">
-                        <div class="flex items-center justify-between px-4 mb-6">
-                            <h2 class="card-badge player-muted-text">Missions en jeu</h2>
-                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase player-badge-accent" style="background: color-mix(in srgb, var(--accent-primary) 8%, transparent); border: 1px solid color-mix(in srgb, var(--accent-primary) 30%, transparent);">
-                                {{ parties.length }} active(s)
-                            </span>
-                        </div>
-                        
-                        <div v-if="parties.length" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <Link 
-                                v-for="partie in parties" 
-                                :key="partie.id"
-                                :href="route('progression.enigme', partie.id)"
-                                class="board-card group block gsap-card"
-                            >
-                                <div class="p-6 h-full flex flex-col justify-between">
-                                    <div>
-                                        <div class="flex justify-between items-start mb-4">
-                                            <div 
-                                                class="inline-flex px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border"
-                                                :class="getStatutColor(partie.statut)"
-                                                style="font-family: 'Share Tech Mono', monospace;"
-                                            >
-                                                {{ getStatutLabel(partie.statut) }}
-                                            </div>
-                                            <div class="w-10 h-10 rounded-full flex items-center justify-center border transition-colors shadow-inner player-icon-btn group-hover:border-[var(--accent-primary)]">
-                                                <i class="pi pi-bolt player-accent-text group-hover:text-white"></i>
-                                            </div>
-                                        </div>
-                                        <h3 class="card-title text-xl player-title group-hover:text-[var(--accent-primary)] transition-colors mb-6">
-                                            {{ partie.environnement.nom }}
-                                        </h3>
-                                    </div>
-
-                                    <div class="space-y-4 mt-auto">
-                                        <div class="flex items-center justify-between border-t player-border-subtle pt-4">
-                                            <div class="flex -space-x-2">
-                                                <div v-for="i in 3" :key="i" class="w-7 h-7 rounded-full border-2 player-avatar flex items-center justify-center shadow-sm">
-                                                    <i class="pi pi-user text-[10px] player-muted-text"></i>
-                                                </div>
-                                            </div>
-                                            <span class="card-badge player-accent-text">{{ partie.progression?.score || 0 }} PTS</span>
-                                        </div>
-                                        
-                                        <div class="space-y-2">
-                                            <div class="flex justify-between card-badge text-[9px] player-muted-text">
-                                                <span>Avancement</span>
-                                                <span>{{ Math.round(((partie.progression?.lieux_decouverts?.length || 0) / ((partie.progression?.lieux_restants?.length || 0) + (partie.progression?.lieux_decouverts?.length || 0))) * 100) || 0 }}%</span>
-                                            </div>
-                                            <div class="w-full h-2 rounded-full overflow-hidden player-progress-bar border">
-                                                <div 
-                                                    class="h-full rounded-full player-progress-fill"
-                                                    :style="{ width: (((partie.progression?.lieux_decouverts?.length || 0) / ((partie.progression?.lieux_restants?.length || 0) + (partie.progression?.lieux_decouverts?.length || 0))) * 100) + '%' }"
-                                                ></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Link>
-                        </div>
-
-                        <div v-else class="board-card p-12 text-center border-dashed border-2 flex flex-col items-center gsap-card">
-                            <div class="w-16 h-16 rounded-full flex items-center justify-center border mb-4 player-empty-icon">
-                                <i class="pi pi-box text-2xl player-muted-text opacity-50"></i>
-                            </div>
-                            <p class="card-title text-lg player-muted-text mb-2">Aucune quête active</p>
-                            <p class="card-badge text-[9px] player-muted-text opacity-60 mb-6">Piochez une nouvelle carte pour commencer</p>
-                            <Link :href="route('parties.web.create')">
-                                <button class="px-6 py-3 font-black uppercase tracking-widest text-[10px] rounded-lg transition-all player-btn-cta">
-                                    Piocher une carte
-                                </button>
-                            </Link>
-                        </div>
-                    </section>
-
-                    <!-- EXPLORE ENVIRONMENTS -->
-                    <section>
-                        <div class="flex items-center justify-between px-4 mb-6">
-                            <h2 class="card-badge player-muted-text">Decks Disponibles</h2>
-                            <Link :href="route('parties.web.create')" class="card-badge text-[9px] player-accent-text hover:opacity-70 transition-opacity">Explorer tout →</Link>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                            <div 
-                                v-for="(env, idx) in environnements" 
-                                :key="env.id"
-                                class="board-card group cursor-pointer aspect-[3/4] p-2 flex flex-col gsap-card"
-                                @click="router.get(route('parties.web.create'))"
-                            >
-                                <div class="relative flex-1 rounded-lg overflow-hidden border player-border-subtle mb-3">
-                                    <img :src="env.image_url" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-transform duration-700">
-                                    <div class="absolute inset-0 player-img-overlay"></div>
-                                </div>
-                                <div class="px-2 pb-2 text-center">
-                                    <p class="card-badge text-[8px] player-accent-text mb-1">{{ env.lieux_count || 0 }} ÉTAPES</p>
-                                    <p class="card-title text-xs player-title leading-tight">{{ env.nom }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
+                    <Link
+                        v-if="partie.statut === 'en_attente'"
+                        :href="route('parties.team-setup', partie.id)"
+                        class="cave-btn mt-3"
+                        style="text-decoration:none; min-height:48px; padding:10px"
+                    >
+                        <i class="cave-btn__icon pi pi-cog" />
+                        <span class="cave-btn__label">Gérer l'équipe</span>
+                    </Link>
                 </div>
             </div>
-        </div>
-    </AuthenticatedLayout>
+        </section>
+
+        <!-- Missions en cours -->
+        <section class="mb-6">
+            <h3 class="cave-section-title" style="font-size:0.85rem">Missions actives</h3>
+
+            <div v-if="parties.length" class="cave-levels-grid cave-levels-grid--multi">
+                <Link
+                    v-for="partie in parties"
+                    :key="partie.id"
+                    :href="route('progression.enigme', partie.id)"
+                    class="cave-mission-card"
+                >
+                    <span class="cave-mission-card__status cave-mission-card__status--active">
+                        {{ getStatutLabel(partie.statut) }}
+                    </span>
+                    <h4 class="cave-mission-card__title">{{ partie.environnement?.nom }}</h4>
+                    <div class="flex justify-between text-[9px] font-bold uppercase mb-2" style="color: var(--cave-border-dark); opacity: 0.7">
+                        <span>{{ partie.progression?.score || 0 }} pts</span>
+                        <span>{{ progressionPct(partie) }}%</span>
+                    </div>
+                    <div class="cave-progress-track">
+                        <div
+                            class="cave-progress-fill"
+                            :style="{ width: progressionPct(partie) + '%' }"
+                        ></div>
+                    </div>
+                </Link>
+            </div>
+
+            <div v-else class="cave-empty">
+                <i class="pi pi-map-marker" />
+                <p class="font-bold uppercase text-sm mb-1">Aucune mission</p>
+                <p class="cave-hint">Lancez une aventure pour commencer</p>
+            </div>
+        </section>
+
+        <!-- Parcours à proximité -->
+        <section v-if="environnements.length">
+            <h3 class="cave-section-title" style="font-size:0.85rem">
+                {{ geolocalise ? 'Près de vous' : 'Explorer' }}
+            </h3>
+            <p v-if="isLocating" class="cave-hint mb-3">
+                <i class="pi pi-spin pi-spinner" /> Localisation...
+            </p>
+            <div class="cave-levels-grid cave-levels-grid--multi">
+                <article
+                    v-for="env in environnements"
+                    :key="env.id"
+                    class="cave-level-card"
+                    @click="router.get(route('parties.web.create'))"
+                >
+                    <div class="cave-level-card__img-wrap" style="height:90px">
+                        <img
+                            :src="env.image_url || 'https://images.unsplash.com/photo-1519307212971-dd9561667ffb?auto=format&fit=crop&q=80&w=400'"
+                            :alt="env.nom"
+                            class="cave-level-card__img"
+                        />
+                        <div class="cave-level-card__overlay" />
+                        <span v-if="env.distance_km != null" class="cave-level-card__badge">
+                            {{ env.distance_km }} km
+                        </span>
+                        <h3 class="cave-level-card__title" style="font-size:0.85rem">{{ env.nom }}</h3>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </CavePlayLayout>
 </template>
 
 <script setup>
 import { onMounted } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { gsap } from 'gsap';
+import { computed, onMounted, ref } from 'vue';
+import CavePlayLayout from '@/Layouts/CavePlayLayout.vue';
 
 const props = defineProps({
-    parties: Array,
-    environnements: Array
+    parties: { type: Array, default: () => [] },
+    environnements: { type: Array, default: () => [] },
+    geolocalise: { type: Boolean, default: false },
+});
+
+const isLocating = ref(!props.geolocalise);
+const copiedId = ref(null);
+
+const equipesCreees = computed(() =>
+    props.parties.filter(
+        (p) => p.mode === 'team' && p.code_liaison && p.statut !== 'terminee'
+    )
+);
+
+const copyText = async (text, id) => {
+    try {
+        await navigator.clipboard.writeText(text);
+    } catch {
+        const input = document.createElement('input');
+        input.value = text;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+    }
+    copiedId.value = id;
+    setTimeout(() => { copiedId.value = null; }, 2500);
+};
+
+const progressionPct = (partie) => {
+    const done = partie.progression?.lieux_decouverts?.length || 0;
+    const rest = partie.progression?.lieux_restants?.length || 0;
+    const total = done + rest;
+    return total ? Math.round((done / total) * 100) : 0;
+};
+
+const requestNearbyEnvironments = () => {
+    if (!navigator.geolocation) {
+        isLocating.value = false;
+        return;
+    }
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            isLocating.value = false;
+            router.get(route('dashboard'), {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+            }, {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true,
+                only: ['environnements', 'geolocalise'],
+            });
+        },
+        () => { isLocating.value = false; },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+    );
+};
+
+onMounted(() => {
+    if (!props.geolocalise) requestNearbyEnvironments();
 });
 
 onMounted(() => {
@@ -160,112 +257,13 @@ onMounted(() => {
 });
 
 const getStatutLabel = (statut) => {
-    switch(statut) {
-        case 'en_cours': return 'En jeu';
-        case 'terminee': return 'Validée';
-        case 'suspendue': return 'Dans la défausse';
-        default: return statut;
-    }
-};
-
-const getStatutColor = (statut) => {
-    switch(statut) {
-        case 'en_cours': return 'statut-en-cours bg-blue-500/10 text-blue-400 border-blue-500/20';
-        case 'terminee': return 'statut-terminee bg-green-500/10 text-green-400 border-green-500/20';
-        case 'suspendue': return 'statut-suspendue bg-[#FF9500]/10 text-[#FF9500] border-[#FF9500]/20';
-        default: return 'bg-white/5 text-white/40 border-white/10';
-    }
+    const labels = {
+        en_attente: 'En attente',
+        en_cours: 'En mission',
+        terminee: 'Terminée',
+        suspendue: 'En pause',
+        pause: 'En pause',
+    };
+    return labels[statut] || statut;
 };
 </script>
-
-<style scoped>
-/* ── Dark Mode: variables player (défaut) ── */
-.player-section-header {
-  background: #1f140e;
-  border-color: #5c4033;
-}
-.player-title { color: #f5e8c7; }
-.player-accent-text { color: #FF9500; }
-.player-muted-text { color: rgba(245, 232, 199, 0.5); }
-.player-badge-accent {
-  border: 1px solid rgba(255, 149, 0, 0.3);
-  background: rgba(255, 149, 0, 0.1);
-  color: #FF9500;
-}
-.player-icon-btn {
-  background: rgba(0,0,0,0.4);
-  border-color: rgba(255,255,255,0.1);
-}
-.player-border-subtle { border-color: rgba(255,255,255,0.1); }
-.player-avatar {
-  border-color: #2a1c14;
-  background: rgba(255,255,255,0.1);
-}
-.player-progress-bar {
-  background: rgba(0,0,0,0.6);
-  border-color: #5c4033;
-}
-.player-progress-fill {
-  background: linear-gradient(to right, #FF9500, #FF7B00);
-  box-shadow: 0 0 10px rgba(255,149,0,0.5);
-}
-.player-empty-icon {
-  background: rgba(255,255,255,0.05);
-  border-color: rgba(255,255,255,0.1);
-}
-.player-btn-cta {
-  background: #FF9500;
-  color: #1f140e;
-  box-shadow: 0 4px 0 #cc7a00;
-}
-.player-btn-cta:hover { background: #ffaa33; }
-.player-btn-cta:active { transform: translateY(4px); box-shadow: none; }
-.player-img-overlay {
-  background: linear-gradient(to top, #1f140e, transparent);
-}
-
-/* ── Light Mode: variables player (parchemin + émeraude) ── */
-:global(:root.light-theme) .player-section-header {
-  background: linear-gradient(135deg, #faf6ee 0%, #f0e8d0 100%) !important;
-  border-color: #c8a96e !important;
-  box-shadow: 0 10px 30px rgba(139, 105, 20, 0.12) !important;
-}
-:global(:root.light-theme) .player-title { color: #1a1208 !important; }
-:global(:root.light-theme) .player-accent-text { color: #059669 !important; }
-:global(:root.light-theme) .player-muted-text { color: #6b4c1e !important; }
-:global(:root.light-theme) .player-badge-accent {
-  border-color: rgba(5, 150, 105, 0.35) !important;
-  background: rgba(5, 150, 105, 0.1) !important;
-  color: #059669 !important;
-}
-:global(:root.light-theme) .player-icon-btn {
-  background: rgba(200, 169, 110, 0.15) !important;
-  border-color: #c8a96e !important;
-}
-:global(:root.light-theme) .player-border-subtle { border-color: rgba(200, 169, 110, 0.4) !important; }
-:global(:root.light-theme) .player-avatar {
-  border-color: #fffdf7 !important;
-  background: rgba(200, 169, 110, 0.15) !important;
-}
-:global(:root.light-theme) .player-progress-bar {
-  background: #e8dfc8 !important;
-  border-color: #c8a96e !important;
-}
-:global(:root.light-theme) .player-progress-fill {
-  background: linear-gradient(to right, #059669, #0891b2) !important;
-  box-shadow: 0 0 8px rgba(5, 150, 105, 0.4) !important;
-}
-:global(:root.light-theme) .player-empty-icon {
-  background: rgba(200, 169, 110, 0.1) !important;
-  border-color: #c8a96e !important;
-}
-:global(:root.light-theme) .player-btn-cta {
-  background: #059669 !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 0 #047857 !important;
-}
-:global(:root.light-theme) .player-btn-cta:hover { background: #047857 !important; }
-:global(:root.light-theme) .player-img-overlay {
-  background: linear-gradient(to top, #faf6ee, transparent) !important;
-}
-</style>

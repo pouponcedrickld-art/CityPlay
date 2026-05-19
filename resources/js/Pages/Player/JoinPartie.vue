@@ -1,21 +1,41 @@
 <script setup>
-import { onMounted } from 'vue';
-import { Head, Link, router } from '@inertiajs/vue3';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { gsap } from 'gsap';
+import { Head, router } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import CavePlayLayout from '@/Layouts/CavePlayLayout.vue';
 
 const props = defineProps({
-    partie: Object
+    partie: Object,
 });
 
-const copyCode = () => {
-    navigator.clipboard.writeText(props.partie.code_liaison);
-    // On pourrait ajouter un toast PrimeVue ici
+const copiedLink = ref(false);
+const copiedCode = ref(false);
+
+const invitationLink = props.partie.lien_invitation || props.partie.lien_partage;
+const invitationCode = props.partie.code_invitation || props.partie.code_liaison;
+
+const copyToClipboard = async (text, type) => {
+    try {
+        await navigator.clipboard.writeText(text);
+    } catch {
+        const input = document.createElement('input');
+        input.value = text;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+    }
+    if (type === 'link') {
+        copiedLink.value = true;
+        setTimeout(() => { copiedLink.value = false; }, 2500);
+    } else {
+        copiedCode.value = true;
+        setTimeout(() => { copiedCode.value = false; }, 2500);
+    }
 };
 
 const selectRole = (role) => {
     router.post(route('parties.update-role', props.partie.id), { role }, {
-        onSuccess: () => router.get(route('progression.enigme', props.partie.id))
+        onSuccess: () => router.get(route('progression.enigme', props.partie.id)),
     });
 };
 
@@ -32,55 +52,46 @@ onMounted(() => {
 </script>
 
 <template>
-    <AuthenticatedLayout>
-        <Head title="Choix du Rôle" />
-        
-        <div class="py-10 px-4 min-h-screen play-mat">
-            <div class="max-w-[1000px] mx-auto game-board p-8 md:p-12">
-                
-                <header class="gsap-header text-center mb-12">
-                    <h1 class="text-3xl md:text-5xl font-black text-[#f5e8c7] uppercase tracking-tighter card-title mb-4 drop-shadow-md">
-                        Tirez votre Carte de Rôle
-                    </h1>
-                    <p class="card-badge text-white/50">Rejoignez la Guilde et définissez votre destinée</p>
-                </header>
+    <CavePlayLayout wide hide-logo>
+        <Head title="Configuration Équipe" />
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 relative mb-20">
-                    <!-- CHALLENGER CARD -->
-                    <div 
-                        @click="selectRole('challenger')"
-                        class="role-card board-card cursor-pointer group p-8 flex flex-col items-center text-center relative overflow-hidden"
-                    >
-                        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_#3b82f6_0%,_transparent_70%)]"></div>
-                        <div class="w-24 h-24 rounded-full border-4 border-[#5c4033] bg-[#1f140e] flex items-center justify-center mb-6 shadow-inner group-hover:border-[#3b82f6] group-hover:shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-all duration-500">
-                            <i class="pi pi-bolt text-4xl text-[#3b82f6] drop-shadow-[0_0_8px_#3b82f6]"></i>
-                        </div>
-                        <h2 class="card-title text-3xl text-white mb-2 group-hover:text-[#3b82f6] transition-colors">Challenger</h2>
-                        <p class="card-badge text-[10px] text-[#3b82f6] mb-6">Affrontement Solo</p>
-                        <p class="text-sm text-white/50 italic leading-relaxed font-serif">
-                            "Je joue pour la gloire. Chaque énigme résolue me rapproche du sommet du classement."
-                        </p>
-                        <button class="mt-8 px-8 py-3 bg-[#1f140e] border border-[#5c4033] text-[#3b82f6] rounded-xl card-badge text-[10px] group-hover:bg-[#3b82f6] group-hover:text-white transition-colors">
-                            Sélectionner
+        <h2 class="cave-section-title">Choisissez votre rôle</h2>
+        <p class="cave-hint text-center mb-5">
+            {{ partie.environnement?.nom }} · {{ partie.nb_membres || 1 }}/{{ partie.parametres?.nb_joueurs || 10 }} joueurs
+        </p>
+
+        <div class="cave-team-setup">
+            <button type="button" class="cave-role-card cave-role-card--challenger" @click="selectRole('challenger')">
+                <div class="cave-role-card__icon"><i class="pi pi-bolt" /></div>
+                <h3 class="cave-role-card__title">Challenger</h3>
+                <p class="text-xs opacity-80 italic max-w-xs">Dominez le classement et visez la victoire.</p>
+            </button>
+
+            <button type="button" class="cave-role-card cave-role-card--participant" @click="selectRole('participant')">
+                <div class="cave-role-card__icon"><i class="pi pi-users" /></div>
+                <h3 class="cave-role-card__title">Participant</h3>
+                <p class="text-xs opacity-80 italic max-w-xs">Jouez en équipe et partagez l'aventure.</p>
+            </button>
+
+            <div class="cave-team-invite-bar cave-tablet">
+                <p class="cave-section-title" style="font-size:0.75rem;margin-bottom:12px">Invitez vos coéquipiers</p>
+
+                <div class="cave-invite-block" style="margin-top:0">
+                    <p class="text-[9px] font-bold uppercase"><i class="pi pi-link" /> Lien — sans compte</p>
+                    <div class="cave-invite-row">
+                        <span class="text-[10px] truncate flex-1 opacity-80">{{ invitationLink }}</span>
+                        <button type="button" class="cave-copy-btn" @click.stop="copyToClipboard(invitationLink, 'link')">
+                            <i :class="copiedLink ? 'pi pi-check' : 'pi pi-copy'" />
                         </button>
                     </div>
+                </div>
 
-                    <!-- PARTICIPANT CARD -->
-                    <div 
-                        @click="selectRole('participant')"
-                        class="role-card board-card cursor-pointer group p-8 flex flex-col items-center text-center relative overflow-hidden"
-                    >
-                        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_#FF9500_0%,_transparent_70%)]"></div>
-                        <div class="w-24 h-24 rounded-full border-4 border-[#5c4033] bg-[#1f140e] flex items-center justify-center mb-6 shadow-inner group-hover:border-[#FF9500] group-hover:shadow-[0_0_20px_rgba(255,149,0,0.5)] transition-all duration-500">
-                            <i class="pi pi-users text-4xl text-[#FF9500] drop-shadow-[0_0_8px_#FF9500]"></i>
-                        </div>
-                        <h2 class="card-title text-3xl text-white mb-2 group-hover:text-[#FF9500] transition-colors">Coéquipier</h2>
-                        <p class="card-badge text-[10px] text-[#FF9500] mb-6">Force Collective</p>
-                        <p class="text-sm text-white/50 italic leading-relaxed font-serif">
-                            "L'union fait la force. Je partage l'aventure et collabore avec ma guilde pour triompher."
-                        </p>
-                        <button class="mt-8 px-8 py-3 bg-[#1f140e] border border-[#5c4033] text-[#FF9500] rounded-xl card-badge text-[10px] group-hover:bg-[#FF9500] group-hover:text-[#1f140e] transition-colors">
-                            Sélectionner
+                <div class="cave-invite-block">
+                    <p class="text-[9px] font-bold uppercase"><i class="pi pi-key" /> Code — compte existant</p>
+                    <div class="cave-invite-row">
+                        <span class="cave-invite-code">{{ invitationCode }}</span>
+                        <button type="button" class="cave-copy-btn" @click.stop="copyToClipboard(invitationCode, 'code')">
+                            <i :class="copiedCode ? 'pi pi-check' : 'pi pi-copy'" />
                         </button>
                     </div>
                 </div>
@@ -103,9 +114,5 @@ onMounted(() => {
 
             </div>
         </div>
-    </AuthenticatedLayout>
+    </CavePlayLayout>
 </template>
-
-<style scoped>
-/* Specific overrides */
-</style>

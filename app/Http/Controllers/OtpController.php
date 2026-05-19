@@ -27,10 +27,7 @@ class OtpController extends Controller
         
         // Si le compte est déjà vérifié, on redirige vers le tableau de bord approprié selon le rôle
         if ($this->otpService->estVerifie($user)) {
-            if ($user->is_admin || $user->hasRole('admin')) {
-                return redirect()->route('admin.dashboard');
-            }
-            return redirect()->route('dashboard');
+            return PartieController::redirectApresAuthentification();
         }
 
         // Sinon, on affiche la vue de saisie du code OTP (Inertia)
@@ -61,13 +58,7 @@ class OtpController extends Controller
             ]);
         }
 
-        // Une fois vérifié, redirection vers l'espace de jeu ou d'administration
-        if ($user->is_admin || $user->hasRole('admin')) {
-            return redirect()->route('admin.dashboard')
-                ->with('success', 'Compte admin vérifié avec succès !');
-        }
-
-        return redirect()->route('dashboard')
+        return PartieController::redirectApresAuthentification()
             ->with('success', 'Compte vérifié avec succès !');
     }
 
