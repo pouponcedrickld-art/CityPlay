@@ -1,15 +1,32 @@
 <script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { ref, computed, watch } from 'vue';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import SelectButton from 'primevue/selectbutton';
 import Slider from 'primevue/slider';
-import InputNumber from 'primevue/inputnumber';
+import InputText from 'primevue/inputtext';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 const props = defineProps({
-    environnements: Array
+    environnements: Array,
+    tab: { type: String, default: 'create' },
+});
+
+const page = usePage();
+const activeTab = ref(props.tab === 'join' ? 'join' : 'create');
+
+watch(() => props.tab, (tab) => {
+    activeTab.value = tab === 'join' ? 'join' : 'create';
+});
+
+const tabOptions = [
+    { label: 'Créer une équipe', value: 'create', icon: 'pi pi-plus-circle' },
+    { label: 'Rejoindre une équipe', value: 'join', icon: 'pi pi-link' },
+];
+
+const joinForm = useForm({
+    lien: '',
 });
 
 const showConfig = ref(false);
@@ -62,18 +79,15 @@ watch(() => form.locomotion, (newLoc) => {
 });
 
 const submit = () => {
-    console.log("Formulaire soumis avec les données:", form.data());
     form.post(route('parties.web.store'), {
-        onStart: () => console.log("Début de l'envoi Inertia..."),
         onSuccess: () => {
-            console.log("Création réussie !");
             showConfig.value = false;
         },
-        onError: (errors) => {
-            console.error("Erreurs retournées par le serveur:", errors);
-        },
-        onFinish: () => console.log("Envoi terminé.")
     });
+};
+
+const submitJoin = () => {
+    joinForm.post(route('parties.rejoindre.form'));
 };
 </script>
 
@@ -82,12 +96,63 @@ const submit = () => {
         <Head title="Nouvelle Partie" />
 
         <div class="p-6 max-w-7xl mx-auto space-y-6">
-            <!-- FLASH ERRORS -->
-            <div v-if="form.errors.environnement_id" class="p-4 bg-red-50 border border-red-200 rounded-2xl text-red-600 text-xs font-bold animate-pulse">
+            <SelectButton
+                v-model="activeTab"
+                :options="tabOptions"
+                optionLabel="label"
+                optionValue="value"
+                class="w-full max-w-xl custom-select-button"
+            >
+                <template #option="slotProps">
+                    <div class="flex items-center gap-2 py-1">
+                        <i :class="slotProps.option.icon"></i>
+                        <span class="font-bold uppercase text-[10px]">{{ slotProps.option.label }}</span>
+                    </div>
+                </template>
+            </SelectButton>
+
+            <div v-if="page.props.flash?.error" class="p-4 bg-red-50 border border-red-200 rounded-2xl text-red-600 text-xs font-bold">
+                <i class="pi pi-exclamation-circle mr-2"></i>
+                {{ page.props.flash.error }}
+            </div>
+            <div v-if="page.props.flash?.success" class="p-4 bg-green-50 border border-green-200 rounded-2xl text-green-700 text-xs font-bold">
+                <i class="pi pi-check-circle mr-2"></i>
+                {{ page.props.flash.success }}
+            </div>
+            <div v-if="form.errors.environnement_id" class="p-4 bg-red-50 border border-red-200 rounded-2xl text-red-600 text-xs font-bold">
                 <i class="pi pi-exclamation-circle mr-2"></i>
                 Veuillez sélectionner un parcours valide.
             </div>
-            <main class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <section v-if="activeTab === 'join'" class="max-w-xl mx-auto">
+                <div class="bg-white rounded-3xl border border-orange-100 shadow-sm p-8 space-y-6">
+                    <div class="text-center space-y-2">
+                        <div class="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center mx-auto border border-orange-100">
+                            <i class="pi pi-link text-2xl text-orange-500"></i>
+                        </div>
+                        <h2 class="text-xl font-black text-orange-950 uppercase tracking-tight">Rejoindre une équipe</h2>
+                        <p class="text-sm text-orange-900/50">Collez le lien d'invitation reçu de votre organisateur</p>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase tracking-[0.2em] text-orange-900/40 ml-1">Lien d'invitation</label>
+                        <InputText
+                            v-model="joinForm.lien"
+                            placeholder="https://votre-site.test/rejoindre/ABC123"
+                            class="w-full"
+                        />
+                        <p v-if="joinForm.errors.lien" class="text-xs text-red-500 font-bold">{{ joinForm.errors.lien }}</p>
+                    </div>
+                    <Button
+                        @click="submitJoin"
+                        label="Rejoindre l'équipe"
+                        icon="pi pi-sign-in"
+                        class="w-full p-4 rounded-2xl bg-orange-950 border-none font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all"
+                        :loading="joinForm.processing"
+                    />
+                </div>
+            </section>
+
+            <main v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div 
                 v-for="env in environnements" 
                 :key="env.id"

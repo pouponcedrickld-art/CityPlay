@@ -83,30 +83,51 @@
                         <p class="text-xl font-black text-white uppercase tracking-tight">Aucun déploiement</p>
                         <p class="text-[10px] text-white/40 font-bold uppercase tracking-[0.2em]">Sélectionnez un parcours pour commencer</p>
                     </div>
-                    <Link :href="route('parties.web.create')">
-                        <button class="px-8 py-4 bg-[#FF9500] text-black font-black uppercase tracking-widest text-xs rounded-2xl shadow-lg shadow-[#FF9500]/20 active:scale-95 transition-all">
-                            Explorer les zones
-                        </button>
-                    </Link>
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                        <Link :href="route('parties.web.create')">
+                            <button class="px-8 py-4 bg-[#FF9500] text-black font-black uppercase tracking-widest text-xs rounded-2xl shadow-lg shadow-[#FF9500]/20 active:scale-95 transition-all">
+                                Créer une équipe
+                            </button>
+                        </Link>
+                        <Link :href="route('parties.web.create') + '?tab=join'">
+                            <button class="px-8 py-4 bg-white/5 text-white font-black uppercase tracking-widest text-xs rounded-2xl border border-white/10 hover:border-[#FF9500]/30 active:scale-95 transition-all">
+                                Rejoindre une équipe
+                            </button>
+                        </Link>
+                    </div>
                 </div>
             </section>
 
             <!-- EXPLORE ENVIRONMENTS -->
             <section class="space-y-6">
                 <div class="flex items-center justify-between px-2">
-                    <h2 class="text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">Zones d'exploration</h2>
+                    <div class="space-y-1">
+                        <h2 class="text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">
+                            {{ geolocalise ? 'Zones près de vous' : 'Zones d\'exploration' }}
+                        </h2>
+                        <p v-if="isLocating" class="text-[8px] font-bold text-[#FF9500]/60 uppercase tracking-widest flex items-center gap-1">
+                            <i class="pi pi-spin pi-spinner"></i> Localisation en cours...
+                        </p>
+                    </div>
                     <Link :href="route('parties.web.create')" class="text-[8px] font-black text-[#FF9500] uppercase tracking-widest hover:underline">Voir tout</Link>
                 </div>
-                
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+                <div v-if="!environnements.length && !isLocating" class="bg-[#1a1a1a] p-10 rounded-3xl border border-dashed border-white/10 text-center">
+                    <p class="text-[10px] font-black text-white/30 uppercase tracking-widest">Aucun parcours disponible à proximité</p>
+                </div>
+
+                <div v-else class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div 
                         v-for="env in environnements" 
                         :key="env.id"
                         class="group relative bg-[#1a1a1a] rounded-3xl border border-white/5 overflow-hidden aspect-[4/5] cursor-pointer active:scale-95 transition-all shadow-xl"
                         @click="router.get(route('parties.web.create'))"
                     >
-                        <img :src="env.image_url" class="w-full h-full object-cover opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
+                        <img :src="env.image_url || 'https://images.unsplash.com/photo-1519307212971-dd9561667ffb?auto=format&fit=crop&q=80&w=800'" class="w-full h-full object-cover opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
                         <div class="absolute inset-0 bg-gradient-to-t from-[#0f0f0f] via-transparent to-transparent"></div>
+                        <div v-if="env.distance_km != null" class="absolute top-3 right-3 px-2 py-1 bg-[#FF9500] text-black text-[8px] font-black uppercase tracking-widest rounded-full">
+                            {{ env.distance_km }} km
+                        </div>
                         <div class="absolute bottom-4 left-4 right-4">
                             <p class="text-[8px] font-black text-[#FF9500] uppercase tracking-widest mb-1">{{ env.lieux_count || 0 }} ÉTAPES</p>
                             <p class="text-sm font-black text-white uppercase tracking-tighter leading-none">{{ env.nom }}</p>
@@ -120,11 +141,51 @@
 
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
+import { onMounted, ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 const props = defineProps({
-    parties: Array,
-    environnements: Array
+    parties: { type: Array, default: () => [] },
+    environnements: { type: Array, default: () => [] },
+    geolocalise: { type: Boolean, default: false },
+});
+
+const isLocating = ref(!props.geolocalise);
+
+const requestNearbyEnvironments = () => {
+    if (!navigator.geolocation) {
+        isLocating.value = false;
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            isLocating.value = false;
+            router.get(
+                route('dashboard'),
+                {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                },
+                {
+                    preserveState: true,
+                    preserveScroll: true,
+                    replace: true,
+                    only: ['environnements', 'geolocalise'],
+                }
+            );
+        },
+        () => {
+            isLocating.value = false;
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+    );
+};
+
+onMounted(() => {
+    if (!props.geolocalise) {
+        requestNearbyEnvironments();
+    }
 });
 
 const getStatutLabel = (statut) => {

@@ -87,7 +87,7 @@ class LieuSeeder extends Seeder
                          . "Activez le bouton « Valider sur place » quand vous y êtes !",
             ],
             'enfant' => [
-                'texte' => "🗺️ Mission explorateur !\n\n"
+                'texte' => "Mission explorateur !\n\n"
                          . "Tu cherches un endroit très vieux et très beau qui s'appelle « {$lieu->nom} ».\n"
                          . "Demande à un adulte de t'aider à suivre la flèche sur l'écran.\n"
                          . "Quand tu arrives devant, appuie sur le gros bouton vert ! 🎉",

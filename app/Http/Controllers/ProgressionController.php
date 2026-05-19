@@ -141,12 +141,18 @@ class ProgressionController extends Controller
     public function store(Request $request, Partie $partie)
     {
         $progression = $partie->progression;
-        if (!$progression) return response()->json(['error' => 'Pas de progression'], 404);
+        if (!$progression) {
+            return $request->header('X-Inertia')
+                ? back()->with('error', 'Pas de progression')
+                : response()->json(['error' => 'Pas de progression'], 404);
+        }
 
         if ($request->has('temps_restant')) {
             $progression->update(['temps_restant' => $request->temps_restant]);
         }
 
-        return response()->json(['success' => true]);
+        return $request->header('X-Inertia')
+            ? back()
+            : response()->json(['success' => true]);
     }
 }

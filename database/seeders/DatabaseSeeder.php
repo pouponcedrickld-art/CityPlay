@@ -17,6 +17,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->command->info('');
-        $this->command->info('✅ Seed complet terminé !');
+        $this->command->info(' Seed complet terminé !');
     }
 }

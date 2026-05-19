@@ -111,11 +111,11 @@ const startTimer = () => {
         if (props.progression?.statut === 'en_cours' && timeLeft.value > 0) {
             timeLeft.value--;
             
-            // On synchronise avec le serveur toutes les 30 secondes pour éviter les triches de rafraîchissement
+            // Sync silencieuse (axios, pas Inertia) pour ne pas interrompre la page
             if (timeLeft.value % 30 === 0) {
-                router.post(route('progression.store', props.partie.id), {
-                    temps_restant: timeLeft.value
-                }, { preserveScroll: true, preserveState: true });
+                window.axios.post(route('progression.store', props.partie.id), {
+                    temps_restant: timeLeft.value,
+                }).catch(() => {});
             }
         }
     }, 1000);

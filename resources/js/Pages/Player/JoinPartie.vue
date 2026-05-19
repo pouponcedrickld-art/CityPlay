@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import Button from 'primevue/button';
 import { ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
@@ -8,9 +8,25 @@ const props = defineProps({
     partie: Object
 });
 
-const copyCode = () => {
-    navigator.clipboard.writeText(props.partie.code_liaison);
-    // On pourrait ajouter un toast ici
+const copied = ref(false);
+
+const invitationLink = props.partie.lien_invitation || props.partie.lien_partage;
+
+const copyLink = async () => {
+    try {
+        await navigator.clipboard.writeText(invitationLink);
+        copied.value = true;
+        setTimeout(() => { copied.value = false; }, 2500);
+    } catch {
+        const input = document.createElement('input');
+        input.value = invitationLink;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+        copied.value = true;
+        setTimeout(() => { copied.value = false; }, 2500);
+    }
 };
 
 const selectRole = (role) => {
@@ -81,18 +97,27 @@ const selectRole = (role) => {
             </div>
         </div>
 
-        <!-- CODE OVERLAY -->
-        <div class="absolute bottom-12 left-1/2 -translate-x-1/2 z-50 w-full max-w-xs px-6">
-            <div class="bg-white/80 backdrop-blur-xl p-4 rounded-3xl border border-white shadow-2xl space-y-3">
-                <p class="text-[9px] font-black text-center text-orange-950/40 uppercase tracking-[0.2em]">Partagez ce code avec vos amis</p>
+        <!-- LIEN D'INVITATION -->
+        <div class="absolute bottom-12 left-1/2 -translate-x-1/2 z-50 w-full max-w-lg px-6">
+            <div class="bg-white/90 backdrop-blur-xl p-5 rounded-3xl border border-white shadow-2xl space-y-3">
+                <p class="text-[9px] font-black text-center text-orange-950/40 uppercase tracking-[0.2em]">
+                    Partagez ce lien avec vos coéquipiers
+                </p>
                 <div class="flex gap-2">
-                    <div class="flex-1 bg-orange-50 p-3 rounded-2xl border border-orange-100 text-center font-black text-xl tracking-[0.3em] text-orange-950">
-                        {{ partie.code_liaison }}
+                    <div class="flex-1 bg-orange-50 px-4 py-3 rounded-2xl border border-orange-100 text-xs font-bold text-orange-950 truncate" :title="invitationLink">
+                        {{ invitationLink }}
                     </div>
-                    <button @click="copyCode" class="w-12 bg-orange-950 text-white rounded-2xl flex items-center justify-center active:scale-90 transition-transform">
-                        <i class="pi pi-copy"></i>
+                    <button
+                        @click.stop="copyLink"
+                        class="shrink-0 px-4 bg-orange-950 text-white rounded-2xl flex items-center justify-center gap-2 active:scale-90 transition-transform font-black uppercase text-[10px] tracking-widest"
+                    >
+                        <i :class="copied ? 'pi pi-check' : 'pi pi-copy'"></i>
+                        {{ copied ? 'Copié' : 'Copier' }}
                     </button>
                 </div>
+                <p class="text-[9px] text-center text-orange-900/30 font-bold uppercase tracking-widest">
+                    {{ partie.environnement?.nom }} · max {{ partie.parametres?.nb_joueurs || 10 }} joueurs
+                </p>
             </div>
         </div>
         </div>
