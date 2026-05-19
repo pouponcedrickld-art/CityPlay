@@ -1,13 +1,15 @@
 <template>
-  <div class="admin-layout">
+  <div class="admin-layout" :class="{ 'mobile-menu-open': isMobileMenuOpen }">
+    <!-- Mobile Overlay -->
+    <div v-if="isMobileMenuOpen" class="mobile-overlay" @click="closeMobileMenu"></div>
     <!-- Sidebar -->
-    <aside ref="sidebarRef" class="sidebar">
+    <aside ref="sidebarRef" class="sidebar" :class="{ 'sidebar-open': isMobileMenuOpen }">
       <div class="sidebar-logo">
         <span class="logo-icon">🗺️</span>
         <span class="logo-text">CityQuest Admin</span>
       </div>
 
-      <nav class="sidebar-nav">
+      <nav class="sidebar-nav" @click="closeMobileMenu">
         <Link :href="route('admin.dashboard')" class="nav-item" :class="{ active: isActive('admin.dashboard') }">
           <i class="pi pi-home" />
           <span>Dashboard</span>
@@ -55,7 +57,7 @@
     <main ref="mainRef" class="main-content">
       <!-- Topbar -->
       <header ref="topbarRef" class="topbar">
-        <div class="topbar-left">
+        <div class="topbar-left" style="display: flex; align-items: center;">
           <slot name="breadcrumb" />
         </div>
         <div class="topbar-right">
@@ -81,6 +83,68 @@
       </div>
     </main>
 
+
+
+    <!-- Mobile Bottom Navigation (Visible only on mobile) -->
+    <div class="mobile-bottom-nav md:hidden flex" :class="isDark ? 'bg-[#1f2937]' : 'bg-white'">
+      <div class="nav-items-container">
+        <!-- Dashboard -->
+        <Link :href="route('admin.dashboard')" class="nav-item-bottom" :class="{ 'active': isActive('admin.dashboard') }">
+          <i class="pi pi-home"></i>
+          <span>Home</span>
+        </Link>
+        
+        <!-- Villes -->
+        <Link :href="route('admin.villes.index')" class="nav-item-bottom" :class="{ 'active': isActive('admin.villes') }">
+          <i class="pi pi-map"></i>
+          <span>Villes</span>
+        </Link>
+        
+        <!-- Parties (Center FAB) -->
+        <div class="nav-item-center-wrapper">
+          <Link :href="route('admin.parties.index')" class="nav-item-center" :class="{ 'active': isActive('admin.parties') }">
+            <div class="center-btn-inner">
+              <i class="pi pi-play"></i>
+            </div>
+            <span>Parties</span>
+          </Link>
+        </div>
+        
+        <!-- Users -->
+        <Link :href="route('admin.users.index')" class="nav-item-bottom" :class="{ 'active': isActive('admin.users') }">
+          <i class="pi pi-users"></i>
+          <span>Users</span>
+        </Link>
+        
+        <!-- Plus Menu -->
+        <button class="nav-item-bottom" :class="{ 'active': isMobileMenuOpen }" @click="toggleMobileMenu">
+          <i class="pi pi-ellipsis-h"></i>
+          <span>Plus</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Action Sheet for Extra Links -->
+    <div v-if="isMobileMenuOpen" class="mobile-sheet-overlay" @click="closeMobileMenu"></div>
+    <div class="mobile-action-sheet" :class="{ 'open': isMobileMenuOpen }">
+      <div class="sheet-handle" @click="closeMobileMenu"></div>
+      <div class="sheet-content">
+        <h3 class="sheet-title">Autres Menus</h3>
+        <Link :href="route('admin.environnements.index')" class="sheet-item" @click="closeMobileMenu">
+          <i class="pi pi-globe"></i>
+          <span>Environnements</span>
+        </Link>
+        <Link :href="route('admin.invitations.index')" class="sheet-item" @click="closeMobileMenu">
+          <i class="pi pi-link"></i>
+          <span>Invitations App</span>
+        </Link>
+        <Link :href="route('dashboard')" class="sheet-item text-orange-500" @click="closeMobileMenu">
+          <i class="pi pi-external-link"></i>
+          <span>Retour au site</span>
+        </Link>
+      </div>
+    </div>
+
     <!-- Floating Theme Toggle Switch -->
     <button 
       class="theme-switch-float" 
@@ -99,6 +163,28 @@ import Button from 'primevue/button'
 import { onMounted, ref } from 'vue'
 import gsap from 'gsap'
 
+// Mobile menu state
+const isMobileMenuOpen = ref(false)
+const toggleMobileMenu = () => {
+  isMobileMenuOpen.value = !isMobileMenuOpen.value
+}
+const closeMobileMenu = () => {
+  isMobileMenuOpen.value = false
+}
+
+// Theme management
+const isDark = ref(true)
+const toggleTheme = () => {
+  isDark.value = !isDark.value
+  if (isDark.value) {
+    document.documentElement.classList.remove('light-theme')
+    localStorage.setItem('theme', 'dark')
+  } else {
+    document.documentElement.classList.add('light-theme')
+    localStorage.setItem('theme', 'light')
+  }
+}
+
 const page = usePage()
 const sidebarRef = ref(null)
 const mainRef = ref(null)
@@ -116,6 +202,14 @@ const logout = () => {
 }
 
 onMounted(() => {
+  if (document.documentElement.classList.contains('light-theme') || localStorage.getItem('theme') === 'light') {
+    isDark.value = false
+    document.documentElement.classList.add('light-theme')
+  } else {
+    isDark.value = true
+    document.documentElement.classList.remove('light-theme')
+  }
+
   const tl = gsap.timeline()
 
   tl.from(sidebarRef.value, {
@@ -326,5 +420,249 @@ onMounted(() => {
 @keyframes slideIn {
   from { transform: translateY(-10px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+}
+
+/* --- RESPONSIVE MOBILE FIXES --- */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none; /* Hide sidebar completely on mobile */
+  }
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+    padding-bottom: 80px; /* Space for bottom nav */
+  }
+  .topbar {
+    padding: 0 1rem;
+  }
+  .admin-badge {
+    display: none; /* Cache le nom sur mobile pour gagner de la place */
+  }
+  .page-content {
+    padding: 1rem;
+    overflow-x: hidden;
+  }
+  
+  /* Force global tables to scroll horizontally on mobile */
+  :deep(.page-content .p-datatable-wrapper), :deep(.page-content table) {
+    overflow-x: auto !important;
+    display: block !important;
+    width: 100% !important;
+  }
+  
+  .mobile-bottom-nav {
+    display: flex;
+  }
+  
+  /* Theme toggle float repositioning to not overlap bottom nav */
+  .theme-switch-float {
+    bottom: 90px !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-bottom-nav,
+  .mobile-action-sheet,
+  .mobile-sheet-overlay {
+    display: none !important;
+  }
+}
+
+/* Bottom Nav Styles */
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.8);
+  z-index: 100;
+  align-items: center;
+}
+
+:root.light-theme .mobile-bottom-nav {
+  background: #ffffff;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+}
+
+.nav-items-container {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 100%;
+  padding-bottom: 10px;
+  position: relative;
+}
+
+.nav-item-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  color: #9ca3af;
+  text-decoration: none;
+  font-size: 10px;
+  font-weight: 600;
+  width: 20%;
+  background: transparent;
+  border: none;
+  height: 100%;
+  position: relative;
+}
+
+.nav-item-bottom i {
+  font-size: 20px;
+  transition: all 0.3s ease;
+}
+
+.nav-item-bottom.active {
+  color: #3b82f6; /* Blue active state */
+}
+
+.nav-item-bottom.active i {
+  transform: translateY(-2px);
+}
+
+/* Active indicator dash */
+.nav-item-bottom.active::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  width: 12px;
+  height: 3px;
+  background: #3b82f6;
+  border-radius: 3px;
+}
+
+/* Center Elevated Button */
+.nav-item-center-wrapper {
+  width: 20%;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  height: 100%;
+}
+
+.nav-item-center {
+  position: absolute;
+  bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: #9ca3af;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.nav-item-center.active {
+  color: #3b82f6;
+}
+
+.center-btn-inner {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #4f46e5;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-12px);
+  border: 6px solid #1f2937; /* Matches bottom nav background */
+  box-sizing: content-box;
+  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.4);
+  transition: all 0.3s;
+}
+
+:root.light-theme .center-btn-inner {
+  border-color: #ffffff;
+}
+
+.center-btn-inner i {
+  font-size: 22px;
+  color: #ffffff;
+}
+
+/* Action Sheet for extra items */
+.mobile-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 90;
+  backdrop-filter: blur(2px);
+}
+
+.mobile-action-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #1f2937;
+  border-radius: 24px 24px 0 0;
+  z-index: 101;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 1rem 1.5rem 2.5rem;
+}
+
+:root.light-theme .mobile-action-sheet {
+  background: #ffffff;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+}
+
+.mobile-action-sheet.open {
+  transform: translateY(0);
+}
+
+.sheet-handle {
+  width: 40px;
+  height: 4px;
+  background: #4b5563;
+  border-radius: 2px;
+  margin: 0 auto 1.5rem;
+}
+
+:root.light-theme .sheet-handle {
+  background: #e5e7eb;
+}
+
+.sheet-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+}
+
+.sheet-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  color: #e5e7eb;
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px solid #374151;
+}
+
+:root.light-theme .sheet-item {
+  color: #1f2937;
+  border-bottom-color: #f3f4f6;
+}
+
+.sheet-item:last-child {
+  border-bottom: none;
+}
+
+.sheet-item i {
+  font-size: 1.25rem;
+  color: #3b82f6;
+  width: 24px;
+  text-align: center;
 }
 </style>

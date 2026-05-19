@@ -7,6 +7,7 @@ import TextInput from '@/Components/TextInput.vue';
 import Checkbox from '@/Components/Checkbox.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref, computed, onMounted, onUnmounted, inject } from 'vue';
+import MobileAuthView from "./MobileAuthView.vue";
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import { useToast } from 'primevue/usetoast';
@@ -168,8 +169,15 @@ const submit = () => {
 </script>
 
 <template>
-    <GuestLayout>
-        <Head title="Rejoindre la Guilde - CityPlay 🇧🇯" />
+    <div>
+        <MobileAuthView 
+            :form="form" 
+            :submit="submit" 
+            mode="register"
+        />
+        <div class="hidden md:block">
+            <GuestLayout>
+                <Head title="Rejoindre la Guilde - CityPlay 🇧🇯" />
 
         <!-- Wrapper centré avec padding vertical pour éviter la coupure -->
         <div class="w-full flex flex-col items-center justify-center px-4 py-8">
@@ -544,6 +552,8 @@ const submit = () => {
             </template>
         </Dialog>
     </GuestLayout>
+        </div>
+    </div>
 </template>
 
 <style scoped>

@@ -638,3 +638,16 @@
 #64 C:/Users/onibon.afolabi/Documents/cityh/CityPlay/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php(23): require_once('C://Users//onibon...')
 #65 {main}
 "} 
+[2026-05-19 20:41:49] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 20:43:31] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 20:45:56] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 20:47:00] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 20:47:05] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 20:47:15] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 20:49:36] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 20:49:41] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 20:49:53] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 20:49:54] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 20:50:40] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 20:50:50] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-19 20:53:08] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 

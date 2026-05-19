@@ -7,6 +7,7 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { useForm, Head, Link } from "@inertiajs/vue3";
 import { onMounted, onUnmounted, inject, ref } from "vue";
+import MobileAuthView from "./MobileAuthView.vue";
 import { useToast } from "primevue/usetoast";
 import { gsap } from "gsap";
 import connexionFile from "@/Layouts/connexion_file.png";
@@ -219,8 +220,15 @@ const submit = () => {
 </script>
 
 <template>
-    <GuestLayout>
-        <Head title="Connexion - Bénin Quest" />
+    <div>
+        <MobileAuthView 
+            :form="form" 
+            :submit="submit" 
+            :canResetPassword="canResetPassword" 
+        />
+        <div class="hidden md:block">
+            <GuestLayout>
+                <Head title="Connexion - Bénin Quest" />
 
         <div
             v-if="partie_invitation"
@@ -524,6 +532,8 @@ const submit = () => {
             </div>
         </div>
     </GuestLayout>
+        </div>
+    </div>
 </template>
 
 <style scoped>
