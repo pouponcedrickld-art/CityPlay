@@ -2870,3 +2870,27 @@
 "} 
 [2026-05-20 10:17:34] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
 [2026-05-20 10:21:27] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-20 10:23:29] local.INFO: Tentative de création de partie {"environnement_id":2,"mode":"solo","duree":60,"locomotion":"pied","difficulte":2,"nb_joueurs":1} 
+[2026-05-20 10:23:29] local.INFO: Validation réussie {"environnement_id":2,"mode":"solo","duree":60,"locomotion":"pied","difficulte":2,"nb_joueurs":1} 
+[2026-05-20 10:23:29] local.INFO: PartieService: Début création partie {"data":{"environnement_id":2,"mode":"solo","duree":60,"locomotion":"pied","difficulte":2,"nb_joueurs":1},"createurId":2} 
+[2026-05-20 10:23:29] local.INFO: PartieService: Environnement trouvé {"nom":"Les Trésors de Cotonou"} 
+[2026-05-20 10:23:30] local.INFO: PartieService: Fin création partie {"id":2} 
+[2026-05-20 10:23:30] local.INFO: Partie créée avec succès {"id":2} 
+[2026-05-20 10:23:40] local.INFO: GameplayService: Début initialisation progression {"partie_id":2} 
+[2026-05-20 10:23:40] local.INFO: GameplayService: Paramètres extraits {"duree":60,"locomotion":"pied","difficulte":2} 
+[2026-05-20 10:23:40] local.INFO: GameplayService: Nombre d'énigmes calculé {"count":6} 
+[2026-05-20 10:23:40] local.INFO: GameplayService: Lieux sélectionnés {"count":6,"ids":{"Illuminate\\Support\\Collection":[6,7,8,9,10,11]}} 
+[2026-05-20 10:23:40] local.INFO: GameplayService: Énigme de départ identifiée {"id":22} 
+[2026-05-20 10:23:40] local.INFO: GameplayService: Progression créée {"id":1} 
+[2026-05-20 10:23:40] local.INFO: GameplayService: Partie marquée comme en cours  
+[2026-05-20 11:45:48] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-20 13:19:43] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-20 13:20:21] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-20 13:20:33] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-20 13:20:39] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-20 13:20:46] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-20 13:20:55] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-20 13:21:09] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-20 13:21:16] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-20 13:21:22] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-20 13:21:26] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
