@@ -220,26 +220,30 @@ const menuItemHref = (item) => {
             </Link>
         </nav>
 
-        <!-- Floating Music Switch -->
-        <button 
-          class="theme-switch-float" 
-          style="bottom: 5rem;"
-          @click="toggleAudio" 
-          aria-label="Toggle Music"
-          title="Musique de fond"
-        >
-          <i :class="isPlaying ? 'pi pi-volume-up' : 'pi pi-volume-off'" />
-        </button>
-
-        <!-- Floating Theme Toggle Switch -->
-        <button 
-          class="theme-switch-float" 
-          @click="toggleTheme" 
-          aria-label="Toggle Theme"
-          title="Changer de Thème"
-        >
-          <i :class="isDark ? 'pi pi-sun' : 'pi pi-moon'" />
-        </button>
+        <!-- Floating Controls -->
+        <div class="fixed right-6 z-50 flex flex-col gap-4" :class="(isMobile && !isGameMode) ? 'bottom-[100px]' : 'bottom-8'">
+            <!-- Floating Music Switch -->
+            <button 
+              class="w-14 h-14 rounded-full flex items-center justify-center text-xl cursor-pointer transition-all duration-300 shadow-xl backdrop-blur-md border hover:scale-110 hover:rotate-12"
+              :class="isDark ? 'bg-[#10121b]/90 border-orange-500/30 text-orange-500 hover:bg-gradient-to-br hover:from-orange-400 hover:to-orange-600 hover:text-black hover:border-transparent hover:shadow-[0_0_20px_rgba(255,149,0,0.4)]' : 'bg-[#faf6ee]/95 border-[#c8a96e]/40 text-[#059669] hover:bg-gradient-to-br hover:from-emerald-400 hover:to-emerald-600 hover:text-white hover:border-transparent hover:shadow-[0_0_20px_rgba(5,150,105,0.4)]'"
+              @click="toggleAudio" 
+              aria-label="Toggle Music"
+              title="Musique de fond"
+            >
+              <i :class="isPlaying ? 'pi pi-volume-up' : 'pi pi-volume-off'" />
+            </button>
+            
+            <!-- Floating Theme Toggle Switch -->
+            <button 
+              class="w-14 h-14 rounded-full flex items-center justify-center text-xl cursor-pointer transition-all duration-300 shadow-xl backdrop-blur-md border hover:scale-110 hover:rotate-12"
+              :class="isDark ? 'bg-[#10121b]/90 border-orange-500/30 text-orange-500 hover:bg-gradient-to-br hover:from-orange-400 hover:to-orange-600 hover:text-black hover:border-transparent hover:shadow-[0_0_20px_rgba(255,149,0,0.4)]' : 'bg-[#faf6ee]/95 border-[#c8a96e]/40 text-[#059669] hover:bg-gradient-to-br hover:from-emerald-400 hover:to-emerald-600 hover:text-white hover:border-transparent hover:shadow-[0_0_20px_rgba(5,150,105,0.4)]'"
+              @click="toggleTheme" 
+              aria-label="Toggle Theme"
+              title="Changer de Thème"
+            >
+              <i :class="isDark ? 'pi pi-sun' : 'pi pi-moon'" />
+            </button>
+        </div>
     </div>
 </template>
 
