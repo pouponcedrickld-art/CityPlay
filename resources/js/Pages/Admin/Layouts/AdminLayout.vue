@@ -267,6 +267,13 @@ onMounted(() => {
   left: 0; top: 0;
   z-index: 100;
   box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+:root.light-theme .sidebar {
+  background: #ffffff;
+  border-right-color: #e5e7eb;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.05);
 }
 
 .sidebar-logo {
@@ -275,6 +282,10 @@ onMounted(() => {
   align-items: center;
   gap: 1rem;
   border-bottom: 1px solid rgba(255, 149, 0, 0.2);
+}
+
+:root.light-theme .sidebar-logo {
+  border-bottom-color: #f3f4f6;
 }
 
 .logo-icon {
@@ -307,6 +318,10 @@ onMounted(() => {
   padding: 1.5rem 1.5rem 0.5rem;
 }
 
+:root.light-theme .nav-section-title {
+  color: #FF9500;
+}
+
 .nav-item {
   display: flex !important;
   visibility: visible !important;
@@ -322,15 +337,28 @@ onMounted(() => {
   border-left: 4px solid transparent;
 }
 
+:root.light-theme .nav-item {
+  color: #374151 !important;
+}
+
 .nav-item i {
   font-size: 1.1rem;
   color: rgba(255, 149, 0, 0.6);
+}
+
+:root.light-theme .nav-item i {
+  color: #FF9500;
 }
 
 .nav-item:hover {
   color: #fff;
   background: rgba(255, 149, 0, 0.1);
   padding-left: 1.75rem;
+}
+
+:root.light-theme .nav-item:hover {
+  color: #FF9500;
+  background: #fff7ed;
 }
 
 .nav-item:hover i {
@@ -342,6 +370,12 @@ onMounted(() => {
   background: linear-gradient(90deg, rgba(255, 149, 0, 0.2) 0%, transparent 100%);
   border-left-color: #FF9500;
   font-weight: 600;
+}
+
+:root.light-theme .nav-item.active {
+  color: #FF9500;
+  background: #fff7ed;
+  border-left-color: #FF9500;
 }
 
 .nav-item.active i {
@@ -462,6 +496,23 @@ onMounted(() => {
   .theme-switch-float {
     bottom: 90px !important;
   }
+}
+
+/* Fix visibility of input text in Admin */
+:deep(.p-inputtext),
+:deep(.p-inputnumber-input),
+:deep(.p-textarea),
+:deep(.p-select-label),
+:deep(.p-dropdown-label) {
+  color: #ffffff !important; /* White text for dark mode */
+}
+
+:root.light-theme :deep(.p-inputtext),
+:root.light-theme :deep(.p-inputnumber-input),
+:root.light-theme :deep(.p-textarea),
+:root.light-theme :deep(.p-select-label),
+:root.light-theme :deep(.p-dropdown-label) {
+  color: #1a1b1e !important; /* Dark text for light mode */
 }
 
 @media (min-width: 769px) {

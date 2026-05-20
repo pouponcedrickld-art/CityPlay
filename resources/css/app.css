@@ -1055,6 +1055,7 @@ html:not(.light-theme) body .p-inputnumber-input,
 html:not(.light-theme) body .p-textarea,
 html:not(.light-theme) body .p-dropdown,
 html:not(.light-theme) body .p-dropdown-label,
+html:not(.light-theme) body .p-select-label,
 html:not(.light-theme) body .p-multiselect,
 html:not(.light-theme) body .p-multiselect-label,
 html:not(.light-theme) body .p-chips,
@@ -1072,6 +1073,17 @@ html:not(.light-theme) body .p-breadcrumb {
   background-color: rgba(16, 18, 27, 0.92) !important;
   color: #ffffff !important;
   border-color: rgba(255, 149, 0, 0.2) !important;
+}
+
+/* Light Mode Overrides for Inputs */
+:root.light-theme body .p-inputtext,
+:root.light-theme body .p-inputnumber-input,
+:root.light-theme body .p-textarea,
+:root.light-theme body .p-dropdown-label,
+:root.light-theme body .p-select-label,
+:root.light-theme body .p-multiselect-label {
+  color: #1a1b1e !important;
+  background-color: #ffffff !important;
 }
 
 /* 1. PrimeVue Card Override */
