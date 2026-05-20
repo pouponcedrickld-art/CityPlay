@@ -44,8 +44,11 @@
               <div class="search-container">
                 <IconField iconPosition="left">
                   <InputIcon class="pi pi-search" />
-                  <InputText v-model="searchQuery" placeholder="Rechercher une adresse..." @keyup.enter="searchLocation" />
+                  <InputText v-model="searchQuery" placeholder="Rechercher une adresse..."
+                    @keyup.enter="searchLocation"
+                    class="search-input" />
                 </IconField>
+                <Button type="button" icon="pi pi-search" class="search-btn" @click="searchLocation" :loading="isSearching" />
                 <div v-if="isSearching" class="search-loader">
                   <i class="pi pi-spin pi-spinner" />
                 </div>
@@ -181,23 +184,33 @@ const searchResults = ref([])
 const isSearching = ref(false)
 
 const searchLocation = async () => {
-  if (!searchQuery.value || searchQuery.value.length < 3) return
+  if (!searchQuery.value || searchQuery.value.trim().length < 3) return
 
   isSearching.value = true
   searchResults.value = []
 
   try {
+    // Correction CORS : on force withCredentials à false car Nominatim ne l'accepte pas avec wildcard origin
     const response = await axios.get('https://nominatim.openstreetmap.org/search', {
       params: {
         q: searchQuery.value,
         format: 'json',
         addressdetails: 1,
         limit: 5
-      }
+      },
+      headers: {
+        'Accept-Language': 'fr-FR,fr;q=0.9'
+      },
+      withCredentials: false // CRUCIAL pour éviter l'erreur CORS bloquante
     })
     searchResults.value = response.data
+
+    if (response.data.length === 0) {
+      console.log("Aucun résultat trouvé pour cette adresse.");
+    }
   } catch (error) {
-    console.error("Erreur lors de la recherche :", error)
+    console.error("Erreur lors de la recherche Nominatim :", error)
+    // On ne met plus d'alerte pour ne pas gêner l'utilisateur
   } finally {
     isSearching.value = false
   }
@@ -480,14 +493,27 @@ const breadcrumbs = computed(() => [
 .search-container {
   flex: 1;
   position: relative;
-  max-width: 400px;
+  max-width: 450px;
+  display: flex;
+  gap: 5px;
 }
-.search-container input {
+.search-container :deep(.p-iconfield) {
+  flex: 1;
+}
+.search-container input.search-input {
   width: 100% !important;
   background: white !important;
-  color: #1a1b1e !important; /* Force dark text since background is white */
+  color: #1a1b1e !important; /* Force texte noir */
   border-radius: 8px !important;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+  padding-left: 2.5rem !important;
+}
+.search-btn {
+  background: #FF9500 !important;
+  border: none !important;
+  color: white !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(255, 149, 0, 0.3) !important;
 }
 .search-loader {
   position: absolute;

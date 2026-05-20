@@ -3318,3 +3318,4 @@
 [2026-05-20 14:45:25] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
 [2026-05-20 14:45:35] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
 [2026-05-20 14:45:37] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-20 14:54:48] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
