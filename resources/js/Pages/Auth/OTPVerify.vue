@@ -1,11 +1,10 @@
 <script setup>
-import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { Head, useForm, usePage, Link } from '@inertiajs/vue3';
-import { ref, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import InputOtp from 'primevue/inputotp';
+import InputError from '@/Components/InputError.vue';
 import { useToast } from 'primevue/usetoast';
+import Toast from 'primevue/toast';
 
 const toast = useToast();
 const page = usePage();
@@ -20,6 +19,9 @@ onMounted(() => {
     }
     if (page.props.flash?.info) {
         toast.add({ severity: 'info', summary: 'Information', detail: page.props.flash.info, life: 3000 });
+    }
+    if (page.props.flash?.error) {
+        toast.add({ severity: 'error', summary: 'Erreur', detail: page.props.flash.error, life: 4000 });
     }
 });
 
@@ -40,106 +42,108 @@ const resendCode = () => {
 </script>
 
 <template>
-    <GuestLayout>
-        <Head title="Vérification OTP" />
+    <div class="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 font-sans">
+        <Head title="Vérification de sécurité" />
+        <Toast />
 
-        <div class="mb-8 text-center">
-            <div class="w-20 h-20 bg-orange-100 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm">
-                <i class="pi pi-shield text-3xl text-[#FF9500]"></i>
-            </div>
-            <h1 class="text-2xl font-black text-orange-950 uppercase tracking-tight">Vérification <span class="text-[#FF9500]">OTP</span></h1>
-            <p class="mt-2 text-sm text-gray-600 font-medium">
-                Un code de vérification à 6 chiffres a été envoyé à votre adresse email.
-            </p>
-        </div>
-
-        <form @submit.prevent="submit" class="space-y-8">
-            <!-- Zone de saisie du code OTP -->
-            <div class="flex flex-col items-center">
-                <InputOtp 
-                    v-model="form.code" 
-                    :length="6" 
-                    integerOnly
-                    class="custom-otp-input"
-                />
-                <!-- Affichage des erreurs de validation du code -->
-                <InputError class="mt-4" :message="form.errors.code" />
+        <div class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+            <!-- Header épuré -->
+            <div class="bg-slate-900 p-8 text-center">
+                <div class="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/20">
+                    <i class="pi pi-shield text-2xl text-white"></i>
+                </div>
+                <h1 class="text-xl font-bold text-white tracking-tight">Vérification de sécurité</h1>
+                <p class="text-slate-400 text-sm mt-2">Code OTP requis pour continuer</p>
             </div>
 
-            <!-- Boutons d'action -->
-            <div class="flex flex-col gap-4">
-                <PrimaryButton
-                    class="w-full justify-center py-4 text-sm font-bold uppercase tracking-widest bg-gradient-to-r from-[#FF9500] to-[#FF7B00] border-none shadow-lg shadow-orange-200"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing || form.code.length !== 6"
-                >
-                    Vérifier le code
-                </PrimaryButton>
+            <div class="p-8">
+                <div class="text-center mb-8">
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Pour sécuriser votre accès, un code de validation à 6 chiffres a été envoyé à votre adresse email.
+                    </p>
+                </div>
 
-                <button
-                    type="button"
-                    @click="resendCode"
-                    class="text-xs font-bold text-orange-600 hover:text-orange-700 uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
-                    :disabled="form.processing"
-                >
-                    <i class="pi pi-refresh" :class="{ 'animate-spin': form.processing }"></i>
-                    Renvoyer un code
-                </button>
+                <form @submit.prevent="submit" class="space-y-8">
+                    <!-- Saisie OTP standard -->
+                    <div class="flex flex-col items-center">
+                        <InputOtp
+                            v-model="form.code"
+                            :length="6"
+                            integerOnly
+                            class="otp-standard-input"
+                        />
+                        <InputError class="mt-4" :message="form.errors.code" />
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="space-y-4">
+                        <button
+                            type="submit"
+                            class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2 disabled:opacity-50"
+                            :disabled="form.processing || form.code.length !== 6"
+                        >
+                            <i v-if="form.processing" class="pi pi-spin pi-spinner"></i>
+                            <span>Valider mon accès</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            @click="resendCode"
+                            class="w-full py-3 text-slate-500 hover:text-blue-600 text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
+                            :disabled="form.processing"
+                        >
+                            <i class="pi pi-refresh" :class="{ 'animate-spin': form.processing }"></i>
+                            Renvoyer le code
+                        </button>
+                    </div>
+                </form>
+
+                <div class="mt-10 pt-8 border-t border-slate-100">
+                    <div class="flex flex-col items-center gap-4 text-center">
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Un problème ?</p>
+                        <Link
+                            :href="route('logout.register')"
+                            method="post"
+                            as="button"
+                            class="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors underline decoration-2 underline-offset-4"
+                        >
+                            Retourner à l'accueil
+                        </Link>
+                    </div>
+                </div>
             </div>
-        </form>
-
-        <!-- LIEN DE REDIRECTION (OUTSIDE FORM) -->
-        <div class="mt-10 pt-6 border-t border-orange-100 flex flex-col items-center gap-4">
-            <p class="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em]">Vous ne recevez rien ?</p>
-            
-            <Link
-                :href="route('logout.register')"
-                method="post"
-                as="button"
-                class="group flex items-center gap-2 px-6 py-3 bg-orange-50 rounded-2xl text-orange-600 hover:bg-orange-100 transition-all border border-orange-100"
-            >
-                <i class="pi pi-user-plus text-xs group-hover:-translate-x-1 transition-transform"></i>
-                <span class="text-xs font-black uppercase tracking-widest">Retourner à l'inscription</span>
-            </Link>
-            
-            <p class="text-[9px] text-gray-400 font-bold uppercase italic text-center px-4">
-                Utile si vous avez fait une faute dans votre adresse email
-            </p>
         </div>
 
-        <div class="mt-8 text-center">
-            <p class="text-[9px] uppercase font-black tracking-[0.4em] text-orange-900/10">
-                CityPlay Secure
-            </p>
-        </div>
-    </GuestLayout>
+        <p class="mt-8 text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em]">
+            CityPlay Protection System
+        </p>
+    </div>
 </template>
 
 <style scoped>
-.custom-otp-input :deep(.p-inputotp-input) {
+.otp-standard-input :deep(.p-inputotp-input) {
     width: 3rem;
     height: 4rem;
     font-size: 1.5rem;
-    font-weight: 900;
-    border-radius: 16px;
-    border: 2px solid rgba(255, 149, 0, 0.1);
+    font-weight: 700;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
     background: white;
-    color: #FF9500;
-    transition: all 0.3s ease;
+    color: #1e293b;
+    transition: all 0.2s ease;
     text-align: center;
 }
 
-.custom-otp-input :deep(.p-inputotp-input:focus) {
-    border-color: #FF9500;
-    box-shadow: 0 0 0 4px rgba(255, 149, 0, 0.1);
-    transform: translateY(-2px);
+.otp-standard-input :deep(.p-inputotp-input:focus) {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    outline: none;
 }
 
 @media (max-width: 640px) {
-    .custom-otp-input :deep(.p-inputotp-input) {
+    .otp-standard-input :deep(.p-inputotp-input) {
         width: 2.5rem;
         height: 3.5rem;
-        font-size: 1.25rem;
     }
 }
 </style>

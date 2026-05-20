@@ -3319,3 +3319,8 @@
 [2026-05-20 14:45:35] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
 [2026-05-20 14:45:37] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
 [2026-05-20 14:54:48] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-20 14:56:22] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-20 14:56:38] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-20 14:56:44] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-20 14:56:57] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-20 15:01:34] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 

@@ -114,8 +114,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="game-map-wrapper relative rounded-3xl overflow-hidden border-2 border-white/10 shadow-2xl">
-        <div ref="mapContainer" class="w-full h-[400px]"></div>
+    <div class="game-map-wrapper relative h-full w-full overflow-hidden">
+        <div ref="mapContainer" class="w-full h-full"></div>
 
         <!-- Map Overlay UI -->
         <div class="absolute top-4 left-4 z-[1000] flex flex-col gap-2">

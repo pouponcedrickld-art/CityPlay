@@ -35,6 +35,12 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $user = auth()->user();
+
+        // On force la génération d'un code OTP à chaque nouvelle connexion
+        // Cela réinitialise otp_verified_at à null via le service
+        app(\App\Services\OtpService::class)->generer($user);
+
         return PartieController::redirectApresAuthentification();
     }
 
