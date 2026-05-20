@@ -125,11 +125,6 @@ const submitTextAnswer = () => {
     }
 };
 
-// const confirmAbandon = () => {
-//     showAbandonConfirm.value = false;
-//     router.post(route('parties.web.abandon', props.partie.id));
-// };
-
 const confirmSkip = () => {
     showSkipConfirm.value = false;
     showSolution.value = false;

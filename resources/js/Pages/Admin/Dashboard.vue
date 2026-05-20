@@ -40,12 +40,11 @@ const inscriptionsChartData = computed(() => ({
     datasets: [
         {
             label: 'Nouvelles inscriptions',
-            backgroundColor: '#FF9500',
-            borderColor: '#FF9500',
+            backgroundColor: '#8B5CF6',
+            borderColor: '#8B5CF6',
             data: props.charts.inscriptions_recentes.map(item => item.total),
             tension: 0.4,
-            fill: true,
-            backgroundColor: 'rgba(255, 149, 0, 0.1)',
+            fill: false,
         }
     ]
 }));
@@ -56,7 +55,7 @@ const villesChartData = computed(() => ({
     datasets: [
         {
             label: 'Nombre de parties',
-            backgroundColor: ['#FF9500', '#FFB347', '#FFD28E', '#FFF1DC', '#6366F1'],
+            backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#6366F1'],
             data: props.charts.parties_par_ville.map(item => item.total),
         }
     ]
@@ -82,10 +81,8 @@ const statutChartData = computed(() => {
         labels: props.charts.parties_par_statut.map(item => labels[item.statut] || item.statut),
         datasets: [
             {
-                backgroundColor: ['#FF9500', '#10B981', '#F59E0B', '#EF4444'],
+                backgroundColor: props.charts.parties_par_statut.map(item => colors[item.statut] || '#9CA3AF'),
                 data: props.charts.parties_par_statut.map(item => item.total),
-                borderColor: '#111827',
-                borderWidth: 2,
             }
         ]
     };
@@ -97,31 +94,6 @@ const chartOptions = {
     plugins: {
         legend: {
             position: 'bottom',
-            labels: {
-                color: '#94a3b8',
-                font: {
-                    family: 'Rajdhani',
-                    size: 12
-                }
-            }
-        }
-    },
-    scales: {
-        x: {
-            grid: {
-                color: 'rgba(255, 255, 255, 0.05)'
-            },
-            ticks: {
-                color: '#94a3b8'
-            }
-        },
-        y: {
-            grid: {
-                color: 'rgba(255, 255, 255, 0.05)'
-            },
-            ticks: {
-                color: '#94a3b8'
-            }
         }
     }
 };
@@ -129,7 +101,6 @@ const chartOptions = {
 const barOptions = {
     ...chartOptions,
     plugins: {
-        ...chartOptions.plugins,
         legend: {
             display: false,
         }
@@ -138,19 +109,7 @@ const barOptions = {
         y: {
             beginAtZero: true,
             ticks: {
-                stepSize: 1,
-                color: '#94a3b8'
-            },
-            grid: {
-                color: 'rgba(255, 255, 255, 0.05)'
-            }
-        },
-        x: {
-            ticks: {
-                color: '#94a3b8'
-            },
-            grid: {
-                color: 'rgba(255, 255, 255, 0.05)'
+                stepSize: 1
             }
         }
     }
@@ -162,243 +121,209 @@ const barOptions = {
 
     <AdminLayout>
         <template #breadcrumb>
-            <span class="text-sm text-white font-gaming uppercase tracking-widest">Dashboard</span>
+            <span class="text-sm text-gray-500">Dashboard</span>
         </template>
 
-        <div class="dashboard-content">
-            <h1 class="text-3xl font-bold mb-8 text-white">Tableau de bord <span class="text-primary-500">Global</span></h1>
+        <div class="dashboard-content p-4">
+            <h1 class="text-2xl font-bold mb-6">Tableau de bord</h1>
 
             <!-- Stats Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-                <div class="stat-card">
-                    <div class="stat-card-inner">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <Card class="stat-card">
+                    <template #content>
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-gray-400 text-xs uppercase font-gaming tracking-widest mb-1">Villes</p>
-                                <p class="text-4xl font-bold text-white">{{ stats.villes }}</p>
+                                <p class="text-gray-500 text-sm uppercase font-bold">Villes</p>
+                                <p class="text-3xl font-black">{{ stats.villes }}</p>
                             </div>
-                            <div class="stat-icon-wrapper bg-primary-500/10 text-primary-500">
-                                <i class="pi pi-map text-2xl"></i>
+                            <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center">
+                                <i class="pi pi-map text-xl"></i>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </template>
+                </Card>
 
-                <div class="stat-card">
-                    <div class="stat-card-inner">
+                <Card class="stat-card">
+                    <template #content>
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-gray-400 text-xs uppercase font-gaming tracking-widest mb-1">Parcours</p>
-                                <p class="text-4xl font-bold text-white">{{ stats.environnements }}</p>
+                                <p class="text-gray-500 text-sm uppercase font-bold">Parcours</p>
+                                <p class="text-3xl font-black">{{ stats.environnements }}</p>
                             </div>
-                            <div class="stat-icon-wrapper bg-green-500/10 text-green-500">
-                                <i class="pi pi-globe text-2xl"></i>
+                            <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
+                                <i class="pi pi-globe text-xl"></i>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </template>
+                </Card>
 
-                <div class="stat-card">
-                    <div class="stat-card-inner">
+                <Card class="stat-card">
+                    <template #content>
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-gray-400 text-xs uppercase font-gaming tracking-widest mb-1">Énigmes</p>
-                                <p class="text-4xl font-bold text-white">{{ stats.enigmes }}</p>
+                                <p class="text-gray-500 text-sm uppercase font-bold">Énigmes</p>
+                                <p class="text-3xl font-black">{{ stats.enigmes }}</p>
                             </div>
-                            <div class="stat-icon-wrapper bg-orange-500/10 text-orange-500">
-                                <i class="pi pi-question-circle text-2xl"></i>
+                            <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center">
+                                <i class="pi pi-question-circle text-xl"></i>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </template>
+                </Card>
 
-                <div class="stat-card">
-                    <div class="stat-card-inner">
+                <Card class="stat-card">
+                    <template #content>
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-gray-400 text-xs uppercase font-gaming tracking-widest mb-1">Joueurs</p>
-                                <p class="text-4xl font-bold text-white">{{ stats.users }}</p>
+                                <p class="text-gray-500 text-sm uppercase font-bold">Joueurs</p>
+                                <p class="text-3xl font-black">{{ stats.users }}</p>
                             </div>
-                            <div class="stat-icon-wrapper bg-purple-500/10 text-purple-500">
-                                <i class="pi pi-users text-2xl"></i>
+                            <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center">
+                                <i class="pi pi-users text-xl"></i>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </template>
+                </Card>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 <!-- Inscriptions Récentes -->
-                <div class="chart-container">
-                    <div class="chart-header">
-                        <div class="flex items-center gap-3">
-                            <div class="w-2 h-6 bg-primary-500 rounded-full"></div>
-                            <h2 class="text-lg font-gaming text-white">Évolution des inscriptions</h2>
+                <Card class="chart-card">
+                    <template #title>
+                        <div class="flex items-center gap-2">
+                            <i class="pi pi-user-plus text-purple-500"></i>
+                            <span>Évolution des inscriptions</span>
                         </div>
-                    </div>
-                    <div class="chart-body">
+                    </template>
+                    <template #content>
                         <div class="h-[300px]">
                             <Line
                                 v-if="charts.inscriptions_recentes.length > 0"
                                 :data="inscriptionsChartData"
                                 :options="chartOptions"
                             />
-                            <div v-else class="h-full flex items-center justify-center text-gray-500 italic font-gaming">
-                                AUCUNE INSCRIPTION CES 7 DERNIERS JOURS
+                            <div v-else class="h-full flex items-center justify-center text-gray-400 italic">
+                                Aucune inscription ces 7 derniers jours
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </template>
+                </Card>
 
                 <!-- Parties par Ville -->
-                <div class="chart-container">
-                    <div class="chart-header">
-                        <div class="flex items-center gap-3">
-                            <div class="w-2 h-6 bg-primary-500 rounded-full"></div>
-                            <h2 class="text-lg font-gaming text-white">Répartition par ville</h2>
+                <Card class="chart-card">
+                    <template #title>
+                        <div class="flex items-center gap-2">
+                            <i class="pi pi-map-marker text-blue-500"></i>
+                            <span>Répartition par ville</span>
                         </div>
-                    </div>
-                    <div class="chart-body">
+                    </template>
+                    <template #content>
                         <div class="h-[300px]">
                             <Bar
                                 v-if="charts.parties_par_ville.length > 0"
                                 :data="villesChartData"
                                 :options="barOptions"
                             />
-                            <div v-else class="h-full flex items-center justify-center text-gray-500 italic font-gaming">
-                                AUCUNE DONNÉE DISPONIBLE
+                            <div v-else class="h-full flex items-center justify-center text-gray-400 italic">
+                                Aucune donnée disponible
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </template>
+                </Card>
 
                 <!-- Statut des Parties -->
-                <div class="chart-container">
-                    <div class="chart-header">
-                        <div class="flex items-center gap-3">
-                            <div class="w-2 h-6 bg-primary-500 rounded-full"></div>
-                            <h2 class="text-lg font-gaming text-white">Statut des parties</h2>
+                <Card class="chart-card">
+                    <template #title>
+                        <div class="flex items-center gap-2">
+                            <i class="pi pi-chart-pie text-green-500"></i>
+                            <span>Statut des parties</span>
                         </div>
-                    </div>
-                    <div class="chart-body">
+                    </template>
+                    <template #content>
                         <div class="h-[300px]">
                             <Doughnut
                                 v-if="charts.parties_par_statut.length > 0"
                                 :data="statutChartData"
                                 :options="chartOptions"
                             />
-                            <div v-else class="h-full flex items-center justify-center text-gray-500 italic font-gaming">
-                                AUCUNE DONNÉE DISPONIBLE
+                            <div v-else class="h-full flex items-center justify-center text-gray-400 italic">
+                                Aucune donnée disponible
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </template>
+                </Card>
 
                 <!-- Quick Stats / Table -->
-                <div class="chart-container">
-                    <div class="chart-header">
-                        <div class="flex items-center gap-3">
-                            <div class="w-2 h-6 bg-primary-500 rounded-full"></div>
-                            <h2 class="text-lg font-gaming text-white">Résumé de l'activité</h2>
+                <Card class="chart-card">
+                    <template #title>
+                        <div class="flex items-center gap-2">
+                            <i class="pi pi-list text-orange-500"></i>
+                            <span>Résumé de l'activité</span>
                         </div>
-                    </div>
-                    <div class="chart-body">
+                    </template>
+                    <template #content>
                         <div class="space-y-4">
-                            <div class="flex justify-between items-center p-4 bg-white/5 rounded-lg border border-white/10 hover:border-primary-500/30 transition-colors">
-                                <span class="text-gray-400 font-gaming">TOTAL DES ÉQUIPES</span>
-                                <span class="font-bold text-2xl text-primary-500">{{ stats.teams }}</span>
+                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                <span class="text-gray-600">Total des équipes</span>
+                                <span class="font-bold text-xl">{{ stats.teams }}</span>
                             </div>
-                            <div class="flex justify-between items-center p-4 bg-white/5 rounded-lg border border-white/10 hover:border-primary-500/30 transition-colors">
-                                <span class="text-gray-400 font-gaming">TOTAL DES LIEUX</span>
-                                <span class="font-bold text-2xl text-primary-500">{{ stats.lieux }}</span>
+                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                <span class="text-gray-600">Total des lieux</span>
+                                <span class="font-bold text-xl">{{ stats.lieux }}</span>
                             </div>
-                            <div class="flex justify-between items-center p-4 bg-white/5 rounded-lg border border-white/10 hover:border-primary-500/30 transition-colors">
-                                <span class="text-gray-400 font-gaming">TOTAL DES ÉNIGMES</span>
-                                <span class="font-bold text-2xl text-primary-500">{{ stats.enigmes }}</span>
+                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                <span class="text-gray-600">Total des énigmes</span>
+                                <span class="font-bold text-xl">{{ stats.enigmes }}</span>
                             </div>
-                            <div class="mt-6 pt-4 border-t border-white/5">
-                                <p class="text-xs text-gray-500 text-center font-gaming tracking-widest uppercase">
+                            <div class="mt-4 pt-4 border-t border-gray-100">
+                                <p class="text-sm text-gray-500 text-center">
                                     Dernière mise à jour : {{ new Date().toLocaleString() }}
                                 </p>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </template>
+                </Card>
             </div>
         </div>
     </AdminLayout>
 </template>
 
 <style scoped>
-.dashboard-content {
-    min-height: 100%;
-}
-
 .stat-card {
-    position: relative;
-    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-    border-radius: 12px;
-    padding: 1px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow: hidden;
-}
-
-.stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(45deg, transparent, rgba(255, 149, 0, 0.1), transparent);
-    transform: translateX(-100%);
-    transition: transform 0.6s;
+    border: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .stat-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(255, 149, 0, 0.1);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-.stat-card:hover::before {
-    transform: translateX(100%);
-}
-
-.stat-card-inner {
-    background: #111827;
-    padding: 1.5rem;
-    border-radius: 11px;
-    height: 100%;
-}
-
-.stat-icon-wrapper {
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
-}
-
-.chart-container {
-    background: #111827;
-    border: 1px solid #1f2937;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
-
-.chart-header {
-    padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid #1f2937;
-    background: rgba(255, 255, 255, 0.02);
-}
-
-.chart-body {
-    padding: 1.5rem;
-}
-
-:deep(.p-card) {
-    background: transparent;
+.chart-card {
     border: none;
-    color: inherit;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+:deep(.p-card-title) {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1f2937;
+    padding: 1.25rem 1.25rem 0;
+}
+
+:deep(.p-card-body) {
+    padding: 0;
+}
+
+:deep(.p-card-content) {
+    padding: 1.25rem;
+}
+
+.dashboard-content {
+    background-color: #f9fafb;
+    min-height: calc(100vh - 64px);
 }
 </style>

@@ -29,28 +29,20 @@ class RegisteredUserController extends Controller
     public function create(Request $request): Response
     {
         $invitation = null;
-        $inviteToken = $request->query('invite') ?? $request->query('token');
-        $inviteError = null;
-
-        if ($inviteToken) {
-            $invitation = AppInvitation::where('token', $inviteToken)
+        if ($request->has('invite')) {
+            $invitation = AppInvitation::where('token', $request->invite)
                 ->whereNull('used_at')
                 ->where(function($query) {
                     $query->whereNull('expires_at')
                           ->orWhere('expires_at', '>', now());
                 })
                 ->first();
-
-            if (!$invitation) {
-                $inviteError = "Ce lien d'invitation est invalide ou expiré.";
-            }
         }
 
         return Inertia::render('Auth/Register', [
             'invitation_token' => $invitation?->token,
             'prefilled_email' => $invitation?->email,
             'partie_invitation' => PartieController::invitationPartieEnSession(),
-            'invite_error' => $inviteError,
         ]);
     }
 

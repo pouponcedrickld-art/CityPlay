@@ -40,9 +40,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
-import { gsap } from 'gsap';
 
 const props = defineProps({
     partie: Object,
@@ -59,15 +57,4 @@ const nextStep = () => {
     }
     router.get(route('progression.enigme', props.partie.id));
 };
-
-onMounted(() => {
-    gsap.set('.gsap-header', { y: -50, opacity: 0, scale: 0.9 });
-    gsap.set('.gsap-card', { y: 100, opacity: 0, rotationY: -15 });
-    gsap.set('.gsap-action', { y: 50, opacity: 0 });
-
-    const tl = gsap.timeline();
-    tl.to('.gsap-header', { y: 0, opacity: 1, scale: 1, duration: 0.8, ease: 'back.out(1.5)' })
-      .to('.gsap-card', { y: 0, opacity: 1, rotationY: 0, duration: 0.8, ease: 'power3.out' }, '-=0.4')
-      .to('.gsap-action', { y: 0, opacity: 1, duration: 0.6, ease: 'power2.out' }, '-=0.2');
-});
 </script>

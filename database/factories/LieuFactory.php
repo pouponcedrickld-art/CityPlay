@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Lieu;
+use App\Models\Environnement;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,7 +19,14 @@ class LieuFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'environnement_id' => Environnement::factory(),
+            'ordre' => 1,
+            'actif' => true,
+            'latitude' => 48.8566,
+            'longitude' => 2.3522,
+            'rayon_metres' => 50,
+            'nom' => 'Lieu Default',
+            'description' => 'Description du lieu default',
         ];
     }
 }

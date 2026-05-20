@@ -172,12 +172,12 @@ const submit = () => {
             class="forgot-card max-w-5xl w-full mx-auto flex flex-col md:flex-row overflow-hidden rounded-[2.5rem] border transition-all duration-500 shadow-2xl relative"
             :class="isDark 
                 ? 'bg-[#0f0e0c]/90 border-white/5 shadow-black/90 hover:border-[#FF9500]/30' 
-                : 'bg-[#faf9f6]/95 border-[#e2dfd5] shadow-stone-400/25 hover:border-[#059669]/30'"
+                : 'bg-[#faf9f6]/95 border-[#e2dfd5] shadow-stone-400/25 hover:border-[#008751]/30'"
         >
             <!-- TOP NEON BORDER LIGHT DECORATION -->
             <div 
                 class="neon-border-draw absolute top-0 left-0 right-0 h-[3px] z-30 origin-left"
-                :class="isDark ? 'bg-gradient-to-r from-[#FF9500] via-[#ffd699] to-transparent' : 'bg-gradient-to-r from-[#059669] via-[#85e0b7] to-transparent'"
+                :class="isDark ? 'bg-gradient-to-r from-[#FF9500] via-[#ffd699] to-transparent' : 'bg-gradient-to-r from-[#008751] via-[#85e0b7] to-transparent'"
             ></div>
 
             <!-- LEFT ARTWORK SIDE -->
@@ -198,7 +198,7 @@ const submit = () => {
                 <div class="absolute bottom-0 left-0 p-8 space-y-3 z-20 hidden md:block">
                     <span 
                         class="art-overlay-stagger px-3 py-1 text-[9px] font-black tracking-[0.2em] text-white rounded-full uppercase"
-                        :class="isDark ? 'bg-[#FF9500]' : 'bg-[#059669]'"
+                        :class="isDark ? 'bg-[#FF9500]' : 'bg-[#008751]'"
                     >
                         Assistance Aventurier
                     </span>
@@ -223,7 +223,7 @@ const submit = () => {
 
                 <div class="forgot-stagger mb-6 space-y-2">
                     <span 
-                        :class="isDark ? 'text-[#FF9500]' : 'text-[#059669]'" 
+                        :class="isDark ? 'text-[#FF9500]' : 'text-[#008751]'" 
                         class="text-[9px] font-black uppercase tracking-[0.3em] transition-colors duration-500"
                     >
                         Explorateur Égaré • Bénin Quest 🇧🇯
@@ -233,7 +233,7 @@ const submit = () => {
                         :class="isDark ? 'text-white' : 'text-[#1c1917]'" 
                         class="text-4xl font-black uppercase tracking-tighter transition-colors duration-500 flex items-center gap-2 select-text"
                     >
-                        {{ headingText }} <span class="animate-pulse" :class="isDark ? 'text-[#FF9500]' : 'text-[#059669]'">.</span>
+                        {{ headingText }} <span class="animate-pulse" :class="isDark ? 'text-[#FF9500]' : 'text-[#008751]'">.</span>
                     </h3>
 
                     <p 
@@ -270,7 +270,7 @@ const submit = () => {
                                 :class="[
                                     isDark 
                                         ? 'bg-black/50 border-white/5 text-white placeholder:text-white/20 focus:border-[#FF9500]' 
-                                        : 'bg-[#faf9f6] border-[#e2dfd5] text-[#1c1917] placeholder:text-[#1c1917]/30 focus:border-[#059669]',
+                                        : 'bg-[#faf9f6] border-[#e2dfd5] text-[#1c1917] placeholder:text-[#1c1917]/30 focus:border-[#008751]',
                                     'w-full pl-11 pr-4 py-3.5 border-2 rounded-xl font-bold focus:ring-0 focus:outline-none transition-all shadow-inner text-sm'
                                 ]"
                                 v-model="form.email"
@@ -301,7 +301,7 @@ const submit = () => {
                             :class="[
                                 isDark 
                                     ? 'bg-[#FF9500] text-black shadow-[0_5px_0_#cc7a00] hover:bg-[#FF9500]/95 hover:shadow-[0_0_20px_rgba(255,149,0,0.4)]' 
-                                    : 'bg-[#059669] text-white shadow-[0_5px_0_#005c37] hover:bg-[#059669]/95 hover:shadow-[0_0_20px_rgba(0,135,81,0.3)]',
+                                    : 'bg-[#008751] text-white shadow-[0_5px_0_#005c37] hover:bg-[#008751]/95 hover:shadow-[0_0_20px_rgba(0,135,81,0.3)]',
                                 'px-6 py-4 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 active:shadow-none active:translate-y-[5px] transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none select-none relative z-10'
                             ]"
                             :disabled="form.processing"
@@ -333,7 +333,7 @@ input:focus {
     transform: translateY(-2px);
 }
 :deep(.light) input:focus {
-    box-shadow: 0 0 20px rgba(5, 150, 105, 0.2) !important;
+    box-shadow: 0 0 20px rgba(0, 135, 81, 0.2) !important;
 }
 
 /* 3D Depth shadows */

@@ -38,17 +38,6 @@ const selectRole = (role) => {
         onSuccess: () => router.get(route('progression.enigme', props.partie.id)),
     });
 };
-
-onMounted(() => {
-    gsap.set('.gsap-header', { y: -30, opacity: 0 });
-    gsap.set('.role-card', { y: 100, opacity: 0, rotationY: 45 });
-    gsap.set('.code-overlay', { y: 20, opacity: 0 });
-
-    const tl = gsap.timeline();
-    tl.to('.gsap-header', { y: 0, opacity: 1, duration: 0.8, ease: 'back.out(1.5)' })
-      .to('.role-card', { y: 0, opacity: 1, rotationY: 0, duration: 0.8, stagger: 0.2, ease: 'power3.out' }, '-=0.4')
-      .to('.code-overlay', { y: 0, opacity: 1, duration: 0.6, ease: 'power2.out' }, '-=0.2');
-});
 </script>
 
 <template>
@@ -95,23 +84,6 @@ onMounted(() => {
                         </button>
                     </div>
                 </div>
-
-                <!-- CODE OVERLAY (Like a token/plaque on the board) -->
-                <div class="code-overlay bg-[#2a1c14] border-2 border-[#5c4033] p-6 rounded-2xl max-w-sm mx-auto text-center shadow-[0_10px_30px_rgba(0,0,0,0.8)] relative">
-                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#1f140e] border border-[#5c4033] px-4 py-1 rounded-full card-badge text-[8px] text-[#FF9500]">
-                        Sceau d'Invitation
-                    </div>
-                    <p class="card-badge text-[9px] text-white/40 mb-3 mt-2">Partagez ce code avec d'autres aventuriers</p>
-                    <div class="flex gap-2">
-                        <div class="flex-1 bg-[#1f140e] p-3 rounded-xl border border-black text-center font-black text-2xl tracking-[0.3em] text-[#f5e8c7] shadow-inner" style="font-family: 'Share Tech Mono', monospace;">
-                            {{ partie.code_liaison }}
-                        </div>
-                        <button @click="copyCode" class="w-14 bg-[#5c4033] text-[#f5e8c7] rounded-xl flex items-center justify-center hover:bg-[#FF9500] hover:text-[#1f140e] active:scale-95 transition-all shadow-[0_4px_0_#3f2a1e] active:translate-y-[4px] active:shadow-none">
-                            <i class="pi pi-copy text-xl"></i>
-                        </button>
-                    </div>
-                </div>
-
             </div>
         </div>
     </CavePlayLayout>

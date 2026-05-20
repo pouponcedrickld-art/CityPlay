@@ -3,7 +3,6 @@ import { Link } from '@inertiajs/vue3';
 import Toast from 'primevue/toast';
 import { ref, onMounted, onUnmounted, provide } from 'vue';
 import { gsap } from 'gsap';
-import { isPlaying, toggleAudio, playAudio } from '@/audioPlayer';
 import logoDark from './logo_dark.jpg';
 import logoWhite from './logo_whrite.jpg';
 
@@ -44,17 +43,7 @@ onUnmounted(() => {
     window.removeEventListener('resize', resizeCanvas);
     window.removeEventListener('mousemove', onMouseMove);
     window.removeEventListener('mouseleave', onMouseLeave);
-    window.removeEventListener('click', handleFirstInteraction);
 });
-
-// Auto-play attempt on first user interaction if they haven't explicitly paused it
-const handleFirstInteraction = () => {
-    if (!isPlaying.value) {
-        playAudio();
-    }
-    window.removeEventListener('click', handleFirstInteraction);
-};
-window.addEventListener('click', handleFirstInteraction);
 
 // Initialiser le système de particules/braises
 const initCanvas = () => {
@@ -210,27 +199,12 @@ provide('isDark', isDark);
             :class="[
                 isDark 
                     ? 'bg-white/5 border-white/10 hover:bg-[#FF9500] hover:text-black text-[#FF9500] shadow-[0_0_20px_rgba(255,149,0,0.12)]' 
-                    : 'bg-black/5 border-black/10 hover:bg-[#059669] hover:text-white text-[#059669] shadow-[0_0_20px_rgba(0,135,81,0.08)]',
+                    : 'bg-black/5 border-black/10 hover:bg-[#008751] hover:text-white text-[#008751] shadow-[0_0_20px_rgba(0,135,81,0.08)]',
                 'absolute top-6 right-6 z-50 p-3.5 rounded-2xl border backdrop-blur-md transition-all duration-500 active:scale-90 flex items-center justify-center cursor-pointer'
             ]"
             title="Changer de thème"
         >
             <i :class="isDark ? 'pi pi-sun text-base animate-spin-slow' : 'pi pi-moon text-base'" />
-        </button>
-
-        <!-- FLOATING MUSIC SWITCHER -->
-        <button 
-            @click="toggleAudio" 
-            type="button"
-            :class="[
-                isDark 
-                    ? 'bg-white/5 border-white/10 hover:bg-[#FF9500] hover:text-black text-[#FF9500] shadow-[0_0_20px_rgba(255,149,0,0.12)]' 
-                    : 'bg-black/5 border-black/10 hover:bg-[#008751] hover:text-white text-[#008751] shadow-[0_0_20px_rgba(0,135,81,0.08)]',
-                'absolute top-20 right-6 z-50 p-3.5 rounded-2xl border backdrop-blur-md transition-all duration-500 active:scale-90 flex items-center justify-center cursor-pointer'
-            ]"
-            title="Musique de fond"
-        >
-            <i :class="isPlaying ? 'pi pi-volume-up text-base' : 'pi pi-volume-off text-base'" />
         </button>
 
         <!-- CONTENEUR GLOBAL CENTRÉ -->

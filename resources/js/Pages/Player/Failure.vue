@@ -30,9 +30,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
 import { Head, router } from '@inertiajs/vue3';
-import { gsap } from 'gsap';
 
 const props = defineProps({
     partie: Object,
@@ -45,16 +43,4 @@ const tryAgain = () => {
 const skip = () => {
     router.post(route('progression.next', props.partie.id));
 };
-
-onMounted(() => {
-    gsap.set('.gsap-fail-card', { y: -50, opacity: 0, rotationZ: 5 });
-
-    const tl = gsap.timeline();
-    tl.to('.gsap-fail-card', { y: 0, opacity: 1, rotationZ: 0, duration: 0.6, ease: 'bounce.out' })
-      .to('.gsap-fail-card', { 
-          x: [-5, 5, -5, 5, 0], 
-          duration: 0.4, 
-          ease: 'power1.inOut' 
-      }, '+=0.2');
-});
 </script>

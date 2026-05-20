@@ -10,13 +10,13 @@
             </span>
         </div>
 
-        <h2 class="cave-section-title gsap-header">Camp de base</h2>
+        <h2 class="cave-section-title">Camp de base</h2>
         <p class="text-center text-sm font-bold mb-4" style="color: var(--cave-border-dark); opacity: 0.75">
             Bonjour, <strong>{{ $page.props.auth.user.name }}</strong> !
         </p>
 
         <!-- Boutons principaux (stack pierre) -->
-        <div class="cave-btn-stack mb-6 gsap-board">
+        <div class="cave-btn-stack mb-6">
             <Link :href="route('parties.web.create')" class="cave-btn" style="text-decoration:none">
                 <i class="cave-btn__icon pi pi-play" />
                 <span class="cave-btn__label">Nouvelle aventure</span>
@@ -41,7 +41,7 @@
                 <div
                     v-for="partie in equipesCreees"
                     :key="'team-' + partie.id"
-                    class="cave-mission-card gsap-card"
+                    class="cave-mission-card"
                     style="animation-delay: 0.1s"
                 >
                     <span
@@ -106,7 +106,7 @@
                     v-for="partie in parties"
                     :key="partie.id"
                     :href="route('progression.enigme', partie.id)"
-                    class="cave-mission-card gsap-card"
+                    class="cave-mission-card"
                 >
                     <span class="cave-mission-card__status cave-mission-card__status--active">
                         {{ getStatutLabel(partie.statut) }}
@@ -144,7 +144,7 @@
                 <article
                     v-for="env in environnements"
                     :key="env.id"
-                    class="cave-level-card gsap-card"
+                    class="cave-level-card"
                     @click="router.get(route('parties.web.create'))"
                 >
                     <div class="cave-level-card__img-wrap" style="height:90px">
@@ -169,7 +169,6 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';
 import CavePlayLayout from '@/Layouts/CavePlayLayout.vue';
-import gsap from 'gsap';
 
 const props = defineProps({
     parties: { type: Array, default: () => [] },
@@ -233,27 +232,6 @@ const requestNearbyEnvironments = () => {
 
 onMounted(() => {
     if (!props.geolocalise) requestNearbyEnvironments();
-});
-
-onMounted(() => {
-    // Initial state
-    gsap.set('.gsap-header', { y: -30, opacity: 0 });
-    gsap.set('.gsap-board', { opacity: 0, scale: 0.98 });
-    gsap.set('.gsap-card', { y: 50, opacity: 0, rotationY: 15 });
-
-    // Timeline for drawing the board
-    const tl = gsap.timeline();
-    
-    tl.to('.gsap-header', { y: 0, opacity: 1, duration: 0.8, ease: 'back.out(1.5)' })
-      .to('.gsap-board', { opacity: 1, scale: 1, duration: 0.6, ease: 'power2.out' }, '-=0.4')
-      .to('.gsap-card', { 
-          y: 0, 
-          opacity: 1, 
-          rotationY: 0, 
-          duration: 0.8, 
-          stagger: 0.1, 
-          ease: 'power3.out' 
-      }, '-=0.2');
 });
 
 const getStatutLabel = (statut) => {

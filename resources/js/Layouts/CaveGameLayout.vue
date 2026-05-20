@@ -1,14 +1,33 @@
 <script setup>
 import { router } from '@inertiajs/vue3';
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import VideoLoader from '@/Components/VideoLoader.vue';
 
 const showLoader = ref(false);
+let loaderDelayTimer = null;
 
 onMounted(() => {
-    router.on('start', () => { showLoader.value = true; });
-    router.on('finish', () => { setTimeout(() => { showLoader.value = false; }, 600); });
-    router.on('error', () => { showLoader.value = false; });
+    router.on('start', () => {
+        if (loaderDelayTimer) clearTimeout(loaderDelayTimer);
+        loaderDelayTimer = setTimeout(() => {
+            showLoader.value = true;
+        }, 350);
+    });
+    router.on('finish', () => {
+        if (loaderDelayTimer) clearTimeout(loaderDelayTimer);
+        loaderDelayTimer = null;
+        showLoader.value = false;
+    });
+    router.on('error', () => {
+        if (loaderDelayTimer) clearTimeout(loaderDelayTimer);
+        loaderDelayTimer = null;
+        showLoader.value = false;
+    });
+});
+
+onUnmounted(() => {
+    if (loaderDelayTimer) clearTimeout(loaderDelayTimer);
+    loaderDelayTimer = null;
 });
 </script>
 

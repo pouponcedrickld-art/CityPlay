@@ -1,6 +1,6 @@
 <script setup>
 import { Link, router, usePage } from '@inertiajs/vue3';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import VideoLoader from '@/Components/VideoLoader.vue';
 
 const props = defineProps({
@@ -11,6 +11,7 @@ const props = defineProps({
 
 const page = usePage();
 const showLoader = ref(false);
+let loaderDelayTimer = null;
 
 const navItems = [
     { icon: 'pi pi-home', route: 'dashboard', label: 'Accueil' },
@@ -35,9 +36,28 @@ const isActive = (item) => {
 };
 
 onMounted(() => {
-    router.on('start', () => { showLoader.value = true; });
-    router.on('finish', () => { setTimeout(() => { showLoader.value = false; }, 800); });
-    router.on('error', () => { showLoader.value = false; });
+    router.on('start', () => {
+        // Anti-flash UX: show only if navigation is slow
+        if (loaderDelayTimer) clearTimeout(loaderDelayTimer);
+        loaderDelayTimer = setTimeout(() => {
+            showLoader.value = true;
+        }, 350);
+    });
+    router.on('finish', () => {
+        if (loaderDelayTimer) clearTimeout(loaderDelayTimer);
+        loaderDelayTimer = null;
+        showLoader.value = false;
+    });
+    router.on('error', () => {
+        if (loaderDelayTimer) clearTimeout(loaderDelayTimer);
+        loaderDelayTimer = null;
+        showLoader.value = false;
+    });
+});
+
+onUnmounted(() => {
+    if (loaderDelayTimer) clearTimeout(loaderDelayTimer);
+    loaderDelayTimer = null;
 });
 
 const innerClass = computed(() => [
