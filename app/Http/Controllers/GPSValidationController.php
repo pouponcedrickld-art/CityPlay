@@ -23,8 +23,8 @@ class GPSValidationController extends Controller
                 'message' => 'Précision GPS insuffisante. Réessayez dans un endroit plus dégagé.',
                 'precision' => $request->precision,
             ], 422);
-        //l'erreur 422 signifie Requête correcte mais donnée inutilisable
-        // 422=>"Ta position GPS n'est pas assez précise, je ne peux pas la valider.
+            //l'erreur 422 signifie Requête correcte mais donnée inutilisable
+            // 422=>"Ta position GPS n'est pas assez précise, je ne peux pas la valider.
         }
 
         $distance = GeoHelper::haversineDistance(

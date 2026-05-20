@@ -91,7 +91,7 @@ onUnmounted(() => {
             <!-- HUD Minimaliste pour la carte -->
             <header class="cave-hud z-50">
                 <div class="flex items-center gap-3">
-                    <Link :href="route('progression.show', partie.id)" class="cave-hud__btn">
+                    <Link :href="route('progression.carte', partie.id)" class="cave-hud__btn">
                         <i class="pi pi-arrow-left" />
                     </Link>
                     <div>
