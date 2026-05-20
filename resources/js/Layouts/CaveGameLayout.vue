@@ -6,11 +6,6 @@ import VideoLoader from '@/Components/VideoLoader.vue';
 const showLoader = ref(false);
 let loaderDelayTimer = null;
 
-// Force light theme class for player pages to avoid dark mode conflicts
-if (typeof document !== 'undefined') {
-    document.documentElement.classList.add('light-theme');
-}
-
 onMounted(() => {
     router.on('start', () => {
         if (loaderDelayTimer) clearTimeout(loaderDelayTimer);
@@ -37,7 +32,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="cave-play-hub cave-game-hub">
+    <div class="cave-game-hub">
         <VideoLoader :show="showLoader" />
         <div class="cave-leaves" aria-hidden="true">
             <span v-for="n in 6" :key="n" class="cave-leaf" />

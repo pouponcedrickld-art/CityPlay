@@ -41,24 +41,6 @@
           <!-- Carte Interactive -->
           <div class="map-wrapper mb-4">
             <div class="map-toolbar">
-              <div class="search-container">
-                <IconField iconPosition="left">
-                  <InputIcon class="pi pi-search" />
-                  <InputText v-model="searchQuery" placeholder="Rechercher une adresse..."
-                    @keyup.enter="searchLocation"
-                    class="search-input" />
-                </IconField>
-                <Button type="button" icon="pi pi-search" class="search-btn" @click="searchLocation" :loading="isSearching" />
-                <div v-if="isSearching" class="search-loader">
-                  <i class="pi pi-spin pi-spinner" />
-                </div>
-                <ul v-if="searchResults.length" class="search-results">
-                  <li v-for="res in searchResults" :key="res.place_id" @click="selectResult(res)">
-                    <i class="pi pi-map-marker" />
-                    <span>{{ res.display_name }}</span>
-                  </li>
-                </ul>
-              </div>
               <Button type="button" icon="pi pi-map-marker" label="Me localiser"
                 size="small" outlined @click="locateUser" />
             </div>
@@ -145,7 +127,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useForm, Link } from '@inertiajs/vue3'
 import AdminLayout from '@/Pages/Admin/Layouts/AdminLayout.vue'
 import InputText from 'primevue/inputtext'
@@ -153,11 +135,8 @@ import InputNumber from 'primevue/inputnumber'
 import Textarea from 'primevue/textarea'
 import Button from 'primevue/button'
 import Breadcrumb from 'primevue/breadcrumb'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import axios from 'axios'
 
 const props = defineProps({
   environnement: Object,
@@ -177,87 +156,6 @@ onMounted(() => {
 const mapContainer = ref(null)
 const map = ref(null)
 const marker = ref(null)
-
-// Recherche d'adresse
-const searchQuery = ref('')
-const searchResults = ref([])
-const isSearching = ref(false)
-
-const searchLocation = async () => {
-  if (!searchQuery.value || searchQuery.value.trim().length < 3) return
-
-  isSearching.value = true
-  searchResults.value = []
-
-  try {
-    // Correction CORS : on force withCredentials à false car Nominatim ne l'accepte pas avec wildcard origin
-    const response = await axios.get('https://nominatim.openstreetmap.org/search', {
-      params: {
-        q: searchQuery.value,
-        format: 'json',
-        addressdetails: 1,
-        limit: 5
-      },
-      headers: {
-        'Accept-Language': 'fr-FR,fr;q=0.9'
-      },
-      withCredentials: false // CRUCIAL pour éviter l'erreur CORS bloquante
-    })
-    searchResults.value = response.data
-
-    if (response.data.length === 0) {
-      console.log("Aucun résultat trouvé pour cette adresse.");
-    }
-  } catch (error) {
-    console.error("Erreur lors de la recherche Nominatim :", error)
-    // On ne met plus d'alerte pour ne pas gêner l'utilisateur
-  } finally {
-    isSearching.value = false
-  }
-}
-
-const selectResult = (res) => {
-  const lat = parseFloat(res.lat)
-  const lon = parseFloat(res.lon)
-  const latlng = [lat, lon]
-
-  // Mettre à jour la carte et le formulaire
-  map.value.setView(latlng, 16)
-  form.latitude = parseFloat(lat.toFixed(7))
-  form.longitude = parseFloat(lon.toFixed(7))
-
-  // Mettre à jour le marqueur
-  if (marker.value) {
-    marker.value.setLatLng(latlng)
-  } else {
-    marker.value = L.marker(latlng, { draggable: true }).addTo(map.value)
-
-    marker.value.on('dragend', (ev) => {
-      const pos = ev.target.getLatLng()
-      form.latitude = parseFloat(pos.lat.toFixed(7))
-      form.longitude = parseFloat(pos.lng.toFixed(7))
-    })
-  }
-
-  // Nettoyer la recherche
-  searchQuery.value = res.display_name
-  searchResults.value = []
-}
-
-const handleClickOutside = (event) => {
-  const searchContainer = document.querySelector('.search-container')
-  if (searchContainer && !searchContainer.contains(event.target)) {
-    searchResults.value = []
-  }
-}
-
-onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
-})
-
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside)
-})
 
 onMounted(() => {
   const initialLat = props.lieu?.latitude ? parseFloat(props.lieu.latitude) : 44.841389
@@ -481,89 +379,11 @@ const breadcrumbs = computed(() => [
   position: absolute;
   top: 10px;
   right: 10px;
-  left: 10px;
   z-index: 1000;
-  display: flex;
-  gap: 10px;
-  pointer-events: none;
-}
-.map-toolbar > * {
-  pointer-events: auto;
-}
-.search-container {
-  flex: 1;
-  position: relative;
-  max-width: 450px;
-  display: flex;
-  gap: 5px;
-}
-.search-container :deep(.p-iconfield) {
-  flex: 1;
-}
-.search-container input.search-input {
-  width: 100% !important;
-  background: white !important;
-  color: #1a1b1e !important; /* Force texte noir */
-  border-radius: 8px !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
-  padding-left: 2.5rem !important;
-}
-.search-btn {
-  background: #FF9500 !important;
-  border: none !important;
-  color: white !important;
-  border-radius: 8px !important;
-  box-shadow: 0 4px 12px rgba(255, 149, 0, 0.3) !important;
-}
-.search-loader {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #FF9500;
-}
-.search-results {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
   background: white;
-  margin-top: 5px;
-  padding: 0;
-  list-style: none;
-  border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-  max-height: 250px;
-  overflow-y: auto;
-  z-index: 1001;
-}
-.search-results li {
-  padding: 10px 15px;
-  cursor: pointer;
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  border-bottom: 1px solid #f1f5f9;
-  font-size: 0.85rem;
-  color: #334155;
-  transition: background 0.2s;
-}
-.search-results li:hover {
-  background: #f8fafc;
-}
-.search-results li i {
-  color: #FF9500;
-  margin-top: 3px;
-}
-.search-results li:last-child {
-  border-bottom: none;
-}
-.map-toolbar .p-button {
-  background: white !important;
-  color: #FF9500 !important;
-  border: none !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
-  white-space: nowrap;
+  padding: 4px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 .map-container {
   height: 300px;

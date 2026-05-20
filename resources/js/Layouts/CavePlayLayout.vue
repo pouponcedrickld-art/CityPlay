@@ -13,11 +13,6 @@ const page = usePage();
 const showLoader = ref(false);
 let loaderDelayTimer = null;
 
-// Force light theme class for player pages to avoid dark mode conflicts
-if (typeof document !== 'undefined') {
-    document.documentElement.classList.add('light-theme');
-}
-
 const navItems = [
     { icon: 'pi pi-home', route: 'dashboard', label: 'Accueil' },
     { icon: 'pi pi-play', route: 'parties.web.create', label: 'Jouer' },

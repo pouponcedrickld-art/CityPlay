@@ -23,7 +23,7 @@
             <div class="field">
               <label>Nom de l'environnement <span class="required">*</span></label>
               <InputText v-model="form.nom" maxlength="150" :class="{ 'p-invalid': form.errors.nom }" />
-              <small class="char-count">{{ (form.nom || '').length }}/150</small>
+              <small class="char-count">{{ form.nom.length }}/150</small>
               <small v-if="form.errors.nom" class="p-error">{{ form.errors.nom }}</small>
             </div>
           </div>
@@ -117,7 +117,7 @@
 </template>
 
 <script setup>
-import { computed, watch, onMounted } from 'vue'
+import { computed } from 'vue'
 import { useForm, Link } from '@inertiajs/vue3'
 import AdminLayout from '@/Pages/Admin/Layouts/AdminLayout.vue'
 import InputText from 'primevue/inputtext'
@@ -146,24 +146,6 @@ const form = useForm({
   lien_boutique:           props.environnement?.lien_boutique ?? '',
   lien_notation:           props.environnement?.lien_notation ?? '',
 })
-
-// Sécurité supplémentaire : si l'objet environnement change, on met à jour le formulaire
-watch(() => props.environnement, (newEnv) => {
-  if (newEnv) {
-    form.ville_id = newEnv.ville_id;
-    form.nom = newEnv.nom;
-    form.retention_profils_jours = newEnv.retention_profils_jours;
-    form.duree_vie_lien_heures = newEnv.duree_vie_lien_heures;
-    form.regles = newEnv.regles;
-    form.message_bonne_reponse = newEnv.message_bonne_reponse;
-    form.message_mauvaise_reponse = newEnv.message_mauvaise_reponse;
-    form.message_fin = newEnv.message_fin;
-    form.message_pause = newEnv.message_pause;
-    form.lien_restauration = newEnv.lien_restauration;
-    form.lien_boutique = newEnv.lien_boutique;
-    form.lien_notation = newEnv.lien_notation;
-  }
-}, { immediate: true });
 
 const retentionOptions = [
   { label: '30 jours', value: 30 },

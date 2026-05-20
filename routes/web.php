@@ -92,6 +92,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/parties/{partie}/suivant', [ProgressionController::class, 'nextEnigme'])->name('progression.next');
         Route::post('/parties/{partie}/solution', [ProgressionController::class, 'showSolution'])->name('progression.solution');
         Route::get('/parties/{partie}/resume', [ProgressionController::class, 'showSummary'])->name('progression.summary');
+        Route::get('/parties/{partie}/carte', [ProgressionController::class, 'showCarte'])->name('progression.carte');
         Route::post('/parties/{partie}/progression', [ProgressionController::class, 'store'])->name('progression.store');
 
         // Validation GPS

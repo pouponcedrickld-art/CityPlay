@@ -192,6 +192,14 @@ class ProgressionController extends Controller
         ]);
     }
 
+    public function showCarte(Partie $partie)
+    {
+        return Inertia::render('Player/Carte', [
+            'partie' => $partie->load('environnement'),
+            'progression' => $partie->progression,
+        ]);
+    }
+
     /**
      * Sauvegarde l'état de la progression (ex: temps restant)
      */

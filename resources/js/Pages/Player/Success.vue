@@ -1,8 +1,10 @@
 <template>
-    <CaveGameLayout>
-        <Head title="Victoire !" />
+    <Head title="Victoire !" />
 
-        <div class="cave-result-screen min-h-screen">
+    <div class="cave-result-screen">
+        <div class="cave-leaves" aria-hidden="true">
+            <span v-for="n in 6" :key="n" class="cave-leaf" />
+        </div>
 
         <div class="cave-result-icon cave-result-icon--win relative z-10">
             <i class="pi pi-star-fill" />
@@ -35,12 +37,10 @@
         </button>
         <p class="cave-hint relative z-10 mt-3">Appuyez pour continuer votre aventure</p>
     </div>
-    </CaveGameLayout>
 </template>
 
 <script setup>
 import { Head, router } from '@inertiajs/vue3';
-import CaveGameLayout from '@/Layouts/CaveGameLayout.vue';
 
 const props = defineProps({
     partie: Object,
