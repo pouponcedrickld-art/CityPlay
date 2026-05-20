@@ -6,7 +6,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Bungee&display=swap');
 
 /* ── Custom Properties ───────────────────────────────────── */
-.cave-play-hub {
+:root {
   --cave-sky-top: #87CEEB;
   --cave-sky-mid: #E8F4FC;
   --cave-sky-bottom: #F4A44A;
@@ -34,6 +34,34 @@
   --cave-btn-radius: 24px;
   --cave-btn-gap: 15px;
   --cave-padding-x: 24px;
+}
+
+/* ── Global Cave Overrides ──────────────────────────────── */
+.cave-theme {
+  background-color: #FFF8EE !important;
+  color: var(--cave-border-dark) !important;
+}
+
+.cave-theme body {
+  background: linear-gradient(180deg, var(--cave-sky-top) 0%, var(--cave-sky-mid) 38%, #FFF8EE 62%, var(--cave-sky-bottom) 100%) !important;
+  color: var(--cave-border-dark) !important;
+}
+
+.cave-theme .p-dialog-mask {
+  backdrop-filter: blur(4px);
+  background: rgba(61, 34, 16, 0.4) !important;
+}
+
+.cave-theme {
+  --primary-color: var(--cave-btn-primary) !important;
+  --text-color: var(--cave-border-dark) !important;
+  --text-muted-color: var(--cave-border-dark) !important;
+  --content-background: #FFF8EE !important;
+  --surface-ground: #FFF8EE !important;
+  --surface-section: #FFF8EE !important;
+  --surface-card: #FFF8EE !important;
+  --surface-border: var(--cave-border-dark) !important;
+  --mask-background: rgba(61, 34, 16, 0.4) !important;
 }
 
 /* ── Hub container ───────────────────────────────────────── */
@@ -1166,9 +1194,9 @@
     var(--cave-sky-mid) 30%,
     #FFF8EE 55%,
     var(--cave-sky-bottom) 100%
-  );
-  font-family: var(--cave-font-body);
-  color: var(--cave-border-dark);
+  ) !important;
+  font-family: var(--cave-font-body) !important;
+  color: var(--cave-border-dark) !important;
 }
 
 .cave-game-hub .cave-leaves {
@@ -1184,9 +1212,9 @@
   justify-content: space-between;
   gap: 16px;
   padding: 12px 20px;
-  background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock));
-  border-bottom: 4px solid var(--cave-border-dark);
-  box-shadow: 0 6px 0 var(--cave-border-darker);
+  background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock)) !important;
+  border-bottom: 4px solid var(--cave-border-dark) !important;
+  box-shadow: 0 6px 0 var(--cave-border-darker) !important;
 }
 
 .cave-hud__mission {
@@ -1330,10 +1358,10 @@
 }
 
 .cave-panel {
-  background: linear-gradient(180deg, var(--cave-rock-light) 0%, var(--cave-rock) 100%);
-  border: 4px solid var(--cave-border-dark);
-  border-radius: 24px;
-  box-shadow: 0 8px 0 var(--cave-border-darker), 0 12px 28px var(--cave-shadow);
+  background: linear-gradient(180deg, var(--cave-rock-light) 0%, var(--cave-rock) 100%) !important;
+  border: 4px solid var(--cave-border-dark) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 8px 0 var(--cave-border-darker), 0 12px 28px var(--cave-shadow) !important;
   overflow: hidden;
 }
 
@@ -1348,10 +1376,10 @@
 }
 
 .cave-panel__title {
-  font-family: var(--cave-font-title);
+  font-family: var(--cave-font-title) !important;
   font-size: 1.35rem;
   text-transform: uppercase;
-  color: var(--cave-border-dark);
+  color: var(--cave-border-dark) !important;
   margin-bottom: 12px;
   line-height: 1.15;
 }
@@ -1363,7 +1391,7 @@
   padding: 16px;
   font-style: italic;
   line-height: 1.55;
-  color: var(--cave-border-dark);
+  color: var(--cave-border-dark) !important;
 }
 
 .cave-badge {
@@ -1545,10 +1573,10 @@
 .cave-overlay__card {
   width: 100%;
   max-width: 440px;
-  background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock));
-  border: 4px solid var(--cave-border-dark);
-  border-radius: 28px;
-  box-shadow: 0 12px 0 var(--cave-border-darker), 0 24px 48px var(--cave-shadow-lg);
+  background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock)) !important;
+  border: 4px solid var(--cave-border-dark) !important;
+  border-radius: 28px !important;
+  box-shadow: 0 12px 0 var(--cave-border-darker), 0 24px 48px var(--cave-shadow-lg) !important;
   overflow: hidden;
   animation: caveSlideInUp 0.4s ease;
 }
@@ -1556,8 +1584,8 @@
 .cave-overlay__header {
   padding: 28px 24px;
   text-align: center;
-  border-bottom: 3px solid var(--cave-border-dark);
-  background: rgba(255, 248, 238, 0.5);
+  border-bottom: 3px solid var(--cave-border-dark) !important;
+  background: rgba(255, 248, 238, 0.5) !important;
 }
 
 .cave-overlay__body {

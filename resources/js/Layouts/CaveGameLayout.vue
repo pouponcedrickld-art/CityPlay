@@ -7,6 +7,7 @@ const showLoader = ref(false);
 let loaderDelayTimer = null;
 
 onMounted(() => {
+    document.documentElement.classList.add('cave-theme');
     router.on('start', () => {
         if (loaderDelayTimer) clearTimeout(loaderDelayTimer);
         loaderDelayTimer = setTimeout(() => {
@@ -26,13 +27,14 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
+    document.documentElement.classList.remove('cave-theme');
     if (loaderDelayTimer) clearTimeout(loaderDelayTimer);
     loaderDelayTimer = null;
 });
 </script>
 
 <template>
-    <div class="cave-game-hub">
+    <div class="cave-game-hub cave-play-hub">
         <VideoLoader :show="showLoader" />
         <div class="cave-leaves" aria-hidden="true">
             <span v-for="n in 6" :key="n" class="cave-leaf" />
