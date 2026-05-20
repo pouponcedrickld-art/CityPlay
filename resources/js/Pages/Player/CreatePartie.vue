@@ -121,7 +121,7 @@ const submit = () => {
                         "{{ env.description || 'Découvrez les secrets cachés de la ville à travers ce parcours immersif.' }}"
                     </p>
 
-                    <div class="flex items-center justify-between py-4 border-t border-dashed border-orange-100">
+                    <div class="flex items-center justify-between py-4 border-t border-dashed border-orange-100 mb-2">
                         <div class="flex flex-col">
                             <span class="text-[9px] font-black text-orange-900/30 uppercase tracking-widest">Référence</span>
                             <span class="text-sm font-bold text-orange-950">{{ env.duree_estimee || 60 }} min</span>
@@ -131,26 +131,18 @@ const submit = () => {
                             <div class="flex gap-1 mt-1">
                                 <div v-for="i in 3" :key="i" class="w-2 h-2 rounded-full" :class="i <= (env.difficulte || 2) ? 'bg-orange-400' : 'bg-orange-100'"></div>
                             </div>
-
-                            <button 
-                                @click="openConfig(env)"
-                                class="w-full py-3.5 bg-gradient-to-r from-[#5c4033] to-[#3f2a1e] border border-[#FF9500]/50 hover:border-[#FF9500] text-[#f5e8c7] rounded-xl card-badge text-[10px] active:scale-95 transition-all shadow-[0_0_15px_rgba(0,0,0,0.5)] group-hover:shadow-[0_0_20px_rgba(255,149,0,0.2)]"
-                            >
-                                <i class="pi pi-cog mr-2"></i> Configurer
-                            </button>
                         </div>
-                        <button type="button" class="cave-btn" style="animation-delay:0s">
-                            <i class="cave-btn__icon pi pi-play" />
-                            <span class="cave-btn__label">Configurer</span>
-                        </button>
                     </div>
 
-                    <Button 
+                    <button 
+                        type="button" 
+                        class="cave-btn mt-auto"
+                        style="animation: none; justify-content: center;"
                         @click="openConfig(env)"
-                        label="Configurer l'aventure"
-                        icon="pi pi-cog"
-                        class="w-full p-4 rounded-2xl bg-orange-950 border-none font-black uppercase tracking-widest shadow-lg active:scale-95 transition-all"
-                    />
+                    >
+                        <i class="cave-btn__icon pi pi-cog" />
+                        <span class="cave-btn__label">Configurer l'aventure</span>
+                    </button>
                 </div>
             </div>
         </main>
@@ -188,11 +180,12 @@ const submit = () => {
                             v-for="loc in locomotions" 
                             :key="loc.value"
                             type="button"
-                            class="cave-loco-btn"
-                            :class="{ 'cave-loco-btn--active': form.locomotion === loc.value }"
+                            class="cave-loco-btn flex flex-col items-center gap-2 p-3 rounded-2xl border-2 transition-all"
+                            :class="[
+                                { 'cave-loco-btn--active': form.locomotion === loc.value },
+                                form.locomotion === loc.value ? 'bg-orange-50 border-orange-500 shadow-inner' : 'bg-white border-orange-50 hover:border-orange-100'
+                            ]"
                             @click="form.locomotion = loc.value"
-                            class="flex flex-col items-center gap-2 p-3 rounded-2xl border-2 transition-all"
-                            :class="form.locomotion === loc.value ? 'bg-orange-50 border-orange-500 shadow-inner' : 'bg-white border-orange-50 hover:border-orange-100'"
                         >
                             <i :class="[loc.icon, form.locomotion === loc.value ? 'text-orange-600' : 'text-orange-200']" class="text-xl"></i>
                             <span class="text-[9px] font-black uppercase tracking-tight" :class="form.locomotion === loc.value ? 'text-orange-950' : 'text-orange-300'">{{ loc.label }}</span>
