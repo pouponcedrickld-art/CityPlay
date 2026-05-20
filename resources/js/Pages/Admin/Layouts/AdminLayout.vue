@@ -24,7 +24,17 @@
 
         <Link :href="route('admin.environnements.index')" class="nav-item" :class="{ active: isActive('admin.environnements') }">
           <i class="pi pi-globe" />
-          <span>Environnements</span>
+          <span>Parcours</span>
+        </Link>
+
+        <Link v-if="$page.props.environnement" :href="route('admin.lieux.index', $page.props.environnement.id)" class="nav-item" :class="{ active: isActive('admin.lieux') }">
+          <i class="pi pi-map-marker" />
+          <span>Lieux</span>
+        </Link>
+
+        <Link v-if="$page.props.lieu" :href="route('admin.enigmes.index', $page.props.lieu.id)" class="nav-item" :class="{ active: isActive('admin.enigmes') }">
+          <i class="pi pi-box" />
+          <span>Énigmes</span>
         </Link>
 
         <div class="nav-section-title">Gestion</div>
@@ -93,13 +103,13 @@
           <i class="pi pi-home"></i>
           <span>Home</span>
         </Link>
-        
+
         <!-- Villes -->
         <Link :href="route('admin.villes.index')" class="nav-item-bottom" :class="{ 'active': isActive('admin.villes') }">
           <i class="pi pi-map"></i>
           <span>Villes</span>
         </Link>
-        
+
         <!-- Player / Jouer (Center FAB) -->
         <div class="nav-item-center-wrapper">
           <Link :href="route('dashboard')" class="nav-item-center">
@@ -109,13 +119,13 @@
             <span>Jouer</span>
           </Link>
         </div>
-        
+
         <!-- Users -->
         <Link :href="route('admin.users.index')" class="nav-item-bottom" :class="{ 'active': isActive('admin.users') }">
           <i class="pi pi-users"></i>
           <span>Users</span>
         </Link>
-        
+
         <!-- Plus Menu -->
         <button class="nav-item-bottom" :class="{ 'active': isMobileMenuOpen }" @click="toggleMobileMenu">
           <i class="pi pi-ellipsis-h"></i>
@@ -146,9 +156,9 @@
     </div>
 
     <!-- Floating Theme Toggle Switch -->
-    <button 
-      class="theme-switch-float" 
-      @click="toggleTheme" 
+    <button
+      class="theme-switch-float"
+      @click="toggleTheme"
       aria-label="Toggle Theme"
       title="Changer de Thème"
     >
@@ -191,10 +201,12 @@ const mainRef = ref(null)
 const topbarRef = ref(null)
 
 const isActive = (routeName) => {
+  const currentRoute = route().current();
+  if (!currentRoute) return false;
+
   // Supprime le ".index" pour la comparaison de base
   const baseRoute = routeName.endsWith('.index') ? routeName.slice(0, -6) : routeName;
-  const currentRoute = route().current();
-  return currentRoute && currentRoute.startsWith(baseRoute);
+  return currentRoute.startsWith(baseRoute);
 }
 
 const logout = () => {
@@ -232,16 +244,6 @@ onMounted(() => {
     duration: 0.5,
     ease: 'power2.out'
   }, '-=0.2')
-
-  // Animation des items du menu
-  gsap.from('.nav-item', {
-    x: -20,
-    opacity: 0,
-    stagger: 0.05,
-    duration: 0.5,
-    ease: 'power2.out',
-    delay: 0.5
-  })
 })
 </script>
 
@@ -306,11 +308,13 @@ onMounted(() => {
 }
 
 .nav-item {
-  display: flex;
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
   align-items: center;
   gap: 1rem;
   padding: 0.85rem 1.5rem;
-  color: rgba(255, 255, 255, 0.9);
+  color: #ffffff !important;
   text-decoration: none;
   font-size: 0.95rem;
   font-weight: 500;
@@ -442,18 +446,18 @@ onMounted(() => {
     padding: 1rem;
     overflow-x: hidden;
   }
-  
+
   /* Force global tables to scroll horizontally on mobile */
   :deep(.page-content .p-datatable-wrapper), :deep(.page-content table) {
     overflow-x: auto !important;
     display: block !important;
     width: 100% !important;
   }
-  
+
   .mobile-bottom-nav {
     display: flex;
   }
-  
+
   /* Theme toggle float repositioning to not overlap bottom nav */
   .theme-switch-float {
     bottom: 90px !important;
