@@ -174,9 +174,17 @@ const menuItemHref = (item) => {
             
             <div class="flex items-center gap-3">
                 <Link :href="route('profile.edit')" 
-                      class="w-8 h-8 rounded-full flex items-center justify-center"
-                      :class="isDark ? 'bg-orange-100' : 'bg-[#c8a96e]/20 border border-[#c8a96e]/40'">
+                      class="w-8 h-8 rounded-full flex items-center justify-center transition-all"
+                      :class="isDark ? 'bg-orange-100 hover:bg-orange-200' : 'bg-[#c8a96e]/20 border border-[#c8a96e]/40 hover:bg-[#c8a96e]/30'">
                     <i class="pi pi-user text-xs" :class="isDark ? 'text-orange-600' : 'text-[#059669]'"></i>
+                </Link>
+
+                <Link :href="route('logout')" 
+                      method="post"
+                      as="button"
+                      class="w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer"
+                      :class="isDark ? 'bg-red-500/10 border border-red-500/30 hover:bg-red-500/20' : 'bg-red-50 border border-red-200 hover:bg-red-100'">
+                    <i class="pi pi-power-off text-xs" :class="isDark ? 'text-red-400' : 'text-red-600'"></i>
                 </Link>
             </div>
         </header>

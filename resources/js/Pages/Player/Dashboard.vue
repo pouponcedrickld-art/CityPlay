@@ -10,13 +10,13 @@
             </span>
         </div>
 
-        <h2 class="cave-section-title">Camp de base</h2>
+        <h2 class="cave-section-title gsap-header">Camp de base</h2>
         <p class="text-center text-sm font-bold mb-4" style="color: var(--cave-border-dark); opacity: 0.75">
             Bonjour, <strong>{{ $page.props.auth.user.name }}</strong> !
         </p>
 
         <!-- Boutons principaux (stack pierre) -->
-        <div class="cave-btn-stack mb-6">
+        <div class="cave-btn-stack mb-6 gsap-board">
             <Link :href="route('parties.web.create')" class="cave-btn" style="text-decoration:none">
                 <i class="cave-btn__icon pi pi-play" />
                 <span class="cave-btn__label">Nouvelle aventure</span>
@@ -41,7 +41,7 @@
                 <div
                     v-for="partie in equipesCreees"
                     :key="'team-' + partie.id"
-                    class="cave-mission-card"
+                    class="cave-mission-card gsap-card"
                     style="animation-delay: 0.1s"
                 >
                     <span
@@ -106,7 +106,7 @@
                     v-for="partie in parties"
                     :key="partie.id"
                     :href="route('progression.enigme', partie.id)"
-                    class="cave-mission-card"
+                    class="cave-mission-card gsap-card"
                 >
                     <span class="cave-mission-card__status cave-mission-card__status--active">
                         {{ getStatutLabel(partie.statut) }}
@@ -144,7 +144,7 @@
                 <article
                     v-for="env in environnements"
                     :key="env.id"
-                    class="cave-level-card"
+                    class="cave-level-card gsap-card"
                     @click="router.get(route('parties.web.create'))"
                 >
                     <div class="cave-level-card__img-wrap" style="height:90px">
