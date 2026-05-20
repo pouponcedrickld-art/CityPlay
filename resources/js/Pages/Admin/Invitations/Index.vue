@@ -219,7 +219,8 @@ const confirmDelete = (invitation) => {
 }
 
 const getInvitationLink = (token) => {
-  return `${window.location.origin}/register?invite=${token}`
+  // URL courte et plus robuste (évite les problèmes de querystring copiée/trimée)
+  return `${window.location.origin}/invite/${token}`
 }
 
 const copyLink = (token) => {

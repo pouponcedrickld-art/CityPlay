@@ -20,6 +20,11 @@ use Inertia\Inertia;
 // Invitation équipe (accessible sans compte)
 Route::get('/rejoindre/{code}', [PartieController::class, 'rejoindreParLien'])->name('parties.rejoindre');
 
+// Invitation admin (clé d'accès) : URL courte
+Route::get('/invite/{token}', function (string $token) {
+    return redirect()->route('register', ['invite' => $token]);
+})->name('invite.redirect');
+
 // Page d'accueil
 Route::get('/', function () {
     return Inertia::render('Welcome', [

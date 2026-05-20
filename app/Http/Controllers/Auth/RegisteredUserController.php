@@ -30,6 +30,7 @@ class RegisteredUserController extends Controller
     {
         $invitation = null;
         $inviteToken = $request->query('invite') ?? $request->query('token');
+        $inviteError = null;
 
         if ($inviteToken) {
             $invitation = AppInvitation::where('token', $inviteToken)
@@ -39,12 +40,17 @@ class RegisteredUserController extends Controller
                           ->orWhere('expires_at', '>', now());
                 })
                 ->first();
+
+            if (!$invitation) {
+                $inviteError = "Ce lien d'invitation est invalide ou expiré.";
+            }
         }
 
         return Inertia::render('Auth/Register', [
             'invitation_token' => $invitation?->token,
             'prefilled_email' => $invitation?->email,
             'partie_invitation' => PartieController::invitationPartieEnSession(),
+            'invite_error' => $inviteError,
         ]);
     }
 

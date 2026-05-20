@@ -24,6 +24,7 @@ const props = defineProps({
     invitation_token: String,
     prefilled_email: String,
     partie_invitation: Object,
+    invite_error: String,
 });
 
 const canRegister = computed(() => !!(props.invitation_token || props.partie_invitation));
@@ -205,6 +206,17 @@ const submit = () => {
                     <span>Accès Restreint</span>
                 </div>
                 L'inscription à CityPlay se fait uniquement sur invitation. Veuillez utiliser le lien qui vous a été envoyé par l'administrateur ou par votre coéquipier.
+            </div>
+
+            <div
+                v-if="invite_error"
+                class="w-full max-w-5xl mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm"
+            >
+                <div class="flex items-center gap-2 mb-2 font-bold">
+                    <i class="pi pi-times-circle"></i>
+                    <span>Invitation invalide</span>
+                </div>
+                {{ invite_error }}
             </div>
 
             <!-- 3D PERSPECTIVE CARD -->
