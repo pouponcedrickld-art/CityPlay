@@ -21,6 +21,12 @@ class ProgressionController extends Controller
     public function getCurrentEnigme(Partie $partie)
     {
         try {
+            // Sécurité : Une partie terminée ne doit plus être jouée
+            if ($partie->statut === 'terminee' || ($partie->progression && $partie->progression->estTerminee())) {
+                return redirect()->route('progression.summary', $partie)
+                    ->with('info', 'Cette partie est déjà terminée.');
+            }
+
             $progression = $partie->progression;
 
             if (!$progression) {

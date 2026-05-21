@@ -23,6 +23,7 @@ class User extends Authenticatable
         'otp_verified_at',
         'is_admin',
         'keep_account',
+        'total_score',
     ];
 
     protected $hidden = [
