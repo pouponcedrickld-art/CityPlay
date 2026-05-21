@@ -108,7 +108,10 @@
 
         <!-- Missions en cours -->
         <section class="mb-6">
-            <h3 class="cave-section-title" style="font-size:0.85rem">Missions actives</h3>
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="cave-section-title" style="font-size:0.85rem; margin-bottom: 0">Missions actives</h3>
+                <Link :href="route('player.classement')" class="text-[10px] font-black uppercase text-orange-600 hover:underline">Voir tout le classement</Link>
+            </div>
 
             <div v-if="parties.length" class="cave-levels-grid cave-levels-grid--multi">
                 <Link
@@ -138,6 +141,27 @@
                 <i class="pi pi-map-marker" />
                 <p class="font-bold uppercase text-sm mb-1">Aucune mission</p>
                 <p class="cave-hint">Lancez une aventure pour commencer</p>
+            </div>
+        </section>
+
+        <!-- Classement Rapide -->
+        <section v-if="topPlayers && topPlayers.length" class="mb-6">
+            <h3 class="cave-section-title" style="font-size:0.85rem">Classement Mondial</h3>
+            <div class="cave-panel p-4 flex flex-col gap-3">
+                <div v-for="(player, idx) in topPlayers" :key="player.id" class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black"
+                            :class="idx === 0 ? 'bg-yellow-400' : (idx === 1 ? 'bg-slate-300' : 'bg-orange-400')">
+                            {{ idx + 1 }}
+                        </span>
+                        <span class="text-xs font-bold uppercase">{{ player.name }}</span>
+                    </div>
+                    <span class="text-xs font-black">{{ player.total_score }} <span class="opacity-50 text-[9px]">pts</span></span>
+                </div>
+                <Link :href="route('player.classement')" class="cave-btn mt-2" style="min-height:36px; font-size: 0.7rem; text-decoration: none">
+                    <i class="cave-btn__icon pi pi-trophy" style="font-size: 0.8rem" />
+                    <span class="cave-btn__label">Classement complet</span>
+                </Link>
             </div>
         </section>
 
@@ -183,6 +207,7 @@ const props = defineProps({
     parties: { type: Array, default: () => [] },
     environnements: { type: Array, default: () => [] },
     geolocalise: { type: Boolean, default: false },
+    topPlayers: { type: Array, default: () => [] },
 });
 
 const isLocating = ref(!props.geolocalise);

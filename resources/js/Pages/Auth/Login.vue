@@ -512,23 +512,6 @@ const submit = () => {
                         </button>
                     </div>
                 </form>
-
-                <!-- REGISTER REDIRECT LINK -->
-                <!-- <div :class="isDark ? 'border-white/5' : 'border-black/5'" class="login-stagger mt-6 pt-5 border-t text-center space-y-3 transition-colors duration-500">
-                    <p :class="isDark ? 'text-white/30' : 'text-[#1c1917]/40'" class="text-[9px] font-black uppercase tracking-[0.2em] transition-colors duration-500">Nouveau sur CityPlay ?</p>
-                    
-                    <Link
-                        :href="route('register')"
-                        :class="[
-                            isDark 
-                                ? 'bg-white/5 border-white/10 text-white hover:bg-white/10 hover:border-[#FF9500]/40 hover:text-[#FF9500]' 
-                                : 'bg-[#FF9500]/5 border-[#FF9500]/10 text-[#FF9500] hover:bg-[#FF9500]/10 hover:border-[#FF9500]/40',
-                            'inline-flex items-center justify-center w-full p-3.5 border rounded-xl font-black uppercase tracking-widest text-[10px] transition-all shadow-sm active:scale-95 select-none'
-                        ]"
-                    >
-                        Créer mon Profil d'Explorateur
-                    </Link>
-                </div> -->
             </div>
         </div>
     </GuestLayout>

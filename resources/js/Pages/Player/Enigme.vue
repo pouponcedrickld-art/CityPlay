@@ -24,6 +24,7 @@ const form = useForm({
 
 const showHint = ref(false);
 const showSolution = ref(false);
+const showTeam = ref(false);
 const showSkipConfirm = ref(false);
 const showAbandonConfirm = ref(false);
 const showTimeExpired = ref(false);
@@ -100,6 +101,9 @@ const applyFlash = () => {
     const flash = page.props.flash;
     if (flash?.error) {
         gpsMessage.value = { type: 'error', text: flash.error };
+        // Si c'est une erreur de solution, on ferme quand même le chargement
+        isRequestingSolution.value = false;
+        showSolution.value = false;
     }
     if (flash?.gps_validation) {
         lastGpsCheck.value = flash.gps_validation;
@@ -109,21 +113,30 @@ const applyFlash = () => {
         showTimeExpired.value = false;
         showSolution.value = false;
     }
+    if (flash?.solution_revelee === null && revealedSolution.value !== null) {
+        // Optionnel : reset si le flash est explicitement null après navigation
+    }
 };
 
 watch(() => page.props.flash, applyFlash, { deep: true });
 
 watch(
-    () => [props.enigme?.id, props.progression?.temps_restant],
-    ([enigmeId, temps]) => {
-        if (temps != null) {
-            timeLeft.value = temps;
-        }
-        if (enigmeId) {
+    () => props.enigme?.id,
+    (newId, oldId) => {
+        if (newId && newId !== oldId) {
             showTimeExpired.value = false;
             revealedSolution.value = null;
         }
     },
+);
+
+watch(
+    () => props.progression?.temps_restant,
+    (newTemps) => {
+        if (newTemps != null) {
+            timeLeft.value = newTemps;
+        }
+    }
 );
 
 const checkLocation = () => {
@@ -419,10 +432,21 @@ onUnmounted(() => {
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
+                    <!-- Bouton Dashboard (Mobile) -->
+                    <Link :href="route('dashboard')" class="cave-hud__btn lg:hidden" title="Dashboard">
+                        <i class="pi pi-home" />
+                    </Link>
+
                     <div class="cave-hud__score" :title="'Score de la mission: ' + scoreActuel + ' pts'">
                         <i class="pi pi-star" />
                         <span>{{ scoreActuel }}</span>
                     </div>
+
+                    <!-- Bouton Équipe (si mode team) -->
+                    <button v-if="partie.mode === 'team'" type="button" class="cave-hud__btn" @click="showTeam = true" title="Membres de l'équipe">
+                        <i class="pi pi-users" />
+                    </button>
+
                     <div class="cave-hud__score cave-hud__score--gold" :title="'Score global: ' + ($page.props.auth.user.total_score || 0) + ' pts'">
                         <i class="pi pi-star-fill" />
                         <span>{{ $page.props.auth.user.total_score || 0 }}</span>
@@ -435,6 +459,11 @@ onUnmounted(() => {
                         <i class="pi pi-map" />
                     </Link>
                     <button type="button" class="cave-hud__btn" @click="togglePause"><i class="pi pi-pause" /></button>
+
+                    <!-- Bouton Admin -->
+                    <Link v-if="$page.props.auth.user.is_admin" :href="route('admin.dashboard')" class="cave-hud__btn cave-hud__btn--admin" title="Dashboard Admin">
+                        <i class="pi pi-cog" />
+                    </Link>
                 </div>
             </header>
 
@@ -500,6 +529,10 @@ onUnmounted(() => {
                     </div>
 
                     <div class="cave-tool-grid">
+                        <button v-if="partie.mode === 'team'" type="button" class="cave-tool-btn" @click="showTeam = true">
+                            <div class="icon-box"><i class="pi pi-users" /></div>
+                            <span class="label">Équipe</span>
+                        </button>
                         <button type="button" class="cave-tool-btn" @click="showHint = true">
                             <div class="icon-box"><i class="pi pi-question" /></div>
                             <span class="label">Indice</span>
@@ -519,6 +552,34 @@ onUnmounted(() => {
                     </div>
                 </div>
             </main>
+
+            <Dialog v-model:visible="showTeam" modal header="Membres de l'équipe" :style="{ width: '90vw', maxWidth: '480px' }" class="cave-game-dialog">
+                <div class="space-y-3 py-2">
+                    <div v-for="user in partie.team?.users" :key="user.id"
+                        class="flex items-center justify-between p-3 rounded-2xl border-2 border-[var(--cave-border-dark)] bg-white shadow-[0_4px_0_var(--cave-border-darker)]"
+                        :class="{ 'bg-[rgba(255,215,0,0.05)]': user.id === $page.props.auth.user.id }">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-[var(--cave-rock-light)] border-2 border-[var(--cave-border-dark)] flex items-center justify-center font-black">
+                                {{ user.name.charAt(0).toUpperCase() }}
+                            </div>
+                            <div>
+                                <p class="font-black text-sm uppercase leading-none">{{ user.name }}</p>
+                                <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border border-[var(--cave-border-dark)]"
+                                    :class="user.pivot.role === 'challenger' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'">
+                                    {{ user.pivot.role }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[9px] font-black uppercase opacity-50">Score Global</p>
+                            <p class="text-sm font-black text-orange-600">{{ user.total_score || 0 }} <span class="text-[10px]">pts</span></p>
+                        </div>
+                    </div>
+                </div>
+                <template #footer>
+                    <button type="button" class="cave-btn w-full" @click="showTeam = false">Fermer</button>
+                </template>
+            </Dialog>
 
             <Dialog v-model:visible="showHint" modal header="Indice" :style="{ width: '90vw', maxWidth: '420px' }" class="cave-game-dialog">
                 <div class="cave-overlay__body">

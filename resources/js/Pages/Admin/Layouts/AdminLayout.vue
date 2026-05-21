@@ -256,7 +256,8 @@ onMounted(() => {
 
 .sidebar {
   width: 260px;
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
   background: #111827;
   border-right: 1px solid #1f2937;
   display: flex;

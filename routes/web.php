@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\PartieController as AdminPartieController;
 use App\Http\Controllers\Admin\TeamController as AdminTeamController;
 use App\Http\Controllers\Admin\AppInvitationController;
 use App\Http\Controllers\OtpController;
+use App\Http\Controllers\ClassementController;
 use App\Http\Controllers\PartieController;
 use App\Http\Controllers\ProgressionController;
 use App\Http\Controllers\GPSValidationController;
@@ -71,6 +72,9 @@ Route::middleware('auth')->group(function () {
 
         // Dashboard joueur
         Route::get('/dashboard', [PartieController::class, 'index'])->name('dashboard');
+
+        // Classement
+        Route::get('/classement', [ClassementController::class, 'index'])->name('player.classement');
 
         Route::post('/parties/rejoindre', [PartieController::class, 'rejoindre'])->name('parties.rejoindre.form');
 
