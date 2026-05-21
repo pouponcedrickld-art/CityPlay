@@ -72,6 +72,9 @@ Route::middleware('auth')->group(function () {
         // Dashboard joueur
         Route::get('/dashboard', [PartieController::class, 'index'])->name('dashboard');
 
+        // Classement
+        Route::get('/classement', [ClassementController::class, 'index'])->name('player.classement');
+
         Route::post('/parties/rejoindre', [PartieController::class, 'rejoindre'])->name('parties.rejoindre.form');
 
         // Parties
