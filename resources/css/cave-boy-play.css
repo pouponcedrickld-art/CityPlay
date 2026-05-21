@@ -6,7 +6,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Bungee&display=swap');
 
 /* ── Custom Properties ───────────────────────────────────── */
-.cave-play-hub {
+:root {
   --cave-sky-top: #87CEEB;
   --cave-sky-mid: #E8F4FC;
   --cave-sky-bottom: #F4A44A;
@@ -34,6 +34,34 @@
   --cave-btn-radius: 24px;
   --cave-btn-gap: 15px;
   --cave-padding-x: 24px;
+}
+
+/* ── Global Cave Overrides ──────────────────────────────── */
+.cave-theme {
+  background-color: #FFF8EE !important;
+  color: var(--cave-border-dark) !important;
+}
+
+.cave-theme body {
+  background: linear-gradient(180deg, var(--cave-sky-top) 0%, var(--cave-sky-mid) 38%, #FFF8EE 62%, var(--cave-sky-bottom) 100%) !important;
+  color: var(--cave-border-dark) !important;
+}
+
+.cave-theme .p-dialog-mask {
+  backdrop-filter: blur(4px);
+  background: rgba(61, 34, 16, 0.4) !important;
+}
+
+.cave-theme {
+  --primary-color: var(--cave-btn-primary) !important;
+  --text-color: var(--cave-border-dark) !important;
+  --text-muted-color: var(--cave-border-dark) !important;
+  --content-background: #FFF8EE !important;
+  --surface-ground: #FFF8EE !important;
+  --surface-section: #FFF8EE !important;
+  --surface-card: #FFF8EE !important;
+  --surface-border: var(--cave-border-dark) !important;
+  --mask-background: rgba(61, 34, 16, 0.4) !important;
 }
 
 /* ── Hub container ───────────────────────────────────────── */
@@ -286,11 +314,13 @@
   pointer-events: none;
 }
 
-.cave-btn:hover:not(:disabled) {
-  transform: translateY(-3px);
-  box-shadow:
-    0 9px 0 var(--cave-border-darker),
-    0 12px 24px var(--cave-shadow-lg);
+@media (hover: hover) {
+  .cave-btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow:
+      0 9px 0 var(--cave-border-darker),
+      0 12px 24px var(--cave-shadow-lg);
+  }
 }
 
 .cave-btn:active:not(:disabled) {
@@ -414,9 +444,11 @@
 .cave-level-card:nth-child(3) { animation-delay: 0.3s; }
 .cave-level-card:nth-child(4) { animation-delay: 0.4s; }
 
-.cave-level-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 9px 0 var(--cave-border-darker), 0 14px 28px var(--cave-shadow-lg);
+@media (hover: hover) {
+  .cave-level-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 9px 0 var(--cave-border-darker), 0 14px 28px var(--cave-shadow-lg);
+  }
 }
 
 .cave-level-card:active {
@@ -566,9 +598,11 @@
   animation: caveSlideInUp 0.5s ease backwards;
 }
 
-.cave-mission-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 0 var(--cave-border-darker);
+@media (hover: hover) {
+  .cave-mission-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 0 var(--cave-border-darker);
+  }
 }
 
 .cave-mission-card__status {
@@ -707,9 +741,11 @@
   cursor: pointer;
 }
 
-.cave-nav-stone:hover {
-  transform: rotate(-4deg) scale(1.1);
-  color: var(--cave-btn-survival);
+@media (hover: hover) {
+  .cave-nav-stone:hover {
+    transform: rotate(-4deg) scale(1.1);
+    color: var(--cave-btn-survival);
+  }
 }
 
 .cave-nav-stone--active {
@@ -756,37 +792,139 @@
 }
 
 /* ── Config modal overrides ──────────────────────────────── */
-.cave-dialog .p-dialog {
-  border: 4px solid var(--cave-border-dark) !important;
-  border-radius: 24px !important;
+/* ── Dialog unstyled complet ─────────────────────────────── */
+.cave-dialog-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(61, 34, 16, 0.75);
+  backdrop-filter: blur(4px);
+  padding: 16px;
+}
+
+.cave-dialog-root {
+  position: relative;
+  width: 90vw;
+  max-width: 420px;
+  border: 4px solid #5C3317;
+  border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 12px 0 var(--cave-border-darker), 0 20px 40px var(--cave-shadow-lg) !important;
+  box-shadow: 0 12px 0 #3D2210, 0 20px 40px rgba(61, 34, 16, 0.7);
+  font-family: 'Fredoka', sans-serif;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
 }
 
-.cave-dialog .p-dialog-header {
-  background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock)) !important;
-  border-bottom: 3px solid var(--cave-border-dark) !important;
-  padding: 1.25rem 1.5rem !important;
+.cave-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(180deg, #E8D4B0, #D4B483);
+  border-bottom: 3px solid #5C3317;
+  flex-shrink: 0;
 }
 
-.cave-dialog .p-dialog-title {
-  font-family: var(--cave-font-title) !important;
-  font-size: 0.95rem !important;
-  color: var(--cave-border-dark) !important;
+.cave-dialog-title {
+  font-family: 'Bungee', cursive;
+  font-size: 0.95rem;
+  color: #5C3317;
   text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0;
 }
 
-.cave-dialog .p-dialog-content {
-  background: #FFF8EE !important;
-  padding: 1.25rem 1.5rem !important;
+.cave-dialog-close {
+  width: 32px;
+  height: 32px;
+  border: 2px solid #5C3317;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #E8D4B0, #D4B483);
+  color: #5C3317;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  box-shadow: 0 3px 0 #3D2210;
+  transition: transform 0.1s ease;
+  flex-shrink: 0;
 }
 
-.cave-dialog .p-dialog-footer {
-  background: var(--cave-rock-light) !important;
-  border-top: 3px solid var(--cave-border-dark) !important;
-  padding: 1rem 1.5rem 1.25rem !important;
+.cave-dialog-close:hover {
+  transform: translateY(-1px);
 }
 
+.cave-dialog-close:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #3D2210;
+}
+
+.cave-dialog-close-icon {
+  font-size: 0.85rem;
+  color: #5C3317;
+}
+
+.cave-dialog-content {
+  background: #FFF8EE;
+  padding: 1.25rem 1.5rem;
+  color: #5C3317;
+  font-family: 'Fredoka', sans-serif;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.cave-dialog-footer {
+  background: #E8D4B0;
+  border-top: 3px solid #5C3317;
+  padding: 1rem 1.5rem 1.25rem;
+  flex-shrink: 0;
+}
+/* PrimeVue 4 — Dialog PassThrough overrides */
+.cave-dialog-root {
+    border: 4px solid var(--cave-border-dark) !important;
+    border-radius: 24px !important;
+    overflow: hidden !important;
+    box-shadow: 0 12px 0 var(--cave-border-darker), 0 20px 40px var(--cave-shadow-lg) !important;
+    font-family: var(--cave-font-body) !important;
+}
+
+.cave-dialog-header {
+    background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock)) !important;
+    border-bottom: 3px solid var(--cave-border-dark) !important;
+    padding: 1.25rem 1.5rem !important;
+}
+
+.cave-dialog-title {
+    font-family: var(--cave-font-title) !important;
+    font-size: 0.95rem !important;
+    color: var(--cave-border-dark) !important;
+    text-transform: uppercase !important;
+}
+
+.cave-dialog-content {
+    background: #FFF8EE !important;
+    padding: 1.25rem 1.5rem !important;
+    color: var(--cave-border-dark) !important;
+    font-family: var(--cave-font-body) !important;
+}
+
+.cave-dialog-footer {
+    background: var(--cave-rock-light) !important;
+    border-top: 3px solid var(--cave-border-dark) !important;
+    padding: 1rem 1.5rem 1.25rem !important;
+}
+
+.cave-dialog-close {
+    color: var(--cave-border-dark) !important;
+    border: 2px solid var(--cave-border-dark) !important;
+    border-radius: 10px !important;
+    background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock)) !important;
+}
 .cave-config-label {
   font-size: 0.65rem;
   font-weight: 700;
@@ -1056,9 +1194,9 @@
     var(--cave-sky-mid) 30%,
     #FFF8EE 55%,
     var(--cave-sky-bottom) 100%
-  );
-  font-family: var(--cave-font-body);
-  color: var(--cave-border-dark);
+  ) !important;
+  font-family: var(--cave-font-body) !important;
+  color: var(--cave-border-dark) !important;
 }
 
 .cave-game-hub .cave-leaves {
@@ -1074,9 +1212,9 @@
   justify-content: space-between;
   gap: 16px;
   padding: 12px 20px;
-  background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock));
-  border-bottom: 4px solid var(--cave-border-dark);
-  box-shadow: 0 6px 0 var(--cave-border-darker);
+  background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock)) !important;
+  border-bottom: 4px solid var(--cave-border-dark) !important;
+  box-shadow: 0 6px 0 var(--cave-border-darker) !important;
 }
 
 .cave-hud__mission {
@@ -1153,6 +1291,15 @@
   font-size: 0.9rem;
 }
 
+.cave-hud__score--gold {
+  background: linear-gradient(180deg, #FFEFBA, #FFD700);
+  border-color: #B8860B;
+}
+
+.cave-hud__score--gold i {
+  color: #8B4513;
+}
+
 .cave-gps-result {
   padding: 12px 14px;
   border: 3px solid var(--cave-border-dark);
@@ -1220,10 +1367,10 @@
 }
 
 .cave-panel {
-  background: linear-gradient(180deg, var(--cave-rock-light) 0%, var(--cave-rock) 100%);
-  border: 4px solid var(--cave-border-dark);
-  border-radius: 24px;
-  box-shadow: 0 8px 0 var(--cave-border-darker), 0 12px 28px var(--cave-shadow);
+  background: linear-gradient(180deg, var(--cave-rock-light) 0%, var(--cave-rock) 100%) !important;
+  border: 4px solid var(--cave-border-dark) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 8px 0 var(--cave-border-darker), 0 12px 28px var(--cave-shadow) !important;
   overflow: hidden;
 }
 
@@ -1238,10 +1385,10 @@
 }
 
 .cave-panel__title {
-  font-family: var(--cave-font-title);
+  font-family: var(--cave-font-title) !important;
   font-size: 1.35rem;
   text-transform: uppercase;
-  color: var(--cave-border-dark);
+  color: var(--cave-border-dark) !important;
   margin-bottom: 12px;
   line-height: 1.15;
 }
@@ -1253,7 +1400,7 @@
   padding: 16px;
   font-style: italic;
   line-height: 1.55;
-  color: var(--cave-border-dark);
+  color: var(--cave-border-dark) !important;
 }
 
 .cave-badge {
@@ -1435,10 +1582,10 @@
 .cave-overlay__card {
   width: 100%;
   max-width: 440px;
-  background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock));
-  border: 4px solid var(--cave-border-dark);
-  border-radius: 28px;
-  box-shadow: 0 12px 0 var(--cave-border-darker), 0 24px 48px var(--cave-shadow-lg);
+  background: linear-gradient(180deg, var(--cave-rock-light), var(--cave-rock)) !important;
+  border: 4px solid var(--cave-border-dark) !important;
+  border-radius: 28px !important;
+  box-shadow: 0 12px 0 var(--cave-border-darker), 0 24px 48px var(--cave-shadow-lg) !important;
   overflow: hidden;
   animation: caveSlideInUp 0.4s ease;
 }
@@ -1446,8 +1593,8 @@
 .cave-overlay__header {
   padding: 28px 24px;
   text-align: center;
-  border-bottom: 3px solid var(--cave-border-dark);
-  background: rgba(255, 248, 238, 0.5);
+  border-bottom: 3px solid var(--cave-border-dark) !important;
+  background: rgba(255, 248, 238, 0.5) !important;
 }
 
 .cave-overlay__body {

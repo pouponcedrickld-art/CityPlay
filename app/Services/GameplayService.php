@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Service de gestion du gameplay
- * 
+ *
  * Responsable de :
  * - Initialiser la progression d'une nouvelle partie
  * - Gérer les actions du joueur (valider, passer, indice, solution)
@@ -34,7 +34,7 @@ class GameplayService
      * - Calcule le nombre d'énigmes
      * - Sélectionne les lieux
      * - Crée la progression
-     * 
+     *
      * @param Partie $partie La partie à initialiser
      * @return ProgressionPartie La progression créée
      */
@@ -59,7 +59,8 @@ class GameplayService
         \Log::info('GameplayService: Nombre d\'énigmes calculé', ['count' => $nbEnigmes]);
 
         // === ÉTAPE 2 : Sélection des lieux ===
-        $lieux = $this->selectionnerLieux($partie->environnement_id, $nbEnigmes, $difficulte);
+        $user = \App\Models\User::find($partie->createur_id);
+        $lieux = $this->selectionnerLieux($partie->environnement_id, $nbEnigmes, $difficulte, $user);
         \Log::info('GameplayService: Lieux sélectionnés', ['count' => $lieux->count(), 'ids' => $lieux->pluck('id')]);
 
         if ($lieux->isEmpty()) {
@@ -76,7 +77,7 @@ class GameplayService
             default => 'force2',
         };
 
-        $enigmeDepart = $premierLieu->enigmes()->where('type', $typeEnigme)->where('actif', true)->first() 
+        $enigmeDepart = $premierLieu->enigmes()->where('type', $typeEnigme)->where('actif', true)->first()
                         ?? $premierLieu->enigmes()->where('actif', true)->first();
 
         if (!$enigmeDepart) {
@@ -117,10 +118,66 @@ class GameplayService
 
     /**
      * Sélectionne les lieux pour une partie
+     * Exclut les lieux déjà découverts par le joueur si possible
      */
-    private function selectionnerLieux(int $environnementId, int $nbEnigmes, int $difficulte)
+    private function selectionnerLieux(int $environnementId, int $nbEnigmes, int $difficulte, ?\App\Models\User $user = null)
     {
+        $lieuxDecouvertsIds = $user ? $user->getLieuxDecouvertsIds() : [];
+        \Log::info('GameplayService: Filtrage des lieux déjà découverts', ['ids' => $lieuxDecouvertsIds]);
+
         // On cherche d'abord les lieux qui ont l'énigme de la difficulté demandée
+        $typeEnigme = match ($difficulte) {
+            1 => 'force1',
+            2 => 'force2',
+            3 => 'force3',
+            default => 'force2',
+        };
+
+        $query = Lieu::where('environnement_id', $environnementId)
+            ->where('actif', true)
+            ->whereHas('enigmes', function ($query) use ($typeEnigme) {
+                $query->where('type', $typeEnigme)->where('actif', true);
+            })
+            ->whereNotIn('id', $lieuxDecouvertsIds) // Exclure les déjà trouvés
+            ->orderBy('ordre', 'asc')
+            ->limit($nbEnigmes);
+
+        $lieux = $query->get();
+
+        // Si on n'en a pas assez, on complète avec n'importe quel lieu (actif) jamais visité par le joueur
+        if ($lieux->count() < $nbEnigmes) {
+            $idsExistants = $lieux->pluck('id')->toArray();
+
+            $lieuxComplementaires = Lieu::where('environnement_id', $environnementId)
+                ->where('actif', true)
+                ->whereNotIn('id', array_merge($idsExistants, $lieuxDecouvertsIds))
+                ->whereHas('enigmes', function ($query) {
+                    $query->where('actif', true);
+                })
+                ->orderBy('ordre', 'asc')
+                ->limit($nbEnigmes - $lieux->count())
+                ->get();
+
+            $lieux = $lieux->concat($lieuxComplementaires)->sortBy('ordre');
+        }
+
+        // Cas critique : Si après filtrage on n'a absolument AUCUN lieu jamais visité
+        // On autorise à rejouer les anciens lieux (sinon le joueur est bloqué à vie sur cet environnement)
+        if ($lieux->isEmpty()) {
+            \Log::warning('GameplayService: Tous les lieux ont déjà été découverts. Réinitialisation pour permettre de rejouer.');
+
+            // On relance la sélection sans le filtre whereNotIn
+            return $this->selectionnerLieuxSansFiltre($environnementId, $nbEnigmes, $difficulte);
+        }
+
+        return $lieux;
+    }
+
+    /**
+     * Sélection classique (fallback si tout est déjà découvert)
+     */
+    private function selectionnerLieuxSansFiltre(int $environnementId, int $nbEnigmes, int $difficulte)
+    {
         $typeEnigme = match ($difficulte) {
             1 => 'force1',
             2 => 'force2',
@@ -137,10 +194,8 @@ class GameplayService
             ->limit($nbEnigmes)
             ->get();
 
-        // Si on n'en a pas assez, on complète avec n'importe quel lieu ayant au moins une énigme active
         if ($lieux->count() < $nbEnigmes) {
             $idsExistants = $lieux->pluck('id')->toArray();
-            
             $lieuxComplementaires = Lieu::where('environnement_id', $environnementId)
                 ->where('actif', true)
                 ->whereNotIn('id', $idsExistants)
@@ -150,7 +205,6 @@ class GameplayService
                 ->orderBy('ordre', 'asc')
                 ->limit($nbEnigmes - $lieux->count())
                 ->get();
-
             $lieux = $lieux->concat($lieuxComplementaires)->sortBy('ordre');
         }
 
@@ -185,7 +239,7 @@ class GameplayService
 
     /**
      * Action : valider la position GPS du joueur
-     * 
+     *
      * @param Partie $partie La partie en cours
      * @param float $lat Latitude du joueur
      * @param float $lng Longitude du joueur
@@ -237,7 +291,7 @@ class GameplayService
 
     /**
      * Action : passer l'énigme courante (sans la résoudre)
-     * 
+     *
      * @param Partie $partie La partie en cours
      * @return array Résultat de l'action
      */
@@ -262,7 +316,7 @@ class GameplayService
 
     /**
      * Action : demander un indice pour l'énigme courante
-     * 
+     *
      * @param Partie $partie La partie en cours
      * @return array Indice et pénalité éventuelle
      */
@@ -275,11 +329,17 @@ class GameplayService
             return ['succes' => false, 'message' => 'Aucune énigme en cours.'];
         }
 
-        // Pour l'instant, retourne le texte de l'énigme comme "indice"
-        // TODO : ajouter un champ 'indice' séparé dans la table enigmes
+        $indice = trim((string) ($enigme->indice ?? ''));
+        if ($indice === '') {
+            return [
+                'succes' => false,
+                'message' => 'Aucun indice n\'est disponible pour cette énigme.',
+            ];
+        }
+
         return [
             'succes' => true,
-            'indice' => $enigme->texte, // Texte de l'énigme comme indice
+            'indice' => $indice,
             'message' => 'Voici un indice pour vous aider...',
         ];
     }
@@ -314,7 +374,7 @@ class GameplayService
     /**
      * Action : révéler la solution de l'énigme courante
      * Marque l'énigme comme non résolue et passe à la suivante
-     * 
+     *
      * @param Partie $partie La partie en cours
      * @return array Solution et statut
      */

@@ -1,9 +1,11 @@
 <script setup>
-import { Head, useForm, router, usePage } from '@inertiajs/vue3';
+import { Head, useForm, router, usePage, Link } from '@inertiajs/vue3';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import CaveGameLayout from '@/Layouts/CaveGameLayout.vue';
 import InputText from 'primevue/inputtext';
 import Dialog from 'primevue/dialog';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 const props = defineProps({
     partie: Object,
@@ -31,6 +33,60 @@ const isLocating = ref(false);
 const isOffline = ref(!navigator.onLine);
 const gpsMessage = ref(null);
 const lastGpsCheck = ref(null);
+
+const lastKnownCoords = ref(null);
+const lastKnownTime = ref(null);
+
+const mapContainer = ref(null);
+const map = ref(null);
+const playerMarker = ref(null);
+let watchId = null;
+
+const initMap = () => {
+    if (!mapContainer.value) return;
+
+    delete L.Icon.Default.prototype._getIconUrl;
+    L.Icon.Default.mergeOptions({
+        iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+    });
+
+    map.value = L.map(mapContainer.value, {
+        zoomControl: false,
+        attributionControl: false
+    }).setView([44.841389, -0.569722], 15);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map.value);
+
+    if (navigator.geolocation) {
+        watchId = navigator.geolocation.watchPosition(
+            (position) => {
+                const { latitude, longitude, accuracy } = position.coords;
+                const latlng = [latitude, longitude];
+
+                // Sauvegarder pour réutilisation immédiate
+                lastKnownCoords.value = { latitude, longitude, accuracy };
+                lastKnownTime.value = Date.now();
+
+                if (!playerMarker.value) {
+                    playerMarker.value = L.marker(latlng).addTo(map.value);
+                    map.value.setView(latlng, 16);
+                } else {
+                    playerMarker.value.setLatLng(latlng);
+                }
+            },
+            (error) => console.warn("Erreur GPS Radar:", error),
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 5000 }
+        );
+    }
+};
+
+const recenterMap = () => {
+    if (playerMarker.value && map.value) {
+        map.value.setView(playerMarker.value.getLatLng(), 16);
+    }
+};
 
 const updateOnlineStatus = () => {
     isOffline.value = !navigator.onLine;
@@ -82,31 +138,63 @@ const checkLocation = () => {
         };
         return;
     }
-    if (!navigator.geolocation) {
-        alert("La géolocalisation n'est pas supportée par votre navigateur.");
-        return;
-    }
 
     isLocating.value = true;
     gpsMessage.value = null;
 
+    // STRATÉGIE 1 : Réutiliser la position du radar si elle est récente (< 10s)
+    if (lastKnownCoords.value && lastKnownTime.value && (Date.now() - lastKnownTime.value < 10000)) {
+        console.log("Utilisation de la position en cache (Radar)");
+        form.latitude = lastKnownCoords.value.latitude;
+        form.longitude = lastKnownCoords.value.longitude;
+        form.precision = lastKnownCoords.value.accuracy;
+        submitLocationAnswer();
+        return;
+    }
+
+    if (!navigator.geolocation) {
+        isLocating.value = false;
+        alert("La géolocalisation n'est pas supportée par votre navigateur.");
+        return;
+    }
+
+    // STRATÉGIE 2 : Demander une nouvelle position avec un timeout plus long
     navigator.geolocation.getCurrentPosition(
         (position) => {
+            console.log("Nouvelle position obtenue via getCurrentPosition:", position.coords);
             form.latitude = position.coords.latitude;
             form.longitude = position.coords.longitude;
             form.precision = position.coords.accuracy ?? null;
             submitLocationAnswer();
         },
         (error) => {
+            console.error("Erreur Geolocation:", error);
+
+            // STRATÉGIE 3 : Fallback ultime - Utiliser la dernière position connue même si vieille
+            if (lastKnownCoords.value) {
+                console.warn("Échec GPS frais, utilisation de la dernière position connue (Fallback)");
+                form.latitude = lastKnownCoords.value.latitude;
+                form.longitude = lastKnownCoords.value.longitude;
+                form.precision = lastKnownCoords.value.accuracy;
+                submitLocationAnswer();
+                return;
+            }
+
             isLocating.value = false;
+            let msg = 'Erreur de localisation. Réessayez en plein air.';
+
+            if (error.code === 1) {
+                msg = "Veuillez autoriser l'accès à votre position dans les réglages de votre navigateur.";
+            } else if (error.code === 3) {
+                msg = "Le signal GPS est trop faible pour une vérification précise. Rapprochez-vous d'une fenêtre ou sortez dehors.";
+            }
+
             gpsMessage.value = {
                 type: 'error',
-                text: error.code === 1
-                    ? "Veuillez autoriser l'accès à votre position."
-                    : 'Erreur de localisation. Réessayez en plein air.',
+                text: msg,
             };
         },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+        { enableHighAccuracy: true, timeout: 20000, maximumAge: 10000 }
     );
 };
 
@@ -217,6 +305,7 @@ onMounted(() => {
     window.addEventListener('offline', updateOnlineStatus);
     applyFlash();
     startTimer();
+    initMap();
     if (props.progression?.statut === 'en_cours' && timeLeft.value <= 0) {
         onTimerExpired();
     }
@@ -226,6 +315,10 @@ onUnmounted(() => {
     window.removeEventListener('online', updateOnlineStatus);
     window.removeEventListener('offline', updateOnlineStatus);
     if (timerInterval) clearInterval(timerInterval);
+    if (watchId) navigator.geolocation.clearWatch(watchId);
+    if (map.value) {
+        map.value.remove();
+    }
 });
 </script>
 
@@ -326,23 +419,33 @@ onUnmounted(() => {
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <div class="cave-hud__score" :title="scoreActuel + ' points au total'">
-                        <i class="pi pi-star-fill" />
+                    <div class="cave-hud__score" :title="'Score de la mission: ' + scoreActuel + ' pts'">
+                        <i class="pi pi-star" />
                         <span>{{ scoreActuel }}</span>
+                    </div>
+                    <div class="cave-hud__score cave-hud__score--gold" :title="'Score global: ' + ($page.props.auth.user.total_score || 0) + ' pts'">
+                        <i class="pi pi-star-fill" />
+                        <span>{{ $page.props.auth.user.total_score || 0 }}</span>
                     </div>
                     <div class="cave-hud__timer" :class="{ 'cave-hud__timer--urgent': timeLeft < 300 }">
                         <span>{{ formatTime(timeLeft) }}</span>
                         <i class="pi pi-clock" />
                     </div>
+                    <Link :href="route('progression.carte', partie.id)" class="cave-hud__btn" title="Carte">
+                        <i class="pi pi-map" />
+                    </Link>
                     <button type="button" class="cave-hud__btn" @click="togglePause"><i class="pi pi-pause" /></button>
                 </div>
             </header>
 
             <main class="cave-game-content cave-game-content--split">
                 <article class="cave-panel">
-                    <div v-if="enigme?.lieu?.photos?.length || enigme?.image_url" class="relative">
-                        <img :src="enigme?.lieu?.photos?.length ? enigme.lieu.photos[0].url : enigme.image_url" class="cave-panel__img" :alt="enigme?.titre">
+                    <div v-if="enigme?.image_url" class="relative">
+                        <img :src="enigme.image_url" class="cave-panel__img" :alt="enigme?.titre">
                         <div class="cave-level-card__overlay absolute inset-0" />
+                    </div>
+                    <div v-else class="cave-panel__img-placeholder flex items-center justify-center bg-[var(--cave-rock-dark)]" style="height: 200px;">
+                        <i class="pi pi-question-circle text-4xl opacity-20" />
                     </div>
                     <div class="cave-panel__body">
                         <div class="flex flex-wrap gap-2 mb-3">
@@ -358,29 +461,22 @@ onUnmounted(() => {
                 </article>
 
                 <div class="cave-game-sidebar-col">
-                    <div class="cave-panel cave-radar-box">
-                        <div class="cave-radar-pulse absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full" :class="{ 'cave-radar-pulse--active': isLocating }" />
-                        <div class="relative z-10 flex flex-col items-center text-center gap-3 py-4">
-                            <div class="cave-tool-btn__icon" style="width:56px;height:56px;font-size:1.5rem">
+                    <div class="cave-panel cave-radar-box p-0 overflow-hidden relative" style="height: 200px;">
+                        <div ref="mapContainer" class="absolute inset-0 z-0" />
+                        <div class="cave-radar-pulse absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full pointer-events-none" :class="{ 'cave-radar-pulse--active': isLocating }" />
+                        <div class="relative z-10 flex flex-col items-center text-center gap-1 py-4 pointer-events-none bg-gradient-to-b from-white/20 to-transparent">
+                            <div class="cave-tool-btn__icon" style="width:40px;height:40px;font-size:1.2rem;background:rgba(255,255,255,0.4)">
                                 <i class="pi pi-map-marker" :class="{ 'animate-ping': isLocating }" />
                             </div>
-                            <h3 class="cave-section-title" style="font-size:0.75rem;margin:0">Scanner GPS</h3>
-                            <p v-if="gpsDisponible" class="cave-hint">
-                                Rendez-vous sur la zone de l'énigme, puis vérifiez votre position pour gagner les points.
-                            </p>
-                            <p v-else class="cave-hint cave-hint--warn">Vérification GPS indisponible</p>
+                            <h3 class="cave-section-title" style="font-size:0.7rem;margin:0">Radar de zone</h3>
                         </div>
+                        <button type="button" class="absolute bottom-2 right-2 z-10 cave-hud__btn" style="width:32px;height:32px;background:var(--cave-rock-light);color:var(--cave-border-dark);border:2px solid var(--cave-border-dark)" @click="recenterMap">
+                            <i class="pi pi-crosshairs text-sm" />
+                        </button>
                     </div>
 
                     <div v-if="gpsMessage" class="cave-flash" :class="gpsMessage.type === 'error' ? 'cave-flash--error' : 'cave-flash--info'">
                         {{ gpsMessage.text }}
-                    </div>
-
-                    <div v-if="lastGpsCheck && lastGpsCheck.distance != null" class="cave-gps-result">
-                        <p>
-                            Vous êtes à environ <strong>{{ lastGpsCheck.distance }} m</strong> de la zone.
-                            Rapprochez-vous et réessayez.
-                        </p>
                     </div>
 
                     <button
@@ -425,9 +521,12 @@ onUnmounted(() => {
             </main>
 
             <Dialog v-model:visible="showHint" modal header="Indice" :style="{ width: '90vw', maxWidth: '420px' }" class="cave-game-dialog">
-                <p class="cave-panel__text" style="margin:0">L'indice sera bientôt disponible pour vous aider.</p>
+                <div class="cave-overlay__body">
+                    <p v-if="enigme?.indice" class="cave-panel__text text-center" style="margin:0">{{ enigme.indice }}</p>
+                    <p v-else class="cave-hint text-center">Aucun indice n'est disponible pour cette énigme.</p>
+                </div>
                 <template #footer>
-                    <button type="button" class="cave-btn w-full" @click="showHint = false">Fermer</button>
+                    <button type="button" class="cave-btn w-full" @click="showHint = false">Compris</button>
                 </template>
             </Dialog>
 

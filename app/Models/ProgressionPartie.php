@@ -174,9 +174,48 @@ class ProgressionPartie extends Model
         $this->score += $points;
         $this->save();
 
+        // Mise à jour du score de la partie
         $this->partie?->update(['score_total' => $this->score]);
 
+        // LOGIQUE D'ATTRIBUTION DES POINTS AUX JOUEURS
+        $this->attribuerPointsAuxJoueurs($points);
+
         return $points;
+    }
+
+    /**
+     * Attribue les points aux utilisateurs concernés selon le mode de jeu
+     */
+    protected function attribuerPointsAuxJoueurs(int $points): void
+    {
+        $partie = $this->partie;
+        if (!$partie) return;
+
+        if ($partie->mode === 'solo') {
+            // Solo : Tous les points au créateur
+            $user = User::find($partie->createur_id);
+            if ($user) {
+                $user->increment('total_score', $points);
+            }
+        } elseif ($partie->mode === 'team' && $partie->team) {
+            // Team : Logique Participant vs Challenger
+            $users = $partie->team->users;
+
+            foreach ($users as $user) {
+                $role = $user->pivot->role ?? 'participant';
+
+                if ($role === 'participant') {
+                    // Participant : Reçoit les points (partagés par tous les participants)
+                    $user->increment('total_score', $points);
+                } elseif ($role === 'challenger') {
+                    // Challenger : Reçoit les points seulement s'il est l'auteur de l'action
+                    // NOTE: Pour l'instant, l'auteur est auth()->id()
+                    if (auth()->id() === $user->id) {
+                        $user->increment('total_score', $points);
+                    }
+                }
+            }
+        }
     }
 
     /**

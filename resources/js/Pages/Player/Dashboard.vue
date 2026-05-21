@@ -4,10 +4,19 @@
 
         <!-- Vies / score joueur -->
         <div class="cave-lives-bar">
-            <span class="cave-lives-label">Missions</span>
-            <span class="cave-score-value">
-                {{ parties.length }} <span class="star">★</span>
-            </span>
+            <div class="flex flex-col items-center">
+                <span class="cave-lives-label">Missions</span>
+                <span class="cave-score-value">
+                    {{ parties.length }} <span class="star">★</span>
+                </span>
+            </div>
+            <div class="w-px h-8 bg-white/20 mx-2"></div>
+            <div class="flex flex-col items-center">
+                <span class="cave-lives-label">Score Global</span>
+                <span class="cave-score-value">
+                    {{ $page.props.auth.user.total_score || 0 }} <span class="star">pts</span>
+                </span>
+            </div>
         </div>
 
         <h2 class="cave-section-title">Camp de base</h2>

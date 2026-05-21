@@ -43,87 +43,90 @@ const resendCode = () => {
     <GuestLayout>
         <Head title="Vérification OTP" />
 
-        <div class="mb-8 text-center">
-            <div class="w-20 h-20 bg-orange-100 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm">
-                <i class="pi pi-shield text-3xl text-[#FF9500]"></i>
-            </div>
-            <h1 class="text-2xl font-black text-orange-950 uppercase tracking-tight">Vérification <span class="text-[#FF9500]">OTP</span></h1>
-            <p class="mt-2 text-sm text-gray-600 font-medium">
-                Un code de vérification à 6 chiffres a été envoyé à votre adresse email.
-            </p>
-        </div>
-
-        <form @submit.prevent="submit" class="space-y-8">
-            <!-- Zone de saisie du code OTP -->
+        <div class="flex flex-col items-center justify-center gap-10 w-full max-w-md mx-auto py-8 text-center relative z-20">
+            <!-- PARTIE 1 : INFOS -->
             <div class="flex flex-col items-center">
-                <InputOtp 
-                    v-model="form.code" 
-                    :length="6" 
-                    integerOnly
-                    class="custom-otp-input"
-                />
-                <!-- Affichage des erreurs de validation du code -->
-                <InputError class="mt-4" :message="form.errors.code" />
+                <div class="w-20 h-20 bg-[#fff5e6] rounded-3xl flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(255,149,0,0.1)]">
+                    <i class="pi pi-shield text-3xl text-[#FF9500]"></i>
+                </div>
+                <h1 class="text-3xl font-black tracking-tighter uppercase mb-2 text-white">
+                    Vérification <br> <span class="text-[#FF9500]">OTP</span>
+                </h1>
+                <p class="text-[11px] text-gray-400 font-bold uppercase tracking-widest leading-relaxed max-w-[280px]">
+                    Un code de vérification à 6 chiffres a été envoyé à votre adresse email.
+                </p>
             </div>
 
-            <!-- Boutons d'action -->
-            <div class="flex flex-col gap-4">
-                <PrimaryButton
-                    class="w-full justify-center py-4 text-sm font-bold uppercase tracking-widest bg-gradient-to-r from-[#FF9500] to-[#FF7B00] border-none shadow-lg shadow-orange-200"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing || form.code.length !== 6"
-                >
-                    Vérifier le code
-                </PrimaryButton>
+            <!-- PARTIE 2 : FORMULAIRE -->
+            <div class="w-full flex flex-col items-center gap-6">
+                <form @submit.prevent="submit" class="w-full flex flex-col items-center gap-6">
+                    <div class="flex flex-col items-center w-full">
+                        <InputOtp
+                            v-model="form.code"
+                            :length="6"
+                            integerOnly
+                            class="custom-otp-input"
+                        />
+                        <InputError class="mt-4" :message="form.errors.code" />
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="w-full py-4 rounded-2xl text-xs font-black uppercase tracking-[0.3em] bg-[#9e5200] text-white/80 border border-white/5 shadow-[0_0_40px_rgba(0,0,0,0.3)] hover:bg-[#FF7B00] hover:text-white hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50"
+                        :disabled="form.processing || form.code.length !== 6"
+                    >
+                        Vérifier le code
+                    </button>
+                </form>
 
                 <button
                     type="button"
                     @click="resendCode"
-                    class="text-xs font-bold text-orange-600 hover:text-orange-700 uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
+                    class="text-[9px] font-black text-orange-500/80 hover:text-orange-400 uppercase tracking-[0.4em] transition-all flex items-center gap-2 group"
                     :disabled="form.processing"
                 >
-                    <i class="pi pi-refresh" :class="{ 'animate-spin': form.processing }"></i>
+                    <i class="pi pi-refresh group-hover:rotate-180 transition-transform duration-500" :class="{ 'animate-spin': form.processing }"></i>
                     Renvoyer un code
                 </button>
             </div>
-        </form>
 
-        <!-- LIEN DE REDIRECTION (OUTSIDE FORM) -->
-        <div class="mt-10 pt-6 border-t border-orange-100 flex flex-col items-center gap-4">
-            <p class="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em]">Vous ne recevez rien ?</p>
-            
-            <Link
-                :href="route('logout.register')"
-                method="post"
-                as="button"
-                class="group flex items-center gap-2 px-6 py-3 bg-orange-50 rounded-2xl text-orange-600 hover:bg-orange-100 transition-all border border-orange-100"
-            >
-                <i class="pi pi-user-plus text-xs group-hover:-translate-x-1 transition-transform"></i>
-                <span class="text-xs font-black uppercase tracking-widest">Retourner à l'inscription</span>
-            </Link>
-            
-            <p class="text-[9px] text-gray-400 font-bold uppercase italic text-center px-4">
-                Utile si vous avez fait une faute dans votre adresse email
-            </p>
-        </div>
+            <!-- PARTIE 3 : FALLBACK -->
+            <div class="flex flex-col items-center gap-4 pt-4 border-t border-white/5 w-full">
+                <p class="text-[9px] text-gray-500 font-black uppercase tracking-[0.3em]">Vous ne recevez rien ?</p>
 
-        <div class="mt-8 text-center">
-            <p class="text-[9px] uppercase font-black tracking-[0.4em] text-orange-900/10">
-                CityPlay Secure
-            </p>
+                <Link
+                    :href="route('logout')"
+                    method="post"
+                    as="button"
+                    class="group flex items-center gap-3 px-8 py-3 bg-white rounded-2xl text-[#FF7B00] hover:bg-[#fff5e6] transition-all shadow-[0_10px_30px_rgba(0,0,0,0.3)]"
+                >
+                    <i class="pi pi-user-plus text-[10px]"></i>
+                    <span class="text-[10px] font-black uppercase tracking-widest">Retourner à l'inscription</span>
+                </Link>
+
+                <p class="text-[8px] text-gray-600 font-bold uppercase italic tracking-wider">
+                    Utile si vous avez fait une faute dans votre adresse email
+                </p>
+
+                <div class="mt-2">
+                    <p class="text-[8px] uppercase font-black tracking-[0.5em] text-white/5">
+                        CityPlay Secure
+                    </p>
+                </div>
+            </div>
         </div>
     </GuestLayout>
 </template>
 
 <style scoped>
 .custom-otp-input :deep(.p-inputotp-input) {
-    width: 3rem;
-    height: 4rem;
+    width: 3.5rem;
+    height: 4.5rem;
     font-size: 1.5rem;
     font-weight: 900;
-    border-radius: 16px;
-    border: 2px solid rgba(255, 149, 0, 0.1);
-    background: white;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 149, 0, 0.2);
+    background: #0d0c0a;
     color: #FF9500;
     transition: all 0.3s ease;
     text-align: center;
@@ -131,15 +134,23 @@ const resendCode = () => {
 
 .custom-otp-input :deep(.p-inputotp-input:focus) {
     border-color: #FF9500;
-    box-shadow: 0 0 0 4px rgba(255, 149, 0, 0.1);
-    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(255, 149, 0, 0.15);
+    background: #1a1814;
+}
+
+@media (max-width: 1024px) {
+    .custom-otp-input :deep(.p-inputotp-input) {
+        width: 3rem;
+        height: 4rem;
+    }
 }
 
 @media (max-width: 640px) {
     .custom-otp-input :deep(.p-inputotp-input) {
-        width: 2.5rem;
-        height: 3.5rem;
-        font-size: 1.25rem;
+        width: 2.2rem;
+        height: 3.2rem;
+        font-size: 1.2rem;
+        border-radius: 8px;
     }
 }
 </style>

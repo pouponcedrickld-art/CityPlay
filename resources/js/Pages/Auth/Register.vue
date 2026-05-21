@@ -7,6 +7,7 @@ import TextInput from '@/Components/TextInput.vue';
 import Checkbox from '@/Components/Checkbox.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref, computed, onMounted, onUnmounted, inject } from 'vue';
+import MobileAuthView from "./MobileAuthView.vue";
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import { useToast } from 'primevue/usetoast';
@@ -23,6 +24,7 @@ const props = defineProps({
     invitation_token: String,
     prefilled_email: String,
     partie_invitation: Object,
+    invite_error: String,
 });
 
 const canRegister = computed(() => !!(props.invitation_token || props.partie_invitation));
@@ -168,8 +170,15 @@ const submit = () => {
 </script>
 
 <template>
-    <GuestLayout>
-        <Head title="Rejoindre la Guilde - CityPlay 🇧🇯" />
+    <div>
+        <MobileAuthView 
+            :form="form" 
+            :submit="submit" 
+            mode="register"
+        />
+        <div class="hidden md:block">
+            <GuestLayout>
+                <Head title="Rejoindre la Guilde - CityPlay 🇧🇯" />
 
         <!-- Wrapper centré avec padding vertical pour éviter la coupure -->
         <div class="w-full flex flex-col items-center justify-center px-4 py-8">
@@ -197,6 +206,17 @@ const submit = () => {
                     <span>Accès Restreint</span>
                 </div>
                 L'inscription à CityPlay se fait uniquement sur invitation. Veuillez utiliser le lien qui vous a été envoyé par l'administrateur ou par votre coéquipier.
+            </div>
+
+            <div
+                v-if="invite_error"
+                class="w-full max-w-5xl mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm"
+            >
+                <div class="flex items-center gap-2 mb-2 font-bold">
+                    <i class="pi pi-times-circle"></i>
+                    <span>Invitation invalide</span>
+                </div>
+                {{ invite_error }}
             </div>
 
             <!-- 3D PERSPECTIVE CARD -->
@@ -233,7 +253,7 @@ const submit = () => {
                             class="art-overlay-stagger px-3 py-1 text-[9px] font-black tracking-[0.2em] text-white rounded-full uppercase"
                             :class="isDark ? 'bg-[#FF9500]' : 'bg-[#059669]'"
                         >
-                            Nouvelle Amazone / Guerrier
+                            Bienvenue chez les Guepard
                         </span>
                         <h4 class="art-overlay-stagger text-xl font-black text-white uppercase tracking-tight drop-shadow-lg">
                             Prenez les Armes
@@ -257,7 +277,7 @@ const submit = () => {
                     <!-- Header -->
                     <div class="register-stagger mb-5 space-y-1">
                         <span
-                            :class="isDark ? 'text-[#FF9500]' : 'text-[#008751]'"
+                            :class="isDark ? 'text-[#FF9500]' : 'text-[#059669]'"
                             class="text-[9px] font-black uppercase tracking-[0.3em] transition-colors duration-500"
                         >
                             Nouveau Chasseur de Trésor • CityPlay 🇧🇯
@@ -267,7 +287,7 @@ const submit = () => {
                             :class="isDark ? 'text-white' : 'text-[#1c1917]'"
                             class="text-4xl font-black uppercase tracking-tighter transition-colors duration-500 flex items-center gap-2 select-text"
                         >
-                            {{ headingText }} <span class="animate-pulse" :class="isDark ? 'text-[#FF9500]' : 'text-[#008751]'">.</span>
+                            {{ headingText }} <span class="animate-pulse" :class="isDark ? 'text-[#FF9500]' : 'text-[#059669]'">.</span>
                         </h3>
 
                         <p
@@ -322,7 +342,7 @@ const submit = () => {
                                         :class="[
                                             isDark
                                                 ? 'bg-black/50 border-white/5 text-white placeholder:text-white/20 focus:border-[#FF9500]'
-                                                : 'bg-[#faf9f6] border-[#e2dfd5] text-[#1c1917] placeholder:text-[#1c1917]/30 focus:border-[#008751]',
+                                                : 'bg-[#faf9f6] border-[#e2dfd5] text-[#1c1917] placeholder:text-[#1c1917]/30 focus:border-[#059669]',
                                             'w-full pl-11 pr-4 py-2.5 border-2 rounded-xl font-bold focus:ring-0 focus:outline-none transition-all shadow-inner text-sm'
                                         ]"
                                         v-model="form.pseudo"
@@ -348,7 +368,7 @@ const submit = () => {
                                     :class="[
                                             isDark
                                                 ? 'bg-black/50 border-white/5 text-white placeholder:text-white/20 focus:border-[#FF9500]'
-                                                : 'bg-[#faf9f6] border-[#e2dfd5] text-[#1c1917] placeholder:text-[#1c1917]/30 focus:border-[#008751]',
+                                                : 'bg-[#faf9f6] border-[#e2dfd5] text-[#1c1917] placeholder:text-[#1c1917]/30 focus:border-[#059669]',
                                         'w-full pl-11 pr-4 py-2.5 border-2 rounded-xl font-bold focus:ring-0 focus:outline-none transition-all shadow-inner text-sm'
                                     ]"
                                     v-model="form.email"
@@ -374,7 +394,7 @@ const submit = () => {
                                         :class="[
                                             isDark
                                                 ? 'bg-black/50 border-white/5 text-white placeholder:text-white/20 focus:border-[#FF9500]'
-                                                : 'bg-[#faf9f6] border-[#e2dfd5] text-[#1c1917] placeholder:text-[#1c1917]/30 focus:border-[#008751]',
+                                                : 'bg-[#faf9f6] border-[#e2dfd5] text-[#1c1917] placeholder:text-[#1c1917]/30 focus:border-[#059669]',
                                             'w-full pl-11 pr-4 py-2.5 border-2 rounded-xl font-bold focus:ring-0 focus:outline-none transition-all shadow-inner text-sm'
                                         ]"
                                         v-model="form.password"
@@ -398,7 +418,7 @@ const submit = () => {
                                         :class="[
                                             isDark
                                                 ? 'bg-black/50 border-white/5 text-white placeholder:text-white/20 focus:border-[#FF9500]'
-                                                : 'bg-[#faf9f6] border-[#e2dfd5] text-[#1c1917] placeholder:text-[#1c1917]/30 focus:border-[#008751]',
+                                                : 'bg-[#faf9f6] border-[#e2dfd5] text-[#1c1917] placeholder:text-[#1c1917]/30 focus:border-[#059669]',
                                             'w-full pl-11 pr-4 py-2.5 border-2 rounded-xl font-bold focus:ring-0 focus:outline-none transition-all shadow-inner text-sm'
                                         ]"
                                         v-model="form.password_confirmation"
@@ -415,11 +435,11 @@ const submit = () => {
                         <div class="register-stagger pt-1">
                             <label class="flex items-start cursor-pointer group select-none">
                                 <Checkbox name="consent_cgu" v-model:checked="form.consent_cgu" required :class="[
-                                    isDark ? 'border-white/10 bg-black/40 text-[#FF9500]' : 'border-[#e2dfd5] bg-[#faf9f6] text-[#008751]',
+                                    isDark ? 'border-white/10 bg-black/40 text-[#FF9500]' : 'border-[#e2dfd5] bg-[#faf9f6] text-[#059669]',
                                     'rounded focus:ring-0 mt-0.5 transition-colors duration-500'
                                 ]" />
                                 <span :class="isDark ? 'text-white/40 group-hover:text-white/70' : 'text-[#1c1917]/40 group-hover:text-[#1c1917]/70'" class="ms-3 text-[10px] font-bold leading-relaxed transition-colors duration-300">
-                                    J'accepte les <button type="button" @click="showCGU = true" :class="isDark ? 'text-[#FF9500]' : 'text-[#008751]'" class="font-black hover:underline focus:outline-none transition-colors duration-500">Conditions Générales de la Guilde</button>
+                                    J'accepte les <button type="button" @click="showCGU = true" :class="isDark ? 'text-[#FF9500]' : 'text-[#059669]'" class="font-black hover:underline focus:outline-none transition-colors duration-500">Conditions Générales de la Guilde</button>
                                 </span>
                             </label>
                             <InputError class="mt-1 text-xs font-bold text-red-500" :message="form.errors.consent_cgu" />
@@ -429,11 +449,11 @@ const submit = () => {
                         <div class="register-stagger">
                             <label class="flex items-start cursor-pointer group select-none">
                                 <Checkbox name="consent_donnees" v-model:checked="form.consent_donnees" required :class="[
-                                    isDark ? 'border-white/10 bg-black/40 text-[#FF9500]' : 'border-[#e2dfd5] bg-[#faf9f6] text-[#008751]',
+                                    isDark ? 'border-white/10 bg-black/40 text-[#FF9500]' : 'border-[#e2dfd5] bg-[#faf9f6] text-[#059669]',
                                     'rounded focus:ring-0 mt-0.5 transition-colors duration-500'
                                 ]" />
                                 <span :class="isDark ? 'text-white/40 group-hover:text-white/70' : 'text-[#1c1917]/40 group-hover:text-[#1c1917]/70'" class="ms-3 text-[10px] font-bold leading-relaxed transition-colors duration-300">
-                                    J'accepte la <button type="button" @click="showPrivacy = true" :class="isDark ? 'text-[#FF9500]' : 'text-[#008751]'" class="font-black hover:underline focus:outline-none transition-colors duration-500">Charte de Confidentialité</button> et la géolocalisation
+                                    J'accepte la <button type="button" @click="showPrivacy = true" :class="isDark ? 'text-[#FF9500]' : 'text-[#059669]'" class="font-black hover:underline focus:outline-none transition-colors duration-500">Charte de Confidentialité</button> et la géolocalisation
                                 </span>
                             </label>
                             <InputError class="mt-1 text-xs font-bold text-red-500" :message="form.errors.consent_donnees" />
@@ -457,7 +477,7 @@ const submit = () => {
                                 :class="[
                                     isDark
                                         ? 'bg-[#FF9500] text-black shadow-[0_5px_0_#cc7a00] hover:bg-[#FF9500]/95 hover:shadow-[0_0_20px_rgba(255,149,0,0.4)]'
-                                        : 'bg-[#008751] text-white shadow-[0_5px_0_#005f38] hover:bg-[#008751]/95 hover:shadow-[0_0_20px_rgba(0,135,81,0.35)]',
+                                        : 'bg-[#059669] text-white shadow-[0_5px_0_#047857] hover:bg-[#059669]/95 hover:shadow-[0_0_20px_rgba(0,135,81,0.35)]',
                                     'px-6 py-3.5 rounded-xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 active:shadow-none active:translate-y-[5px] transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none select-none relative z-10'
                                 ]"
                                 :disabled="form.processing"
@@ -544,6 +564,8 @@ const submit = () => {
             </template>
         </Dialog>
     </GuestLayout>
+        </div>
+    </div>
 </template>
 
 <style scoped>
@@ -563,7 +585,7 @@ const submit = () => {
     border-radius: 3px;
 }
 :deep(.light) .register-form-panel::-webkit-scrollbar-thumb {
-    background: rgba(0, 135, 81, 0.2);
+    background: rgba(5, 150, 105, 0.2);
 }
 
 /* Focus transitions */
@@ -573,7 +595,7 @@ input:focus {
     transform: translateY(-2px);
 }
 :deep(.light) input:focus {
-    box-shadow: 0 0 20px rgba(0, 135, 81, 0.2) !important;
+    box-shadow: 0 0 20px rgba(5, 150, 105, 0.2) !important;
 }
 
 /* 3D Card */

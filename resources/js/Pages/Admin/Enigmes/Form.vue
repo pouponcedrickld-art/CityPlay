@@ -17,9 +17,28 @@
 
       <form @submit.prevent="submit" class="form-card">
 
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Titre -->
+          <section class="form-section">
+            <h2 class="section-title">Titre de l'énigme</h2>
+            <InputText v-model="form.titre" placeholder="Ex: Le secret du vieux pont"
+              :class="{ 'p-invalid': form.errors.titre }" />
+            <small v-if="form.errors.titre" class="p-error">{{ form.errors.titre }}</small>
+          </section>
+
+          <!-- Points -->
+          <section class="form-section">
+            <h2 class="section-title">Points <span class="required">*</span></h2>
+            <InputNumber v-model="form.points" :min="0" :max="100" showButtons
+              suffix=" pts" :class="{ 'p-invalid': form.errors.points }" />
+            <small v-if="form.errors.points" class="p-error">{{ form.errors.points }}</small>
+          </section>
+        </div>
+
         <!-- Texte de l'énigme -->
         <section class="form-section">
           <h2 class="section-title">Texte de l'énigme <span class="required">*</span></h2>
+          <!-- ... hints ... -->
           <p class="section-hint" v-if="type === 'force3'">
             💡 Force 3 = la plus difficile. Rédigez une énigme cryptique ou poétique sans donner le nom du lieu.
           </p>
@@ -33,13 +52,49 @@
             💡 Enfant = adapté aux plus jeunes. Utilisez un langage simple et un ton ludique.
           </p>
 
-          <Textarea v-model="form.texte" rows="6" maxlength="2000" autoResize
+          <Textarea v-model="form.texte" rows="4" maxlength="2000" autoResize
             :placeholder="textePlaceholder"
             :class="{ 'p-invalid': form.errors.texte }" />
           <div class="textarea-footer">
             <small v-if="form.errors.texte" class="p-error">{{ form.errors.texte }}</small>
             <small class="char-count">{{ form.texte.length }}/2000</small>
           </div>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Réponse -->
+          <section class="form-section">
+            <h2 class="section-title">Réponse attendue <span class="required">*</span></h2>
+            <InputText v-model="form.reponse" placeholder="Ex: Pont de Pierre"
+              :class="{ 'p-invalid': form.errors.reponse }" />
+            <p class="section-hint text-xs">La réponse que le joueur doit taper (insensible à la casse).</p>
+            <small v-if="form.errors.reponse" class="p-error">{{ form.errors.reponse }}</small>
+          </section>
+
+          <!-- Indice -->
+          <section class="form-section">
+            <h2 class="section-title">Indice</h2>
+            <Textarea v-model="form.indice" rows="2" maxlength="1000" autoResize
+              placeholder="Un petit coup de pouce..."
+              :class="{ 'p-invalid': form.errors.indice }" />
+            <small v-if="form.errors.indice" class="p-error">{{ form.errors.indice }}</small>
+          </section>
+        </div>
+
+        <!-- Solution -->
+        <section class="form-section">
+          <h2 class="section-title">Solution détaillée</h2>
+          <Textarea v-model="form.solution" rows="3" maxlength="2000" autoResize
+            placeholder="Explication complète de l'énigme..."
+            :class="{ 'p-invalid': form.errors.solution }" />
+          <p class="section-hint text-xs">Affichée si le joueur abandonne l'énigme ou si le temps est écoulé.</p>
+          <small v-if="form.errors.solution" class="p-error">{{ form.errors.solution }}</small>
+        </section>
+
+        <!-- Actif -->
+        <section class="form-section flex flex-row items-center gap-3">
+          <InputSwitch v-model="form.actif" />
+          <h2 class="section-title mb-0">Énigme active</h2>
         </section>
 
         <!-- Image -->
@@ -90,6 +145,9 @@ import { ref, computed } from 'vue'
 import { useForm, Link } from '@inertiajs/vue3'
 import AdminLayout from '@/Pages/Admin/Layouts/AdminLayout.vue'
 import Textarea from 'primevue/textarea'
+import InputText from 'primevue/inputtext'
+import InputNumber from 'primevue/inputnumber'
+import InputSwitch from 'primevue/inputswitch'
 import Button from 'primevue/button'
 import Breadcrumb from 'primevue/breadcrumb'
 
@@ -109,7 +167,13 @@ const currentImageUrl = computed(() =>
 )
 
 const form = useForm({
+  titre: props.enigme?.titre ?? '',
   texte: props.enigme?.texte ?? '',
+  reponse: props.enigme?.reponse ?? '',
+  indice: props.enigme?.indice ?? '',
+  solution: props.enigme?.solution ?? '',
+  points: props.enigme?.points ?? 10,
+  actif: props.enigme?.actif ?? true,
   image: null,
   remove_image: false,
 })

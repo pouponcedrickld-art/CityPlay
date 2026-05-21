@@ -21,6 +21,12 @@ class ProgressionController extends Controller
     public function getCurrentEnigme(Partie $partie)
     {
         try {
+            // Sécurité : Une partie terminée ne doit plus être jouée
+            if ($partie->statut === 'terminee' || ($partie->progression && $partie->progression->estTerminee())) {
+                return redirect()->route('progression.summary', $partie)
+                    ->with('info', 'Cette partie est déjà terminée.');
+            }
+
             $progression = $partie->progression;
 
             if (!$progression) {
@@ -64,6 +70,13 @@ class ProgressionController extends Controller
 
         // Cas 1 : Soumission GPS
         if ($request->has('latitude') && $request->has('longitude')) {
+            \Log::info('ProgressionController: Soumission GPS reçue', [
+                'partie_id' => $partie->id,
+                'lat' => $request->latitude,
+                'lng' => $request->longitude,
+                'precision' => $request->precision
+            ]);
+
             $precision = $request->filled('precision')
                 ? (float) $request->input('precision')
                 : null;
@@ -76,12 +89,12 @@ class ProgressionController extends Controller
             );
 
             if ($resultat['succes']) {
+                session()->flash('points_gagnes', $resultat['points_gagnes'] ?? 0);
+                session()->flash('score_total', $resultat['score_total'] ?? 0);
+
                 return redirect()->route('progression.success', [
                     'partie' => $partie,
                     'lieu' => $resultat['lieu_id'],
-                ])->with([
-                    'points_gagnes' => $resultat['points_gagnes'] ?? 0,
-                    'score_total' => $resultat['score_total'] ?? 0,
                 ]);
             }
 
@@ -110,14 +123,15 @@ class ProgressionController extends Controller
             $lieuId = $enigme->lieu_id;
             $pointsGagnes = $progression->resoudreEnigmeCourante();
             $progression->refresh();
+
+            session()->flash('points_gagnes', $pointsGagnes);
+            session()->flash('score_total', $progression->score);
+
             $progression->passerEnigmeSuivante();
 
             return redirect()->route('progression.success', [
                 'partie' => $partie,
                 'lieu' => $lieuId,
-            ])->with([
-                'points_gagnes' => $pointsGagnes,
-                'score_total' => $progression->score,
             ]);
         }
 
@@ -126,11 +140,14 @@ class ProgressionController extends Controller
 
     public function showSuccess(Partie $partie, Request $request)
     {
-        $lieu = Lieu::with('photos')->find($request->lieu);
+        $lieu = Lieu::find($request->lieu);
+
+        // On récupère les photos avec la logique robuste (table ou JSON legacy)
+        $photos = $lieu ? $this->lieuPhotosPourJoueur($lieu) : [];
 
         return Inertia::render('Player/Success', [
             'partie' => $partie->load('environnement'),
-            'lieu' => $lieu,
+            'lieu' => $lieu ? array_merge($lieu->toArray(), ['photos' => $photos]) : null,
             'progression' => $partie->progression,
             'points_gagnes' => (int) session('points_gagnes', 0),
             'score_total' => (int) session('score_total', $partie->progression?->score ?? 0),
@@ -192,6 +209,14 @@ class ProgressionController extends Controller
         ]);
     }
 
+    public function showCarte(Partie $partie)
+    {
+        return Inertia::render('Player/Carte', [
+            'partie' => $partie->load('environnement'),
+            'progression' => $partie->progression,
+        ]);
+    }
+
     /**
      * Sauvegarde l'état de la progression (ex: temps restant)
      */
@@ -228,8 +253,9 @@ class ProgressionController extends Controller
             'type' => $enigme->type,
             'titre' => $enigme->titre,
             'texte' => $enigme->texte,
+            'indice' => $enigme->indice,
             'points' => $enigme->points,
-            'image_url' => $enigme->image_url,
+            'image_url' => $enigme->full_image_url,
             'lieu' => [
                 'gps_disponible' => $gpsDisponible,
                 'photos' => $this->lieuPhotosPourJoueur($lieu),
@@ -251,7 +277,7 @@ class ProgressionController extends Controller
         $fromTable = $lieu->photos()
             ->orderBy('ordre')
             ->get()
-            ->map(fn ($photo) => ['url' => $photo->url])
+            ->map(fn ($photo) => ['url' => $photo->full_url])
             ->all();
 
         if ($fromTable !== []) {
@@ -270,13 +296,15 @@ class ProgressionController extends Controller
 
         return collect($decoded)
             ->map(function ($item) {
-                if (is_string($item)) {
-                    return ['url' => $item];
-                }
+                $path = is_string($item) ? $item : ($item['url'] ?? '');
+                if (!$path) return null;
 
-                return ['url' => $item['url'] ?? ''];
+                if (filter_var($path, FILTER_VALIDATE_URL)) {
+                    return ['url' => $path];
+                }
+                return ['url' => asset('storage/' . $path)];
             })
-            ->filter(fn (array $photo) => $photo['url'] !== '')
+            ->filter()
             ->values()
             ->all();
     }

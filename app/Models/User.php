@@ -23,6 +23,7 @@ class User extends Authenticatable
         'otp_verified_at',
         'is_admin',
         'keep_account',
+        'total_score',
     ];
 
     protected $hidden = [
@@ -58,8 +59,17 @@ class User extends Authenticatable
         return $this->hasMany(Partie::class, 'createur_id');
     }
 
-    public function progressions()
+    /**
+     * Retourne tous les IDs des lieux déjà découverts par ce joueur
+     */
+    public function getLieuxDecouvertsIds(): array
     {
-        return $this->hasMany(Progression::class);
+        return ProgressionPartie::whereIn('partie_id', $this->parties()->pluck('id'))
+            ->get()
+            ->pluck('lieux_decouverts')
+            ->flatten()
+            ->unique()
+            ->filter()
+            ->toArray();
     }
 }

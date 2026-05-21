@@ -44,6 +44,8 @@ class HandleInertiaRequests extends Middleware
                     'id' => $request->user()->id,
                     'name' => $request->user()->name,
                     'email' => $request->user()->email,
+                    'pseudo' => $request->user()->pseudo,
+                    'total_score' => (int) $request->user()->total_score,
                     'is_admin' => (bool) $request->user()->is_admin,
                     'roles' => $request->user()->getRoleNames(), // Spatie roles
                     'permissions' => $request->user()->getAllPermissions()->pluck('name'), // Spatie permissions

@@ -16,11 +16,24 @@ class Enigme extends Model
         'force1' => 'Facile (Force 1)',
         'enfant' => 'Enfant',
     ];
-    protected $fillable = ['lieu_id', 'type', 'titre', 'texte', 'reponse', 'points', 'image_url', 'actif'];
+    protected $fillable = ['lieu_id', 'type', 'titre', 'texte', 'indice', 'reponse', 'solution', 'points', 'image_url', 'actif'];
 
     protected $casts = [
         'actif' => 'boolean',
     ];
+
+    protected $appends = ['full_image_url'];
+
+    public function getFullImageUrlAttribute(): ?string
+    {
+        if (!$this->image_url) {
+            return null;
+        }
+        if (filter_var($this->image_url, FILTER_VALIDATE_URL)) {
+            return $this->image_url;
+        }
+        return asset('storage/' . $this->image_url);
+    }
 
     public function lieu()
     {

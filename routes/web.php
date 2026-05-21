@@ -92,6 +92,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/parties/{partie}/suivant', [ProgressionController::class, 'nextEnigme'])->name('progression.next');
         Route::post('/parties/{partie}/solution', [ProgressionController::class, 'showSolution'])->name('progression.solution');
         Route::get('/parties/{partie}/resume', [ProgressionController::class, 'showSummary'])->name('progression.summary');
+        Route::get('/parties/{partie}/carte', [ProgressionController::class, 'showCarte'])->name('progression.carte');
         Route::post('/parties/{partie}/progression', [ProgressionController::class, 'store'])->name('progression.store');
 
         // Validation GPS
@@ -111,6 +112,7 @@ Route::middleware('auth')->group(function () {
             Route::resource('environnements', EnvironnementController::class)->names('admin.environnements');
 
             // Lieux (dépendent d'un environnement)
+            Route::get('/lieux/search', [AdminLieuController::class, 'searchLocation'])->name('admin.lieux.search');
             Route::get('/environnements/{environnement}/lieux', [AdminLieuController::class, 'index'])->name('admin.lieux.index');
             Route::get('/environnements/{environnement}/lieux/create', [AdminLieuController::class, 'create'])->name('admin.lieux.create');
             Route::post('/environnements/{environnement}/lieux', [AdminLieuController::class, 'store'])->name('admin.lieux.store');
