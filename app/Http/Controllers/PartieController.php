@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Partie;
 use App\Models\Environnement;
 use App\Services\PartieService;
@@ -78,6 +79,10 @@ class PartieController extends Controller
             'parties' => $parties,
             'environnements' => $environnements->take(4)->values(),
             'geolocalise' => $geolocalise,
+            'topPlayers' => User::where('is_admin', false)
+                ->orderByDesc('total_score')
+                ->limit(3)
+                ->get(['id', 'name', 'total_score']),
         ]);
     }
 

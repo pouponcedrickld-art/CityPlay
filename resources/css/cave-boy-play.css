@@ -1024,6 +1024,7 @@
     padding-bottom: 0;
     display: flex;
     min-height: 100vh;
+    overflow-x: hidden;
   }
 
   .cave-play-hub::before,
@@ -2003,7 +2004,17 @@
   color: var(--cave-grass-dark);
 }
 
-/* Modals thème Cave Boy */
+.cave-hud__btn--admin {
+  background: #C2410C !important;
+  color: white !important;
+  border-color: #9A3412 !important;
+}
+
+.cave-hud__btn--admin:hover {
+  background: #EA580C !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.4);
+}
 .cave-modal-backdrop {
   background: rgba(61, 34, 16, 0.75) !important;
   opacity: 1 !important;

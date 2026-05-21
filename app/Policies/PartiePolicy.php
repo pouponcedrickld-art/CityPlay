@@ -16,6 +16,17 @@ use App\Models\User;
 class PartiePolicy
 {
     /**
+     * Autorise l'admin à tout faire
+     */
+    public function before(User $user, string $ability): ?bool
+    {
+        if ($user->is_admin || $user->hasRole('admin')) {
+            return true;
+        }
+        return null;
+    }
+
+    /**
      * Détermine si l'utilisateur peut voir la liste des parties
      */
     public function viewAny(User $user): bool

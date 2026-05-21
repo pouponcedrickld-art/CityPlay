@@ -28,7 +28,7 @@ onMounted(() => {
 // Menu adaptatif selon le rôle (Admin ou Player)
 const menuItems = computed(() => {
     const isAdmin = page.props.auth.user?.is_admin;
-    
+
     if (isAdmin) {
         return [
             { label: "Dashboard", icon: "pi pi-th-large", route: "admin.dashboard" },
@@ -38,9 +38,10 @@ const menuItems = computed(() => {
             { label: "Paramètres", icon: "pi pi-cog", route: "admin.parametres" },
         ];
     }
-    
+
     return [
         { label: "Mes Parties", icon: "pi pi-play", route: "player.dashboard" },
+        { label: "Classement", icon: "pi pi-trophy", route: "player.classement" },
         { label: "Nouveau Parcours", icon: "pi pi-plus-circle", route: "parties.create" },
         { label: "Mon Profil", icon: "pi pi-user", route: "profile.edit" },
     ];
@@ -141,7 +142,8 @@ const closeSidebar = () => {
         ></div>
 
         <!-- Main Content Area -->
-        <main class="flex-1 pt-16 lg:pt-0 lg:pl-72 min-h-screen relative z-0">
+        <main class="flex-1 pt-16 min-h-screen relative z-0 transition-all duration-300"
+            :class="[visible ? 'lg:pl-72' : 'lg:pl-0']">
             <div class="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
                 <slot />
             </div>
