@@ -158,7 +158,7 @@ const innerClass = computed(() => [
         <!-- Nav mobile -->
         <nav v-if="!immersive" class="cave-bottom-nav lg:hidden" aria-label="Navigation jeu">
             <Link
-                v-for="item in navItems.slice(0, 5)"
+                v-for="item in navItems"
                 :key="'m-' + item.label"
                 :href="navHref(item)"
                 class="cave-nav-stone"
