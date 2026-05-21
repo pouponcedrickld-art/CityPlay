@@ -7,18 +7,18 @@ const props = defineProps({
     currentUser: Object,
 });
 
-const getRankColor = (index) => {
-    if (index === 0) return "text-yellow-500 bg-yellow-50 border-yellow-200";
-    if (index === 1) return "text-slate-400 bg-slate-50 border-slate-200";
-    if (index === 2) return "text-orange-600 bg-orange-50 border-orange-200";
-    return "text-gray-500 bg-gray-50 border-gray-100";
+const getRankClass = (index) => {
+    if (index === 0) return "cave-rank-box--gold";
+    if (index === 1) return "cave-rank-box--silver";
+    if (index === 2) return "cave-rank-box--bronze";
+    return "cave-rank-box--default";
 };
 
 const getRankIcon = (index) => {
-    if (index === 0) return "pi pi-trophy text-2xl";
-    if (index === 1) return "pi pi-medal text-xl";
-    if (index === 2) return "pi pi-award text-lg";
-    return "text-xs font-black";
+    if (index === 0) return "pi pi-trophy";
+    if (index === 1) return "pi pi-medal";
+    if (index === 2) return "pi pi-award";
+    return null;
 };
 </script>
 
@@ -26,67 +26,60 @@ const getRankIcon = (index) => {
     <Head title="Classement" />
 
     <CavePlayLayout wide>
-        <div class="max-w-4xl mx-auto space-y-8 pb-12">
+        <div class="max-w-4xl mx-auto space-y-6 pb-12">
             <!-- Header Section -->
-            <div class="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-orange-600 to-orange-400 p-8 text-white shadow-2xl shadow-orange-200">
-                <div class="absolute top-0 right-0 -mt-12 -mr-12 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-                <div class="absolute bottom-0 left-0 -mb-12 -ml-12 w-48 h-48 bg-black/10 rounded-full blur-2xl"></div>
-
-                <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div class="cave-profile-section overflow-hidden relative" style="padding: 0;">
+                <div class="absolute inset-0 z-0 bg-cover bg-center opacity-10" style="background-image: url('/storage/enigmes/images/placeholder_cave.jpg')"></div>
+                <div class="relative z-10 p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div>
-                        <h1 class="text-4xl font-black tracking-tighter uppercase mb-2">Classement Mondial</h1>
-                        <p class="text-orange-50 font-medium text-sm tracking-wide uppercase opacity-80">
-                            Les meilleurs explorateurs de CityPlay
-                        </p>
+                        <h1 class="cave-result-title" style="margin-bottom: 4px;">Classement Mondial</h1>
+                        <p class="cave-result-sub" style="margin-bottom: 0;">Les meilleurs explorateurs</p>
                     </div>
-                    <div class="bg-white/20 backdrop-blur-md rounded-3xl p-6 border border-white/30 flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-orange-600 shadow-xl">
-                            <i class="pi pi-user text-xl"></i>
-                        </div>
-                        <div>
-                            <p class="text-[10px] font-black uppercase tracking-widest opacity-70">Votre Score</p>
-                            <p class="text-2xl font-black">{{ currentUser.total_score || 0 }} <span class="text-xs">PTS</span></p>
+
+                    <div class="cave-stat-box" style="min-width: 180px; background: rgba(255, 248, 238, 0.4);">
+                        <div class="cave-stat-box__label">Votre Score</div>
+                        <div class="cave-stat-box__value" style="font-size: 2.5rem; color: var(--cave-gold-dark);">
+                            {{ currentUser.total_score || 0 }} <span style="font-size: 0.8rem; font-family: var(--cave-font-body);">PTS</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Leaderboard List -->
-            <div class="bg-white rounded-[2rem] shadow-xl shadow-orange-950/5 border border-orange-100 overflow-hidden">
+            <div class="cave-profile-section" style="padding: 0; overflow: hidden;">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="border-b border-orange-50 bg-orange-50/30">
-                                <th class="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-orange-900/40">Rang</th>
-                                <th class="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-orange-900/40">Explorateur</th>
-                                <th class="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-orange-900/40 text-right">Points</th>
+                            <tr style="background: rgba(61, 34, 16, 0.1); border-bottom: 3px solid var(--cave-border-dark);">
+                                <th class="px-6 py-4 cave-field-label" style="margin-bottom: 0;">Rang</th>
+                                <th class="px-6 py-4 cave-field-label" style="margin-bottom: 0;">Explorateur</th>
+                                <th class="px-6 py-4 cave-field-label text-right" style="margin-bottom: 0;">Points</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-orange-50">
+                        <tbody class="divide-y-3 divide-[var(--cave-border-dark)]">
                             <tr v-for="(user, index) in users" :key="user.id"
-                                class="group hover:bg-orange-50/50 transition-colors"
-                                :class="{'bg-orange-50/20': user.id === currentUser.id}">
-                                <td class="px-8 py-6">
-                                    <div class="w-12 h-12 rounded-2xl border flex items-center justify-center transition-transform group-hover:scale-110"
-                                        :class="getRankColor(index)">
-                                        <i v-if="index < 3" :class="getRankIcon(index)"></i>
-                                        <span v-else :class="getRankIcon(index)">#{{ index + 1 }}</span>
+                                class="transition-colors"
+                                :class="user.id === currentUser.id ? 'bg-[rgba(255,215,0,0.1)]' : 'hover:bg-[rgba(255,255,255,0.1)]'">
+                                <td class="px-6 py-4">
+                                    <div class="cave-rank-box" :class="getRankClass(index)">
+                                        <i v-if="getRankIcon(index)" :class="getRankIcon(index)"></i>
+                                        <span v-else>#{{ index + 1 }}</span>
                                     </div>
                                 </td>
-                                <td class="px-8 py-6">
-                                    <div class="flex items-center gap-4">
-                                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-100 to-orange-50 flex items-center justify-center text-orange-400 font-bold border border-orange-200">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-xl border-2 border-[var(--cave-border-dark)] bg-[var(--cave-rock-light)] flex items-center justify-center text-[var(--cave-border-dark)] font-black shadow-[0_3px_0_var(--cave-border-darker)]">
                                             {{ user.name.charAt(0).toUpperCase() }}
                                         </div>
                                         <div>
-                                            <p class="font-black text-orange-950 uppercase text-sm">{{ user.name }}</p>
-                                            <span v-if="user.id === currentUser.id" class="text-[9px] font-black uppercase tracking-tighter px-2 py-0.5 bg-orange-100 text-orange-600 rounded-full">Vous</span>
+                                            <p class="font-black text-[var(--cave-border-dark)] uppercase text-sm tracking-tight">{{ user.name }}</p>
+                                            <span v-if="user.id === currentUser.id" class="cave-badge cave-badge--gold" style="font-size: 0.5rem; padding: 1px 6px;">VOUS</span>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-8 py-6 text-right">
-                                    <span class="text-lg font-black text-orange-600">{{ user.total_score || 0 }}</span>
-                                    <span class="text-[10px] font-black text-orange-900/30 ml-1 uppercase">pts</span>
+                                <td class="px-6 py-4 text-right">
+                                    <span class="cave-stat-box__value" style="font-size: 1.4rem;">{{ user.total_score || 0 }}</span>
+                                    <span class="cave-stat-box__label" style="margin-left: 4px;">pts</span>
                                 </td>
                             </tr>
                         </tbody>
@@ -95,10 +88,10 @@ const getRankIcon = (index) => {
 
                 <!-- Empty State -->
                 <div v-if="users.length === 0" class="p-12 text-center">
-                    <div class="w-20 h-20 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="pi pi-users text-3xl text-orange-200"></i>
+                    <div class="w-16 h-16 bg-[var(--cave-rock-dark)] rounded-2xl border-3 border-[var(--cave-border-dark)] flex items-center justify-center mx-auto mb-4 opacity-40">
+                        <i class="pi pi-users text-2xl text-[var(--cave-border-dark)]"></i>
                     </div>
-                    <p class="text-orange-900/40 font-bold uppercase text-xs tracking-widest">Aucun joueur pour le moment</p>
+                    <p class="cave-hint">Aucun explorateur dans cette zone...</p>
                 </div>
             </div>
         </div>
@@ -106,14 +99,42 @@ const getRankIcon = (index) => {
 </template>
 
 <style scoped>
-.custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
+.cave-rank-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: 3px solid var(--cave-border-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--cave-font-title);
+    font-size: 1.1rem;
+    box-shadow: 0 4px 0 var(--cave-border-darker);
 }
-.custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
+
+.cave-rank-box--gold {
+    background: linear-gradient(180deg, var(--cave-gold), var(--cave-gold-dark));
+    color: var(--cave-border-dark);
 }
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #FF9500;
-    border-radius: 10px;
+
+.cave-rank-box--silver {
+    background: linear-gradient(180deg, #E2E8F0, #94A3B8);
+    color: var(--cave-border-dark);
+}
+
+.cave-rank-box--bronze {
+    background: linear-gradient(180deg, #FDBA74, #C2410C);
+    color: white;
+}
+
+.cave-rank-box--default {
+    background: var(--cave-rock-light);
+    color: var(--cave-border-dark);
+    font-size: 0.8rem;
+}
+
+.divide-y-3 > :not([hidden]) ~ :not([hidden]) {
+    border-top-width: 3px;
+    border-style: dashed;
 }
 </style>
