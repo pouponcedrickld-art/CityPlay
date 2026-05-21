@@ -440,9 +440,12 @@ onUnmounted(() => {
 
             <main class="cave-game-content cave-game-content--split">
                 <article class="cave-panel">
-                    <div v-if="enigme?.lieu?.photos?.length || enigme?.image_url" class="relative">
-                        <img :src="enigme?.lieu?.photos?.length ? enigme.lieu.photos[0].url : enigme.image_url" class="cave-panel__img" :alt="enigme?.titre">
+                    <div v-if="enigme?.image_url" class="relative">
+                        <img :src="enigme.image_url" class="cave-panel__img" :alt="enigme?.titre">
                         <div class="cave-level-card__overlay absolute inset-0" />
+                    </div>
+                    <div v-else class="cave-panel__img-placeholder flex items-center justify-center bg-[var(--cave-rock-dark)]" style="height: 200px;">
+                        <i class="pi pi-question-circle text-4xl opacity-20" />
                     </div>
                     <div class="cave-panel__body">
                         <div class="flex flex-wrap gap-2 mb-3">
