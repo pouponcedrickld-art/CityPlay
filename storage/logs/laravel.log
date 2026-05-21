@@ -3326,3 +3326,5 @@
 [2026-05-20 15:01:34] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
 [2026-05-21 08:26:28] local.INFO: OTP envoyé par mail à admin@example.com  
 [2026-05-21 08:30:42] local.INFO: OTP envoyé par mail à admin@example.com  
+[2026-05-21 08:36:04] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 08:36:19] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
