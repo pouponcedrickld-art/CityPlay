@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link } from "@inertiajs/vue3";
-import SidebarLayout from "@/Layouts/SidebarLayout.vue";
+import CavePlayLayout from "@/Layouts/CavePlayLayout.vue";
 
 const props = defineProps({
     users: Array,
@@ -25,7 +25,7 @@ const getRankIcon = (index) => {
 <template>
     <Head title="Classement" />
 
-    <SidebarLayout>
+    <CavePlayLayout wide>
         <div class="max-w-4xl mx-auto space-y-8 pb-12">
             <!-- Header Section -->
             <div class="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-orange-600 to-orange-400 p-8 text-white shadow-2xl shadow-orange-200">
@@ -63,7 +63,7 @@ const getRankIcon = (index) => {
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-orange-50">
-                            <tr v-for="(user, index) in users" :key="user.id" 
+                            <tr v-for="(user, index) in users" :key="user.id"
                                 class="group hover:bg-orange-50/50 transition-colors"
                                 :class="{'bg-orange-50/20': user.id === currentUser.id}">
                                 <td class="px-8 py-6">
@@ -102,7 +102,7 @@ const getRankIcon = (index) => {
                 </div>
             </div>
         </div>
-    </SidebarLayout>
+    </CavePlayLayout>
 </template>
 
 <style scoped>
