@@ -51,9 +51,15 @@ class EnigmeController extends Controller
         abort_unless(in_array($type, Enigme::TYPES), 404);
 
         $data = $request->validate([
+            'titre'       => 'nullable|string|max:150',
             'texte'       => 'required|string|max:2000',
+            'reponse'     => 'required|string|max:255',
+            'indice'      => 'nullable|string|max:1000',
+            'solution'    => 'nullable|string|max:2000',
+            'points'      => 'required|integer|min:0|max:100',
             'image'       => 'nullable|image|max:2048',
             'remove_image' => 'nullable|boolean',
+            'actif'       => 'boolean',
         ]);
 
         $enigme = $lieu->enigmes()->where('type', $type)->first();
@@ -74,8 +80,14 @@ class EnigmeController extends Controller
         $lieu->enigmes()->updateOrCreate(
             ['lieu_id' => $lieu->id, 'type' => $type],
             [
+                'titre'      => $data['titre'] ?? '',
                 'texte'      => $data['texte'],
-                'image_url' => $imageUrl,
+                'reponse'    => $data['reponse'],
+                'indice'     => $data['indice'],
+                'solution'   => $data['solution'],
+                'points'     => $data['points'],
+                'actif'      => $data['actif'] ?? true,
+                'image_url'  => $imageUrl,
             ]
         );
 

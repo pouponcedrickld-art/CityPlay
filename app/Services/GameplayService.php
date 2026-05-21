@@ -275,11 +275,17 @@ class GameplayService
             return ['succes' => false, 'message' => 'Aucune énigme en cours.'];
         }
 
-        // Pour l'instant, retourne le texte de l'énigme comme "indice"
-        // TODO : ajouter un champ 'indice' séparé dans la table enigmes
+        $indice = trim((string) ($enigme->indice ?? ''));
+        if ($indice === '') {
+            return [
+                'succes' => false,
+                'message' => 'Aucun indice n\'est disponible pour cette énigme.',
+            ];
+        }
+
         return [
             'succes' => true,
-            'indice' => $enigme->texte, // Texte de l'énigme comme indice
+            'indice' => $indice,
             'message' => 'Voici un indice pour vous aider...',
         ];
     }

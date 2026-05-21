@@ -34,6 +34,9 @@ const isOffline = ref(!navigator.onLine);
 const gpsMessage = ref(null);
 const lastGpsCheck = ref(null);
 
+const lastKnownCoords = ref(null);
+const lastKnownTime = ref(null);
+
 const mapContainer = ref(null);
 const map = ref(null);
 const playerMarker = ref(null);
@@ -59,8 +62,12 @@ const initMap = () => {
     if (navigator.geolocation) {
         watchId = navigator.geolocation.watchPosition(
             (position) => {
-                const { latitude, longitude } = position.coords;
+                const { latitude, longitude, accuracy } = position.coords;
                 const latlng = [latitude, longitude];
+
+                // Sauvegarder pour réutilisation immédiate
+                lastKnownCoords.value = { latitude, longitude, accuracy };
+                lastKnownTime.value = Date.now();
 
                 if (!playerMarker.value) {
                     playerMarker.value = L.marker(latlng).addTo(map.value);
@@ -69,8 +76,8 @@ const initMap = () => {
                     playerMarker.value.setLatLng(latlng);
                 }
             },
-            (error) => console.warn("Erreur GPS:", error),
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            (error) => console.warn("Erreur GPS Radar:", error),
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 5000 }
         );
     }
 };
@@ -131,31 +138,63 @@ const checkLocation = () => {
         };
         return;
     }
-    if (!navigator.geolocation) {
-        alert("La géolocalisation n'est pas supportée par votre navigateur.");
-        return;
-    }
 
     isLocating.value = true;
     gpsMessage.value = null;
 
+    // STRATÉGIE 1 : Réutiliser la position du radar si elle est récente (< 10s)
+    if (lastKnownCoords.value && lastKnownTime.value && (Date.now() - lastKnownTime.value < 10000)) {
+        console.log("Utilisation de la position en cache (Radar)");
+        form.latitude = lastKnownCoords.value.latitude;
+        form.longitude = lastKnownCoords.value.longitude;
+        form.precision = lastKnownCoords.value.accuracy;
+        submitLocationAnswer();
+        return;
+    }
+
+    if (!navigator.geolocation) {
+        isLocating.value = false;
+        alert("La géolocalisation n'est pas supportée par votre navigateur.");
+        return;
+    }
+
+    // STRATÉGIE 2 : Demander une nouvelle position avec un timeout plus long
     navigator.geolocation.getCurrentPosition(
         (position) => {
+            console.log("Nouvelle position obtenue via getCurrentPosition:", position.coords);
             form.latitude = position.coords.latitude;
             form.longitude = position.coords.longitude;
             form.precision = position.coords.accuracy ?? null;
             submitLocationAnswer();
         },
         (error) => {
+            console.error("Erreur Geolocation:", error);
+
+            // STRATÉGIE 3 : Fallback ultime - Utiliser la dernière position connue même si vieille
+            if (lastKnownCoords.value) {
+                console.warn("Échec GPS frais, utilisation de la dernière position connue (Fallback)");
+                form.latitude = lastKnownCoords.value.latitude;
+                form.longitude = lastKnownCoords.value.longitude;
+                form.precision = lastKnownCoords.value.accuracy;
+                submitLocationAnswer();
+                return;
+            }
+
             isLocating.value = false;
+            let msg = 'Erreur de localisation. Réessayez en plein air.';
+
+            if (error.code === 1) {
+                msg = "Veuillez autoriser l'accès à votre position dans les réglages de votre navigateur.";
+            } else if (error.code === 3) {
+                msg = "Le signal GPS est trop faible pour une vérification précise. Rapprochez-vous d'une fenêtre ou sortez dehors.";
+            }
+
             gpsMessage.value = {
                 type: 'error',
-                text: error.code === 1
-                    ? "Veuillez autoriser l'accès à votre position."
-                    : 'Erreur de localisation. Réessayez en plein air.',
+                text: msg,
             };
         },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+        { enableHighAccuracy: true, timeout: 20000, maximumAge: 10000 }
     );
 };
 
@@ -433,13 +472,6 @@ onUnmounted(() => {
                         {{ gpsMessage.text }}
                     </div>
 
-                    <div v-if="lastGpsCheck && lastGpsCheck.distance != null" class="cave-gps-result">
-                        <p>
-                            Vous êtes à environ <strong>{{ lastGpsCheck.distance }} m</strong> de la zone.
-                            Rapprochez-vous et réessayez.
-                        </p>
-                    </div>
-
                     <button
                         type="button"
                         class="cave-btn w-full"
@@ -482,9 +514,12 @@ onUnmounted(() => {
             </main>
 
             <Dialog v-model:visible="showHint" modal header="Indice" :style="{ width: '90vw', maxWidth: '420px' }" class="cave-game-dialog">
-                <p class="cave-panel__text" style="margin:0">L'indice sera bientôt disponible pour vous aider.</p>
+                <div class="cave-overlay__body">
+                    <p v-if="enigme?.indice" class="cave-panel__text text-center" style="margin:0">{{ enigme.indice }}</p>
+                    <p v-else class="cave-hint text-center">Aucun indice n'est disponible pour cette énigme.</p>
+                </div>
                 <template #footer>
-                    <button type="button" class="cave-btn w-full" @click="showHint = false">Fermer</button>
+                    <button type="button" class="cave-btn w-full" @click="showHint = false">Compris</button>
                 </template>
             </Dialog>
 

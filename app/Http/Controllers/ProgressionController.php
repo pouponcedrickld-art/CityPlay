@@ -64,6 +64,13 @@ class ProgressionController extends Controller
 
         // Cas 1 : Soumission GPS
         if ($request->has('latitude') && $request->has('longitude')) {
+            \Log::info('ProgressionController: Soumission GPS reçue', [
+                'partie_id' => $partie->id,
+                'lat' => $request->latitude,
+                'lng' => $request->longitude,
+                'precision' => $request->precision
+            ]);
+
             $precision = $request->filled('precision')
                 ? (float) $request->input('precision')
                 : null;
@@ -127,6 +134,17 @@ class ProgressionController extends Controller
     public function showSuccess(Partie $partie, Request $request)
     {
         $lieu = Lieu::with('photos')->find($request->lieu);
+
+        if ($lieu) {
+            // On s'assure que les photos ont les URLs complètes
+            $lieu->photos = $lieu->photos->map(function($photo) {
+                return [
+                    'id' => $photo->id,
+                    'url' => $photo->full_url,
+                    'alt_text' => $photo->alt_text
+                ];
+            });
+        }
 
         return Inertia::render('Player/Success', [
             'partie' => $partie->load('environnement'),
@@ -236,8 +254,9 @@ class ProgressionController extends Controller
             'type' => $enigme->type,
             'titre' => $enigme->titre,
             'texte' => $enigme->texte,
+            'indice' => $enigme->indice,
             'points' => $enigme->points,
-            'image_url' => $enigme->image_url,
+            'image_url' => $enigme->full_image_url,
             'lieu' => [
                 'gps_disponible' => $gpsDisponible,
                 'photos' => $this->lieuPhotosPourJoueur($lieu),
@@ -259,7 +278,7 @@ class ProgressionController extends Controller
         $fromTable = $lieu->photos()
             ->orderBy('ordre')
             ->get()
-            ->map(fn ($photo) => ['url' => $photo->url])
+            ->map(fn ($photo) => ['url' => $photo->full_url])
             ->all();
 
         if ($fromTable !== []) {
@@ -278,13 +297,15 @@ class ProgressionController extends Controller
 
         return collect($decoded)
             ->map(function ($item) {
-                if (is_string($item)) {
-                    return ['url' => $item];
-                }
+                $path = is_string($item) ? $item : ($item['url'] ?? '');
+                if (!$path) return null;
 
-                return ['url' => $item['url'] ?? ''];
+                if (filter_var($path, FILTER_VALIDATE_URL)) {
+                    return ['url' => $path];
+                }
+                return ['url' => asset('storage/' . $path)];
             })
-            ->filter(fn (array $photo) => $photo['url'] !== '')
+            ->filter()
             ->values()
             ->all();
     }
