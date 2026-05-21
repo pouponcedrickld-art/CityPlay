@@ -100,9 +100,13 @@ onUnmounted(() => {
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <div class="cave-hud__score">
-                        <i class="pi pi-star-fill" />
+                    <div class="cave-hud__score" title="Score de la mission">
+                        <i class="pi pi-star" />
                         <span>{{ progression?.score || 0 }}</span>
+                    </div>
+                    <div class="cave-hud__score cave-hud__score--gold" title="Score global">
+                        <i class="pi pi-star-fill" />
+                        <span>{{ $page.props.auth.user.total_score || 0 }}</span>
                     </div>
                 </div>
             </header>

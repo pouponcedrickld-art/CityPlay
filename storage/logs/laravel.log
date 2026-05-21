@@ -3570,3 +3570,48 @@
 #56 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php(23): require_once('C://Users//halil....')
 #57 {main}
 "} 
+[2026-05-21 10:53:10] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 10:53:20] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 10:53:33] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 10:53:35] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 10:53:42] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 10:53:43] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 10:59:49] local.INFO: Tentative de création de partie {"environnement_id":2,"mode":"solo","duree":60,"locomotion":"pied","difficulte":2,"nb_joueurs":1} 
+[2026-05-21 10:59:50] local.INFO: Validation réussie {"environnement_id":2,"mode":"solo","duree":60,"locomotion":"pied","difficulte":2,"nb_joueurs":1} 
+[2026-05-21 10:59:50] local.INFO: PartieService: Début création partie {"data":{"environnement_id":2,"mode":"solo","duree":60,"locomotion":"pied","difficulte":2,"nb_joueurs":1},"createurId":2} 
+[2026-05-21 10:59:50] local.INFO: PartieService: Environnement trouvé {"nom":"Les Trésors de Cotonou"} 
+[2026-05-21 10:59:50] local.INFO: PartieService: Fin création partie {"id":5} 
+[2026-05-21 10:59:50] local.INFO: Partie créée avec succès {"id":5} 
+[2026-05-21 10:59:53] local.INFO: GameplayService: Début initialisation progression {"partie_id":5} 
+[2026-05-21 10:59:53] local.INFO: GameplayService: Paramètres extraits {"duree":60,"locomotion":"pied","difficulte":2} 
+[2026-05-21 10:59:53] local.INFO: GameplayService: Nombre d'énigmes calculé {"count":6} 
+[2026-05-21 10:59:53] local.INFO: GameplayService: Lieux sélectionnés {"count":6,"ids":{"Illuminate\\Support\\Collection":[6,12,7,8,9,10]}} 
+[2026-05-21 10:59:53] local.INFO: GameplayService: Énigme de départ identifiée {"id":22} 
+[2026-05-21 10:59:53] local.INFO: GameplayService: Progression créée {"id":4} 
+[2026-05-21 10:59:53] local.INFO: GameplayService: Partie marquée comme en cours  
+[2026-05-21 11:00:41] local.INFO: ProgressionController: Soumission GPS reçue {"partie_id":5,"lat":6.3543,"lng":2.4362,"precision":8369} 
+[2026-05-21 11:05:19] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 11:10:58] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 11:11:02] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 11:14:37] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 11:14:58] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 11:15:09] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 11:15:21] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 11:15:31] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 11:15:35] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 11:15:37] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 11:15:45] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 11:16:25] local.INFO: Tentative de création de partie {"environnement_id":2,"mode":"solo","duree":60,"locomotion":"pied","difficulte":2,"nb_joueurs":1} 
+[2026-05-21 11:16:25] local.INFO: Validation réussie {"environnement_id":2,"mode":"solo","duree":60,"locomotion":"pied","difficulte":2,"nb_joueurs":1} 
+[2026-05-21 11:16:25] local.INFO: PartieService: Début création partie {"data":{"environnement_id":2,"mode":"solo","duree":60,"locomotion":"pied","difficulte":2,"nb_joueurs":1},"createurId":2} 
+[2026-05-21 11:16:25] local.INFO: PartieService: Environnement trouvé {"nom":"Les Trésors de Cotonou"} 
+[2026-05-21 11:16:25] local.INFO: PartieService: Fin création partie {"id":6} 
+[2026-05-21 11:16:25] local.INFO: Partie créée avec succès {"id":6} 
+[2026-05-21 11:16:29] local.INFO: GameplayService: Début initialisation progression {"partie_id":6} 
+[2026-05-21 11:16:29] local.INFO: GameplayService: Paramètres extraits {"duree":60,"locomotion":"pied","difficulte":2} 
+[2026-05-21 11:16:29] local.INFO: GameplayService: Nombre d'énigmes calculé {"count":6} 
+[2026-05-21 11:16:29] local.INFO: GameplayService: Lieux sélectionnés {"count":6,"ids":{"Illuminate\\Support\\Collection":[6,12,7,8,9,10]}} 
+[2026-05-21 11:16:29] local.INFO: GameplayService: Énigme de départ identifiée {"id":22} 
+[2026-05-21 11:16:37] local.INFO: GameplayService: Progression créée {"id":5} 
+[2026-05-21 11:16:37] local.INFO: GameplayService: Partie marquée comme en cours  
+[2026-05-21 11:17:06] local.INFO: ProgressionController: Soumission GPS reçue {"partie_id":6,"lat":6.3543,"lng":2.4362,"precision":8369} 

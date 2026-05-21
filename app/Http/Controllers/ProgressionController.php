@@ -89,12 +89,12 @@ class ProgressionController extends Controller
             );
 
             if ($resultat['succes']) {
+                session()->flash('points_gagnes', $resultat['points_gagnes'] ?? 0);
+                session()->flash('score_total', $resultat['score_total'] ?? 0);
+
                 return redirect()->route('progression.success', [
                     'partie' => $partie,
                     'lieu' => $resultat['lieu_id'],
-                ])->with([
-                    'points_gagnes' => $resultat['points_gagnes'] ?? 0,
-                    'score_total' => $resultat['score_total'] ?? 0,
                 ]);
             }
 
@@ -123,14 +123,15 @@ class ProgressionController extends Controller
             $lieuId = $enigme->lieu_id;
             $pointsGagnes = $progression->resoudreEnigmeCourante();
             $progression->refresh();
+
+            session()->flash('points_gagnes', $pointsGagnes);
+            session()->flash('score_total', $progression->score);
+
             $progression->passerEnigmeSuivante();
 
             return redirect()->route('progression.success', [
                 'partie' => $partie,
                 'lieu' => $lieuId,
-            ])->with([
-                'points_gagnes' => $pointsGagnes,
-                'score_total' => $progression->score,
             ]);
         }
 

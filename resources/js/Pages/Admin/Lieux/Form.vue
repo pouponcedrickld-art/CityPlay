@@ -38,6 +38,20 @@
         <section class="form-section">
           <h2 class="section-title">Géolocalisation</h2>
 
+          <!-- Recherche d'adresse -->
+          <div class="field mb-3">
+            <label>Rechercher une adresse</label>
+            <div class="p-inputgroup">
+              <InputText v-model="searchQuery" placeholder="Ex: Place de la Bourse, Bordeaux" @keyup.enter="searchAddress" />
+              <Button icon="pi pi-search" :loading="isSearching" @click="searchAddress" />
+            </div>
+            <ul v-if="searchResults.length" class="search-results">
+              <li v-for="res in searchResults" :key="res.place_id" @click="selectAddress(res)">
+                {{ res.display_name }}
+              </li>
+            </ul>
+          </div>
+
           <!-- Carte Interactive -->
           <div class="map-wrapper mb-4">
             <div class="map-toolbar">
@@ -156,6 +170,47 @@ onMounted(() => {
 const mapContainer = ref(null)
 const map = ref(null)
 const marker = ref(null)
+
+// Recherche d'adresse
+const searchQuery = ref('')
+const isSearching = ref(false)
+const searchResults = ref([])
+
+const searchAddress = async () => {
+  if (!searchQuery.value) return
+  isSearching.value = true
+  try {
+    const response = await fetch(route('admin.lieux.search', { q: searchQuery.value }))
+    searchResults.value = await response.json()
+  } catch (e) {
+    console.error(e)
+  } finally {
+    isSearching.value = false
+  }
+}
+
+const selectAddress = (res) => {
+  const lat = parseFloat(res.lat)
+  const lon = parseFloat(res.lon)
+  const latlng = [lat, lon]
+
+  form.latitude = parseFloat(lat.toFixed(7))
+  form.longitude = parseFloat(lon.toFixed(7))
+
+  map.value.setView(latlng, 16)
+  if (marker.value) {
+    marker.value.setLatLng(latlng)
+  } else {
+    marker.value = L.marker(latlng, { draggable: true }).addTo(map.value)
+    marker.value.on('dragend', (ev) => {
+      const pos = ev.target.getLatLng()
+      form.latitude = parseFloat(pos.lat.toFixed(7))
+      form.longitude = parseFloat(pos.lng.toFixed(7))
+    })
+  }
+  searchResults.value = []
+  searchQuery.value = res.display_name
+}
 
 onMounted(() => {
   const initialLat = props.lieu?.latitude ? parseFloat(props.lieu.latitude) : 44.841389
@@ -389,6 +444,35 @@ const breadcrumbs = computed(() => [
   height: 300px;
   width: 100%;
   z-index: 1;
+}
+
+.search-results {
+  background: white;
+  border: 1px solid #e5e9f0;
+  border-radius: 4px;
+  margin-top: 4px;
+  padding: 0;
+  list-style: none;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+}
+.search-results li {
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border-bottom: 1px solid #f7fafc;
+}
+.search-results li:hover {
+  background: #f7fafc;
+  color: #2b6cb0;
+}
+:root.light-theme .search-results {
+  background: #fff;
+  border-color: #ddd;
+}
+:root.light-theme .search-results li {
+  color: #333;
 }
 
 .form-actions { display: flex; justify-content: flex-end; gap: 0.75rem; padding-top: 0.5rem; border-top: 1px solid #e5e9f0; }

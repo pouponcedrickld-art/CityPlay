@@ -419,9 +419,13 @@ onUnmounted(() => {
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <div class="cave-hud__score" :title="scoreActuel + ' points au total'">
-                        <i class="pi pi-star-fill" />
+                    <div class="cave-hud__score" :title="'Score de la mission: ' + scoreActuel + ' pts'">
+                        <i class="pi pi-star" />
                         <span>{{ scoreActuel }}</span>
+                    </div>
+                    <div class="cave-hud__score cave-hud__score--gold" :title="'Score global: ' + ($page.props.auth.user.total_score || 0) + ' pts'">
+                        <i class="pi pi-star-fill" />
+                        <span>{{ $page.props.auth.user.total_score || 0 }}</span>
                     </div>
                     <div class="cave-hud__timer" :class="{ 'cave-hud__timer--urgent': timeLeft < 300 }">
                         <span>{{ formatTime(timeLeft) }}</span>

@@ -366,6 +366,47 @@ onMounted(() => {
   z-index: 50;
 }
 
+:root.light-theme .admin-layout {
+  background: #f8fafc;
+  color: #1e293b;
+}
+
+:root.light-theme .sidebar {
+  background: #ffffff;
+  border-right-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.02);
+}
+
+:root.light-theme .nav-item {
+  color: #475569;
+}
+
+:root.light-theme .nav-item:hover {
+  background: rgba(255, 149, 0, 0.05);
+  color: #FF9500;
+}
+
+:root.light-theme .nav-item.active {
+  background: linear-gradient(90deg, rgba(255, 149, 0, 0.08) 0%, transparent 100%);
+  color: #FF9500;
+}
+
+/* Fix pour la visibilité des inputs en mode light */
+:root.light-theme :deep(.p-inputtext),
+:root.light-theme :deep(.p-inputnumber-input),
+:root.light-theme :deep(.p-textarea) {
+  background: #ffffff !important;
+  color: #1e293b !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+:root.light-theme :deep(.p-inputtext:focus),
+:root.light-theme :deep(.p-inputnumber-input:focus),
+:root.light-theme :deep(.p-textarea:focus) {
+  border-color: #FF9500 !important;
+  box-shadow: 0 0 0 2px rgba(255, 149, 0, 0.1) !important;
+}
+
 :root.light-theme .topbar {
   background: #ffffff;
   border-bottom-color: rgba(0, 0, 0, 0.06);
