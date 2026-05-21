@@ -435,6 +435,11 @@ onUnmounted(() => {
                         <i class="pi pi-map" />
                     </Link>
                     <button type="button" class="cave-hud__btn" @click="togglePause"><i class="pi pi-pause" /></button>
+
+                    <!-- Bouton Admin -->
+                    <Link v-if="$page.props.auth.user.is_admin" :href="route('admin.dashboard')" class="cave-hud__btn cave-hud__btn--admin" title="Dashboard Admin">
+                        <i class="pi pi-cog" />
+                    </Link>
                 </div>
             </header>
 

@@ -27,6 +27,11 @@ class EnsureOtpVerified
     {
         $user = $request->user();
 
+        // Les administrateurs n'ont pas besoin de validation OTP pour jouer/tester
+        if ($user && ($user->is_admin || $user->hasRole('admin'))) {
+            return $next($request);
+        }
+
         // On vérifie si l'utilisateur est authentifié et si son compte n'est pas encore vérifié
         if ($user && !$user->otp_verified_at) {
             // Redirection forcée vers la page de vérification OTP avec un message d'information
