@@ -1291,6 +1291,15 @@
   font-size: 0.9rem;
 }
 
+.cave-hud__score--gold {
+  background: linear-gradient(180deg, #FFEFBA, #FFD700);
+  border-color: #B8860B;
+}
+
+.cave-hud__score--gold i {
+  color: #8B4513;
+}
+
 .cave-gps-result {
   padding: 12px 14px;
   border: 3px solid var(--cave-border-dark);

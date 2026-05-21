@@ -128,4 +128,23 @@ class LieuController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function searchLocation(Request $request)
+    {
+        $query = $request->query('q');
+        if (!$query) return response()->json([]);
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::get('https://nominatim.openstreetmap.org/search', [
+                'q' => $query,
+                'format' => 'json',
+                'limit' => 5,
+                'addressdetails' => 1
+            ]);
+
+            return response()->json($response->json());
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Erreur de recherche'], 500);
+        }
+    }
 }
