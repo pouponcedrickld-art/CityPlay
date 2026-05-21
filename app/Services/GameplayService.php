@@ -403,7 +403,17 @@ class GameplayService
             return $solution;
         }
 
-        return trim((string) ($enigme->reponse ?? ''));
+        $reponse = trim((string) ($enigme->reponse ?? ''));
+        if ($reponse !== '') {
+            return $reponse;
+        }
+
+        // Fallback ultime : si c'est un lieu, on donne le nom du lieu
+        if ($enigme->lieu) {
+            return "La solution se trouve à : " . $enigme->lieu->nom;
+        }
+
+        return '';
     }
 
     /**

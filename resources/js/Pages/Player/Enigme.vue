@@ -100,6 +100,9 @@ const applyFlash = () => {
     const flash = page.props.flash;
     if (flash?.error) {
         gpsMessage.value = { type: 'error', text: flash.error };
+        // Si c'est une erreur de solution, on ferme quand même le chargement
+        isRequestingSolution.value = false;
+        showSolution.value = false;
     }
     if (flash?.gps_validation) {
         lastGpsCheck.value = flash.gps_validation;
@@ -109,21 +112,30 @@ const applyFlash = () => {
         showTimeExpired.value = false;
         showSolution.value = false;
     }
+    if (flash?.solution_revelee === null && revealedSolution.value !== null) {
+        // Optionnel : reset si le flash est explicitement null après navigation
+    }
 };
 
 watch(() => page.props.flash, applyFlash, { deep: true });
 
 watch(
-    () => [props.enigme?.id, props.progression?.temps_restant],
-    ([enigmeId, temps]) => {
-        if (temps != null) {
-            timeLeft.value = temps;
-        }
-        if (enigmeId) {
+    () => props.enigme?.id,
+    (newId, oldId) => {
+        if (newId && newId !== oldId) {
             showTimeExpired.value = false;
             revealedSolution.value = null;
         }
     },
+);
+
+watch(
+    () => props.progression?.temps_restant,
+    (newTemps) => {
+        if (newTemps != null) {
+            timeLeft.value = newTemps;
+        }
+    }
 );
 
 const checkLocation = () => {
