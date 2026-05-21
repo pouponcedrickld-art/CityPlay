@@ -133,22 +133,14 @@ class ProgressionController extends Controller
 
     public function showSuccess(Partie $partie, Request $request)
     {
-        $lieu = Lieu::with('photos')->find($request->lieu);
+        $lieu = Lieu::find($request->lieu);
 
-        if ($lieu) {
-            // On s'assure que les photos ont les URLs complètes
-            $lieu->photos = $lieu->photos->map(function($photo) {
-                return [
-                    'id' => $photo->id,
-                    'url' => $photo->full_url,
-                    'alt_text' => $photo->alt_text
-                ];
-            });
-        }
+        // On récupère les photos avec la logique robuste (table ou JSON legacy)
+        $photos = $lieu ? $this->lieuPhotosPourJoueur($lieu) : [];
 
         return Inertia::render('Player/Success', [
             'partie' => $partie->load('environnement'),
-            'lieu' => $lieu,
+            'lieu' => $lieu ? array_merge($lieu->toArray(), ['photos' => $photos]) : null,
             'progression' => $partie->progression,
             'points_gagnes' => (int) session('points_gagnes', 0),
             'score_total' => (int) session('score_total', $partie->progression?->score ?? 0),
