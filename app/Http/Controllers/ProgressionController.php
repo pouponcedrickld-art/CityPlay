@@ -47,7 +47,7 @@ class ProgressionController extends Controller
             }
 
             return Inertia::render('Player/Enigme', [
-                'partie' => $partie->load('environnement'),
+                'partie' => $partie->load(['environnement', 'team.users']),
                 'enigme' => $this->enigmePourJoueur($enigme),
                 'progression' => $progression->fresh(),
             ]);

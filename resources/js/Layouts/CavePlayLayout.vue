@@ -146,10 +146,20 @@ const innerClass = computed(() => [
                 <i class="pi pi-bars" />
             </button>
             <div :class="innerClass">
-                <header v-if="!hideLogo && !immersive" class="cave-logo-wrap cave-logo-wrap--mobile-only">
+                <header v-if="!hideLogo && !immersive" class="cave-logo-wrap cave-logo-wrap--mobile-only relative">
                     <div class="cave-logo-icon">🗿</div>
                     <h1 class="cave-logo-title">CityPlay</h1>
                     <p class="cave-logo-sub">Aventure urbaine</p>
+
+                    <!-- Bouton Dashboard Admin (Mobile) -->
+                    <Link
+                        v-if="page.props.auth.user?.is_admin"
+                        :href="route('admin.dashboard')"
+                        class="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 bg-[#C2410C] border-2 border-[#9A3412] rounded-xl flex items-center justify-center text-white shadow-lg active:scale-90 transition-transform"
+                        title="Admin"
+                    >
+                        <i class="pi pi-cog" />
+                    </Link>
                 </header>
                 <slot />
             </div>

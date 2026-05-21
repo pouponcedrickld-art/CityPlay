@@ -1,15 +1,11 @@
-[2026-05-21 15:22:52] local.INFO: Tentative de création de partie {"environnement_id":3,"mode":"solo","duree":20,"locomotion":"pied","difficulte":2,"nb_joueurs":1} 
-[2026-05-21 15:22:52] local.INFO: Validation réussie {"environnement_id":3,"mode":"solo","duree":20,"locomotion":"pied","difficulte":2,"nb_joueurs":1} 
-[2026-05-21 15:22:52] local.INFO: PartieService: Début création partie {"data":{"environnement_id":3,"mode":"solo","duree":20,"locomotion":"pied","difficulte":2,"nb_joueurs":1},"createurId":4} 
-[2026-05-21 15:22:52] local.INFO: PartieService: Environnement trouvé {"nom":"Politique et Science"} 
-[2026-05-21 15:22:52] local.INFO: PartieService: Fin création partie {"id":4} 
-[2026-05-21 15:22:52] local.INFO: Partie créée avec succès {"id":4} 
-[2026-05-21 15:22:54] local.INFO: GameplayService: Début initialisation progression {"partie_id":4} 
-[2026-05-21 15:22:54] local.INFO: GameplayService: Paramètres extraits {"duree":20,"locomotion":"pied","difficulte":2} 
-[2026-05-21 15:22:54] local.INFO: GameplayService: Nombre d'énigmes calculé {"count":3} 
-[2026-05-21 15:22:54] local.INFO: GameplayService: Filtrage des lieux déjà découverts {"ids":[12]} 
-[2026-05-21 15:22:54] local.WARNING: GameplayService: Tous les lieux ont déjà été découverts. Réinitialisation pour permettre de rejouer.  
-[2026-05-21 15:22:54] local.INFO: GameplayService: Lieux sélectionnés {"count":1,"ids":{"Illuminate\\Support\\Collection":[12]}} 
-[2026-05-21 15:22:54] local.INFO: GameplayService: Énigme de départ identifiée {"id":46} 
-[2026-05-21 15:22:54] local.INFO: GameplayService: Progression créée {"id":3} 
-[2026-05-21 15:22:54] local.INFO: GameplayService: Partie marquée comme en cours  
+[2026-05-21 16:43:23] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 16:45:53] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 16:50:07] local.INFO: OTP envoyé par mail à admin@example.com  
+[2026-05-21 16:50:08] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 16:50:17] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 16:54:44] local.INFO: OTP envoyé par mail à admin@example.com  
+[2026-05-21 16:54:45] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 16:55:12] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 16:55:27] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 16:55:28] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-21 16:56:19] local.INFO: OTP envoyé par mail à kenzo@gmail.com  

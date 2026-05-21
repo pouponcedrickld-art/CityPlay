@@ -142,12 +142,7 @@
           </button>
 
           <!-- FOOTER LINK -->
-          <div class="text-center mt-6">
-            <span class="text-xs font-bold" :class="isDark ? 'text-gray-500' : 'text-[#6B7280]'">{{ mode === 'login' ? 'Nouveau sur CityPlay ? ' : 'Déjà Aventurier ? ' }}</span>
-            <Link :href="mode === 'login' ? route('register') : route('login')" class="text-xs font-black uppercase tracking-widest" :class="isDark ? 'text-[#FF9500]' : 'text-[#059669]'">
-              {{ mode === 'login' ? 'Créer un profil' : 'Connexion' }}
-            </Link>
-          </div>
+         
         </form>
       </div>
     </div>
