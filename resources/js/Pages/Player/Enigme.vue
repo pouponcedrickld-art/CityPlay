@@ -585,7 +585,7 @@ onUnmounted(() => {
                         <img :src="enigme.image_url" class="cave-panel__img" :alt="enigme?.titre">
                         <div class="cave-level-card__overlay absolute inset-0" />
                     </div>
-                    <div v-else class="cave-panel__img-placeholder flex items-center justify-center bg-[var(--cave-rock-dark)]" style="height: 200px;">
+                    <div v-else class="cave-panel__img-placeholder flex items-center justify-center bg-[var(--cave-rock-dark)] h-[200px] lg:h-[320px] xl:h-[400px]">
                         <i class="pi pi-question-circle text-4xl opacity-20" />
                     </div>
                     <div class="cave-panel__body">
@@ -602,7 +602,7 @@ onUnmounted(() => {
                 </article>
 
                 <div class="cave-game-sidebar-col">
-                    <div class="cave-panel cave-radar-box p-0 overflow-hidden relative" style="height: 200px;">
+                    <div class="cave-panel cave-radar-box p-0 overflow-hidden relative h-[200px] lg:h-[280px] xl:h-[320px]">
                         <div ref="mapContainer" class="absolute inset-0 z-0" />
                         <div class="cave-radar-pulse absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full pointer-events-none" :class="{ 'cave-radar-pulse--active': isLocating }" />
                         <div class="relative z-10 flex flex-col items-center text-center gap-1 py-4 pointer-events-none bg-gradient-to-b from-white/20 to-transparent">
