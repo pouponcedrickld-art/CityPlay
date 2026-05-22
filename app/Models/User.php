@@ -35,6 +35,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'otp_verified_at' => 'datetime',
+        'otp_expires_at' => 'datetime',
         'consent_cgu' => 'boolean',
         'consent_donnees' => 'boolean',
         'is_admin' => 'boolean',

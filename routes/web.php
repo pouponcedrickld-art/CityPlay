@@ -80,10 +80,9 @@ Route::middleware('auth')->group(function () {
         // Système de Chat d'équipe en temps réel (WebSockets)
         Route::get('/teams/{team}/messages', [ChatController::class, 'getMessages'])->name('chat.messages');
         Route::post('/teams/{team}/messages', [ChatController::class, 'sendMessage'])->name('chat.send');
-    });
 
-    // Rejoindre une partie via un code ou un lien de partage
-    Route::post('/parties/rejoindre', [PartieController::class, 'rejoindre'])->name('parties.rejoindre.form');
+        // Rejoindre une partie via un code ou un lien de partage
+        Route::post('/parties/rejoindre', [PartieController::class, 'rejoindre'])->name('parties.rejoindre.form');
 
         // Parties
         Route::get('/parties', [PartieController::class, 'index'])->name('parties.web.index');
@@ -98,6 +97,10 @@ Route::middleware('auth')->group(function () {
         // Progression
         Route::get('/parties/{partie}/enigme', [ProgressionController::class, 'getCurrentEnigme'])->name('progression.enigme');
         Route::post('/parties/{partie}/reponse', [ProgressionController::class, 'submitAnswer'])->name('progression.submit');
+
+        // Validation GPS
+        Route::post('/parties/{partie}/validate-gps', [GPSValidationController::class, 'validate'])->name('progression.validate-gps');
+
         Route::get('/parties/{partie}/succes', [ProgressionController::class, 'showSuccess'])->name('progression.success');
         Route::get('/parties/{partie}/echec', [ProgressionController::class, 'showFailure'])->name('progression.failure');
         Route::post('/parties/{partie}/suivant', [ProgressionController::class, 'nextEnigme'])->name('progression.next');
@@ -108,6 +111,7 @@ Route::middleware('auth')->group(function () {
 
         // Validation GPS
         Route::post('/lieux/{lieu}/valider', [GPSValidationController::class, 'validatePosition'])->name('gps.valider');
+    });
 
         // Admin routes
         Route::middleware('admin')->prefix('admin')->group(function () {

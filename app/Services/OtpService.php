@@ -18,6 +18,7 @@ class OtpService
 
         $user->update([
             'otp_code' => $code,
+            'otp_expires_at' => now()->addMinutes(15), // Code valide pendant 15 minutes
             'otp_verified_at' => null, // reset
         ]);
 
@@ -36,13 +37,26 @@ class OtpService
      */
     public function verifier(User $user, string $codeSaisi): bool
     {
+        // 1. Vérifier si un code est bien présent en base
+        if (!$user->otp_code || !$user->otp_expires_at) {
+            return false;
+        }
+
+        // 2. Vérifier si le code correspond
         if ($user->otp_code !== $codeSaisi) {
             return false;
         }
 
+        // 3. Vérifier si le code a expiré
+        if ($user->otp_expires_at->isPast()) {
+            return false;
+        }
+
+        // 4. Marquer comme vérifié et nettoyer
         $user->update([
             'otp_verified_at' => now(),
-            'otp_code' => null, // on efface le code après usage
+            'otp_code' => null,
+            'otp_expires_at' => null,
         ]);
 
         return true;
