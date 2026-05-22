@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Partie;
 use App\Models\Environnement;
-use App\Services\PartieService;
+// use App\Models\Partie;
 use App\Services\GeoService;
+use App\Services\PartieService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class PartieController extends Controller
@@ -100,7 +102,7 @@ class PartieController extends Controller
             ? $this->extraireCodeDepuisLien($input)
             : strtoupper(preg_replace('/\s+/', '', $input));
 
-        if (!$code || !preg_match('/^[A-Z0-9\-]{6,12}$/i', $code)) {
+        if (! $code || ! preg_match('/^[A-Z0-9\-]{6,12}$/i', $code)) {
             return back()->withErrors([
                 'code' => 'Code d\'invitation invalide. Vérifiez le code reçu de l\'organisateur.',
             ]);
@@ -117,7 +119,7 @@ class PartieController extends Controller
         $code = strtoupper(trim($code));
         $partie = Partie::with('environnement')->where('code_liaison', $code)->first();
 
-        if (!$partie) {
+        if (! $partie) {
             return redirect()->route('register')
                 ->with('error', 'Lien d\'invitation invalide ou expiré.');
         }
@@ -134,14 +136,14 @@ class PartieController extends Controller
 
         session(['partie_invitation_code' => $code]);
 
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return redirect()->route('register')
-                ->with('info', 'Créez un compte ou connectez-vous pour rejoindre l\'équipe « ' . ($partie->environnement?->nom ?? 'CityPlay') . ' ».');
+                ->with('info', 'Créez un compte ou connectez-vous pour rejoindre l\'équipe « '.($partie->environnement?->nom ?? 'CityPlay').' ».');
         }
 
         $user = auth()->user();
 
-        if (!$user->otp_verified_at) {
+        if (! $user->otp_verified_at) {
             return redirect()->route('otp.show')
                 ->with('info', 'Vérifiez votre compte pour rejoindre la partie.');
         }
@@ -157,10 +159,11 @@ class PartieController extends Controller
         if ($partie->mode === 'team' && $partie->team) {
             $dejaMembre = $partie->team->users()->where('user_id', auth()->id())->exists();
 
-            if (!$dejaMembre) {
+            if (! $dejaMembre) {
                 $nbJoueursMax = $partie->parametres['nb_joueurs'] ?? 10;
                 if ($partie->team->users()->count() >= $nbJoueursMax) {
                     session()->forget('partie_invitation_code');
+
                     return redirect()->route('dashboard')
                         ->with('error', 'L\'équipe est déjà complète.');
                 }
@@ -188,7 +191,7 @@ class PartieController extends Controller
         $user = auth()->user();
 
         if ($code = session('partie_invitation_code')) {
-            if (!$user->otp_verified_at) {
+            if (! $user->otp_verified_at) {
                 return redirect()->route('otp.show')
                     ->with('info', 'Vérifiez votre compte pour rejoindre la partie.');
             }
@@ -209,13 +212,14 @@ class PartieController extends Controller
     public static function invitationPartieEnSession(): ?array
     {
         $code = session('partie_invitation_code');
-        if (!$code) {
+        if (! $code) {
             return null;
         }
 
         $partie = Partie::with('environnement')->where('code_liaison', $code)->first();
-        if (!$partie || $partie->estExpiree() || $partie->mode !== 'team') {
+        if (! $partie || $partie->estExpiree() || $partie->mode !== 'team') {
             session()->forget('partie_invitation_code');
+
             return null;
         }
 
@@ -287,7 +291,7 @@ class PartieController extends Controller
             return redirect()->route('progression.enigme', $partie);
         }
 
-        if (!$partie->lien_partage && $partie->code_liaison) {
+        if (! $partie->lien_partage && $partie->code_liaison) {
             $partie->update(['lien_partage' => $partie->genererLienPartage()]);
         }
 
@@ -350,7 +354,7 @@ class PartieController extends Controller
             ];
 
             $partie = $this->partieService->creerPartie($data, auth()->id());
-            
+
             \Log::info('Partie créée avec succès', ['id' => $partie->id]);
 
             if ($partie->mode === 'solo') {
@@ -361,15 +365,16 @@ class PartieController extends Controller
             return redirect()->route('parties.team-setup', $partie)
                 ->with('success', 'Partie créée avec succès ! Invitez vos coéquipiers.');
 
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             \Log::error('Erreur de validation lors de la création de partie', ['errors' => $e->errors()]);
             throw $e;
         } catch (\Exception $e) {
             \Log::error('Erreur inattendue lors de la création de partie', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
-            return back()->with('error', 'Impossible de créer la partie : ' . $e->getMessage());
+
+            return back()->with('error', 'Impossible de créer la partie : '.$e->getMessage());
         }
     }
 
@@ -380,7 +385,7 @@ class PartieController extends Controller
     {
         $this->authorize('update', $partie);
 
-        $code = Str::upper(Str::random(4)) . '-' . Str::random(4);
+        $code = Str::upper(Str::random(4)).'-'.Str::random(4);
 
         $partie->update([
             'code_liaison' => $code,
@@ -400,12 +405,15 @@ class PartieController extends Controller
     public function pause(Partie $partie)
     {
         $progression = $partie->progression;
-        if (!$progression) return back();
+        if (! $progression) {
+            return back();
+        }
 
         $nouveauStatut = $progression->statut === 'pause' ? 'en_cours' : 'pause';
         $progression->update(['statut' => $nouveauStatut]);
 
         $message = $nouveauStatut === 'pause' ? 'Mission suspendue.' : 'Mission reprise !';
+
         return back()->with('success', $message);
     }
 
@@ -418,7 +426,7 @@ class PartieController extends Controller
         if ($progression) {
             $progression->update(['statut' => 'terminee']);
         }
-        
+
         $partie->update(['statut' => 'terminee', 'ended_at' => now()]);
 
         return redirect()->route('dashboard')->with('success', 'Mission abandonnée.');

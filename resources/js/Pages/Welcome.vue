@@ -952,15 +952,15 @@ onMounted(() => {
                 <template v-else>
                     <Link
                         v-if="canRegister"
-                        :href="route('register')"
+                        :href="route('login')"
                         class="btn-cartoon-primary"
                     >
                         <span class="btn-icon">▶</span>
                         <span>COMMENCER</span>
                     </Link>
-                    <Link :href="route('login')" class="btn-cartoon-secondary">
+                    <!-- <Link :href="route('login')" class="btn-cartoon-secondary">
                         <span>CONNEXION</span>
-                    </Link>
+                    </Link> -->
                 </template>
 
                 <!-- Scroll hint -->
@@ -1058,7 +1058,7 @@ onMounted(() => {
                     <template v-else>
                         <Link
                             v-if="canRegister"
-                            :href="route('register')"
+                            :href="route('login')"
                             class="cta-btn primary-cta"
                         >
                             <i class="pi pi-play" /><span
