@@ -35,7 +35,7 @@ class CotonouSeeder extends Seeder
             ]
         );
 
-        // 3. Liste des Lieux de Cotonou
+        // 3. Liste de 15 Lieux pour Cotonou
         $lieux = [
             [
                 'nom' => 'Place de l\'Étoile Rouge',
@@ -43,7 +43,7 @@ class CotonouSeeder extends Seeder
                 'latitude' => 6.370500,
                 'longitude' => 2.417200,
                 'rayon_metres' => 50,
-                'description' => 'Un monument emblématique en briques rouges et forme circulaire, symbolisant l\'histoire politique du Bénin.',
+                'description' => 'Un monument emblématique en briques rouges symbolisant l\'histoire politique du Bénin.',
             ],
             [
                 'nom' => 'Esplanade de l\'Amazone',
@@ -51,7 +51,7 @@ class CotonouSeeder extends Seeder
                 'latitude' => 6.348600,
                 'longitude' => 2.428100,
                 'rayon_metres' => 60,
-                'description' => 'Une majestueuse esplanade accueillant la statue de l\'Amazone de 30 mètres de haut, symbole de la bravoure féminine.',
+                'description' => 'Statue majestueuse de 30 mètres, symbole de la bravoure féminine béninoise.',
             ],
             [
                 'nom' => 'Fondation Zinsou',
@@ -59,7 +59,7 @@ class CotonouSeeder extends Seeder
                 'latitude' => 6.353300,
                 'longitude' => 2.428800,
                 'rayon_metres' => 30,
-                'description' => 'Un espace d\'art contemporain africain d\'accès gratuit, niché dans une superbe villa historique de style afro-brésilien.',
+                'description' => 'Espace d\'art contemporain dans une villa historique de style afro-brésilien.',
             ],
             [
                 'nom' => 'Cathédrale Notre-Dame',
@@ -67,7 +67,7 @@ class CotonouSeeder extends Seeder
                 'latitude' => 6.353900,
                 'longitude' => 2.433800,
                 'rayon_metres' => 40,
-                'description' => 'Un édifice religieux remarquable par son architecture rayée de rouge et de blanc unique, situé près de l\'Ancien Pont.',
+                'description' => 'Architecture remarquable rayée de rouge et de blanc, près de l\'Ancien Pont.',
             ],
             [
                 'nom' => 'Marché Dantokpa',
@@ -75,15 +75,87 @@ class CotonouSeeder extends Seeder
                 'latitude' => 6.372500,
                 'longitude' => 2.436100,
                 'rayon_metres' => 100,
-                'description' => "Le plus grand marché à ciel ouvert de l'Afrique de l'Ouest, bordant la lagune de Cotonou.",
+                'description' => 'Le plus grand marché à ciel ouvert de l\'Afrique de l\'Ouest.',
             ],
             [
-                'nom' => 'Embarcadère de la Lagune',
+                'nom' => 'Ancien Pont de Cotonou',
                 'ordre' => 6,
-                'latitude' => 6.446800,
-                'longitude' => 2.424400,
+                'latitude' => 6.358200,
+                'longitude' => 2.435500,
                 'rayon_metres' => 50,
-                'description' => 'Le point de départ des pirogues traditionnelles naviguant vers la célèbre cité lacustre sur pilotis de Ganvié.',
+                'description' => 'Pont historique reliant les deux rives de la lagune de Cotonou.',
+            ],
+            [
+                'nom' => 'Place des Martyrs',
+                'ordre' => 7,
+                'latitude' => 6.351200,
+                'longitude' => 2.404800,
+                'rayon_metres' => 45,
+                'description' => 'Monument commémoratif dédié aux héros tombés pour la patrie.',
+            ],
+            [
+                'nom' => 'Palais des Congrès',
+                'ordre' => 8,
+                'latitude' => 6.350800,
+                'longitude' => 2.399500,
+                'rayon_metres' => 55,
+                'description' => 'Édifice imposant accueillant les grands événements nationaux.',
+            ],
+            [
+                'nom' => 'Port Autonome de Cotonou',
+                'ordre' => 9,
+                'latitude' => 6.347500,
+                'longitude' => 2.425000,
+                'rayon_metres' => 80,
+                'description' => 'Poumon économique du pays et point d\'entrée maritime majeur.',
+            ],
+            [
+                'nom' => 'Stade de l\'Amitié Général Mathieu Kérékou',
+                'ordre' => 10,
+                'latitude' => 6.384500,
+                'longitude' => 2.384200,
+                'rayon_metres' => 90,
+                'description' => 'Principal complexe sportif du Bénin.',
+            ],
+            [
+                'nom' => 'Aéroport Cardinal Bernardin Gantin',
+                'ordre' => 11,
+                'latitude' => 6.357500,
+                'longitude' => 2.385000,
+                'rayon_metres' => 100,
+                'description' => 'La porte d\'entrée aérienne du Bénin.',
+            ],
+            [
+                'nom' => 'Centre Artisanal de Cotonou',
+                'ordre' => 12,
+                'latitude' => 6.354500,
+                'longitude' => 2.421500,
+                'rayon_metres' => 40,
+                'description' => 'Lieu idéal pour découvrir l\'artisanat local et les souvenirs béninois.',
+            ],
+            [
+                'nom' => 'La Haie Vive (Quartier gastronomique)',
+                'ordre' => 13,
+                'latitude' => 6.359000,
+                'longitude' => 2.398000,
+                'rayon_metres' => 60,
+                'description' => 'Quartier animé réputé pour ses nombreux restaurants et sa vie nocturne.',
+            ],
+            [
+                'nom' => 'Plage de Fidjrossè',
+                'ordre' => 14,
+                'latitude' => 6.345000,
+                'longitude' => 2.365000,
+                'rayon_metres' => 100,
+                'description' => 'Zone balnéaire prisée pour la détente et les loisirs en bord de mer.',
+            ],
+            [
+                'nom' => 'Ministère des Affaires Étrangères',
+                'ordre' => 15,
+                'latitude' => 6.349500,
+                'longitude' => 2.397000,
+                'rayon_metres' => 40,
+                'description' => 'Édifice gouvernemental remarquable par son architecture moderne.',
             ],
         ];
 
@@ -99,7 +171,6 @@ class CotonouSeeder extends Seeder
 
     private function seedEnigmes(Lieu $lieu): void
     {
-        // En se basant sur le modèle de Bordeaux avec TES types en base de données
         $templates = [
             'force3' => [
                 'titre' => 'Le Secret des Pierres',
@@ -111,6 +182,7 @@ class CotonouSeeder extends Seeder
                 'reponse' => 'cotonou',
                 'solution' => "Félicitations ! Vous avez décrypté l'histoire entourant {$lieu->nom}.",
                 'points' => 70,
+                'indice' => "Cherchez un indice visuel sur le monument ou à proximité.",
             ],
             'force2' => [
                 'titre' => 'Repère Historique',
@@ -120,6 +192,7 @@ class CotonouSeeder extends Seeder
                 'reponse' => 'valider',
                 'solution' => "Excellent, vous avez localisé le repère de {$lieu->nom}.",
                 'points' => 50,
+                'indice' => "Le GPS est votre meilleur allié ici.",
             ],
             'force1' => [
                 'titre' => 'En Route !',
@@ -130,6 +203,7 @@ class CotonouSeeder extends Seeder
                 'reponse' => 'oui',
                 'solution' => "Votre présence a été validée avec succès à {$lieu->nom}.",
                 'points' => 30,
+                'indice' => "Avancez vers le marqueur sur la carte.",
             ],
             'enfant' => [
                 'titre' => 'Mission Petit Explorateur',
@@ -140,6 +214,7 @@ class CotonouSeeder extends Seeder
                 'reponse' => 'vert',
                 'solution' => "Génial ! Tu as déniché {$lieu->nom} comme un vrai aventurier !",
                 'points' => 100,
+                'indice' => "Regarde bien devant toi, tu y es presque !",
             ],
         ];
 
@@ -152,6 +227,7 @@ class CotonouSeeder extends Seeder
                     'reponse' => $fields['reponse'],
                     'solution' => $fields['solution'],
                     'points' => $fields['points'],
+                    'indice' => $fields['indice'],
                     'actif' => true,
                     'image_url' => null,
                 ]
