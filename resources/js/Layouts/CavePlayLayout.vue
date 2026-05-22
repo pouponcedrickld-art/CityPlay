@@ -1,23 +1,35 @@
 <script setup>
+/**
+ * Layout principal pour l'interface Joueur (Thème "Cave Boy").
+ *
+ * Gère la sidebar escamotable, le loader de navigation, les animations de fond
+ * et l'affichage responsive (Sidebar sur desktop, Bottom-nav sur mobile).
+ */
 import { Link, router, usePage } from '@inertiajs/vue3';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import VideoLoader from '@/Components/VideoLoader.vue';
 
 const props = defineProps({
-    immersive: { type: Boolean, default: false },
+    immersive: { type: Boolean, default: false }, // Si true, cache la navigation pour le jeu
     hideLogo: { type: Boolean, default: false },
-    wide: { type: Boolean, default: false },
+    wide: { type: Boolean, default: false },      // Si true, utilise toute la largeur
 });
 
 const page = usePage();
 const showLoader = ref(false);
-const isSidebarVisible = ref(true);
+const isSidebarVisible = ref(true); // État de la sidebar desktop (toggleable)
 let loaderDelayTimer = null;
 
+/**
+ * Bascule l'affichage de la sidebar sur Desktop.
+ */
 const toggleSidebar = () => {
     isSidebarVisible.value = !isSidebarVisible.value;
 };
 
+/**
+ * Configuration des éléments de navigation.
+ */
 const navItems = [
     { icon: 'pi pi-home', route: 'dashboard', label: 'Accueil' },
     { icon: 'pi pi-play', route: 'parties.web.create', label: 'Jouer' },
@@ -27,6 +39,9 @@ const navItems = [
     { icon: 'pi pi-cog', route: 'profile.edit', label: 'Réglages' },
 ];
 
+/**
+ * Génère l'URL complète pour un item de navigation.
+ */
 const navHref = (item) => {
     const base = route(item.route);
     if (!item.query) return base;
@@ -34,6 +49,9 @@ const navHref = (item) => {
     return `${base}?${q}`;
 };
 
+/**
+ * Vérifie si l'item de navigation est l'actuel.
+ */
 const isActive = (item) => {
     if (item.query?.tab === 'join') {
         return route().current('parties.web.create') && page.url.includes('tab=join');
@@ -41,9 +59,12 @@ const isActive = (item) => {
     return route().current(item.route) && !page.url.includes('tab=join');
 };
 
+/**
+ * Gestion du Loader Global.
+ * On affiche le loader seulement si la navigation prend plus de 350ms (Anti-flash UX).
+ */
 onMounted(() => {
     router.on('start', () => {
-        // Anti-flash UX: show only if navigation is slow
         if (loaderDelayTimer) clearTimeout(loaderDelayTimer);
         loaderDelayTimer = setTimeout(() => {
             showLoader.value = true;
@@ -66,6 +87,9 @@ onUnmounted(() => {
     loaderDelayTimer = null;
 });
 
+/**
+ * Classes calculées pour le conteneur principal.
+ */
 const innerClass = computed(() => [
     'cave-play-inner',
     props.immersive && 'cave-play-inner--immersive',

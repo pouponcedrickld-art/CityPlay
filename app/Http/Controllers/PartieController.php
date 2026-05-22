@@ -13,30 +13,47 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
+/**
+ * Contrôleur gérant les sessions de jeu (Parties) du point de vue joueur.
+ *
+ * S'occupe de l'affichage du dashboard, de la création de nouvelles parties,
+ * et du système d'invitation/rejointe d'équipe.
+ */
 class PartieController extends Controller
 {
     protected $partieService;
 
+    /**
+     * Injection du service métier pour la gestion des parties.
+     */
     public function __construct(PartieService $partieService)
     {
         $this->partieService = $partieService;
     }
 
     /**
-     * Liste les parties du joueur (Dashboard Joueur)
+     * Affiche le Dashboard du Joueur.
+     *
+     * Récupère :
+     * 1. Les parties en cours/passées de l'utilisateur.
+     * 2. Les environnements disponibles, triés par distance si la géolocalisation est active.
+     * 3. Le top 3 du classement mondial.
      */
     public function index(Request $request)
     {
+        // Validation optionnelle des coordonnées GPS envoyées par le front
         $request->validate([
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
         ]);
 
+        // 1. Récupération des parties de l'utilisateur avec leurs relations
         $parties = Partie::where('createur_id', auth()->id())
             ->with(['environnement', 'progression.enigmeCourante.lieu', 'team.users'])
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function (Partie $partie) {
+                // Enrichissement des données pour le mode équipe
                 if ($partie->mode === 'team' && $partie->code_liaison) {
                     $partie->setAttribute('lien_invitation', $partie->getLienInvitation());
                     $partie->setAttribute('nb_membres', $partie->team?->users->count() ?? 0);
@@ -48,17 +65,20 @@ class PartieController extends Controller
         $userLat = $request->filled('latitude') ? (float) $request->latitude : null;
         $userLng = $request->filled('longitude') ? (float) $request->longitude : null;
 
+        // 2. Récupération des environnements actifs
         $environnements = Environnement::where('actif', true)
             ->withCount('lieux')
             ->with(['lieux' => fn ($q) => $q->where('actif', true)->select('id', 'environnement_id', 'latitude', 'longitude')])
             ->get()
             ->map(function (Environnement $env) use ($userLat, $userLng) {
+                // Calcul du centre géographique (centroid) de l'environnement basé sur ses lieux
                 $centroid = GeoService::centroidFromLieux($env->lieux);
                 $env->unsetRelation('lieux');
 
                 $env->latitude = $centroid['latitude'] ?? null;
                 $env->longitude = $centroid['longitude'] ?? null;
 
+                // Calcul de la distance réelle entre le joueur et l'environnement
                 if ($userLat !== null && $userLng !== null && $env->latitude && $env->longitude) {
                     $env->distance_km = round(
                         GeoService::distanceKm($userLat, $userLng, $env->latitude, $env->longitude),
@@ -71,6 +91,7 @@ class PartieController extends Controller
 
         $geolocalise = $userLat !== null && $userLng !== null;
 
+        // Tri par proximité si les coordonnées sont disponibles
         if ($geolocalise) {
             $environnements = $environnements
                 ->sortBy(fn ($env) => $env->distance_km ?? PHP_FLOAT_MAX)
@@ -79,7 +100,7 @@ class PartieController extends Controller
 
         return Inertia::render('Player/Dashboard', [
             'parties' => $parties,
-            'environnements' => $environnements->take(4)->values(),
+            'environnements' => $environnements->take(4)->values(), // On limite à 4 pour le dashboard
             'geolocalise' => $geolocalise,
             'topPlayers' => User::where('is_admin', false)
                 ->orderByDesc('total_score')

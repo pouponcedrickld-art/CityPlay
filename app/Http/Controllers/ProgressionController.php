@@ -9,19 +9,33 @@ use App\Services\GameplayService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
+/**
+ * Contrôleur gérant le déroulement actif d'une partie.
+ *
+ * S'occupe de l'affichage de l'énigme actuelle, de la validation des réponses
+ * (texte ou GPS) et du passage d'un lieu à un autre.
+ */
 class ProgressionController extends Controller
 {
     protected GameplayService $gameplayService;
 
+    /**
+     * Injection du GameplayService qui contient la logique de validation complexe.
+     */
     public function __construct(GameplayService $gameplayService)
     {
         $this->gameplayService = $gameplayService;
     }
 
+    /**
+     * Affiche l'énigme actuelle pour une partie donnée.
+     *
+     * Gère l'initialisation de la progression si c'est le début de la partie.
+     */
     public function getCurrentEnigme(Partie $partie)
     {
         try {
-            // Sécurité : Une partie terminée ne doit plus être jouée
+            // 1. Sécurité : Une partie terminée ne doit plus être jouée
             if ($partie->statut === 'terminee' || ($partie->progression && $partie->progression->estTerminee())) {
                 return redirect()->route('progression.summary', $partie)
                     ->with('info', 'Cette partie est déjà terminée.');
@@ -29,16 +43,20 @@ class ProgressionController extends Controller
 
             $progression = $partie->progression;
 
+            // 2. Initialisation si première visite
             if (!$progression) {
                 $progression = $this->gameplayService->initialiserPartie($partie);
             }
 
+            // 3. Vérification si la progression vient d'être terminée (après init ou skip)
             if ($progression->estTerminee()) {
                 return redirect()->route('progression.summary', $partie);
             }
 
+            // 4. Récupération de l'énigme courante avec son lieu
             $enigme = Enigme::with('lieu')->find($progression->enigme_courante_id);
 
+            // 5. Fallback si l'énigme est introuvable (tentative de passer à la suivante)
             if (!$enigme) {
                 if ($progression->passerEnigmeSuivante()) {
                     return redirect()->route('progression.enigme', $partie);
@@ -46,9 +64,10 @@ class ProgressionController extends Controller
                 return redirect()->route('progression.summary', $partie);
             }
 
+            // 6. Rendu de la vue de jeu avec les données nécessaires
             return Inertia::render('Player/Enigme', [
                 'partie' => $partie->load(['environnement', 'team.users']),
-                'enigme' => $this->enigmePourJoueur($enigme),
+                'enigme' => $this->enigmePourJoueur($enigme), // On filtre les infos sensibles (réponse)
                 'progression' => $progression->fresh(),
             ]);
         } catch (\Exception $e) {
@@ -58,7 +77,7 @@ class ProgressionController extends Controller
     }
 
     /**
-     * Gère la soumission d'une réponse (texte ou GPS)
+     * Gère la soumission d'une réponse par le joueur (texte ou validation GPS).
      */
     public function submitAnswer(Request $request, Partie $partie)
     {
@@ -68,7 +87,7 @@ class ProgressionController extends Controller
             return back()->with('error', 'Action impossible sur une partie terminée.');
         }
 
-        // Cas 1 : Soumission GPS
+        // --- CAS 1 : Validation par Géolocalisation (Arrivée sur un lieu) ---
         if ($request->has('latitude') && $request->has('longitude')) {
             \Log::info('ProgressionController: Soumission GPS reçue', [
                 'partie_id' => $partie->id,
@@ -81,6 +100,7 @@ class ProgressionController extends Controller
                 ? (float) $request->input('precision')
                 : null;
 
+            // Appel au service pour vérifier si les coordonnées correspondent au lieu actuel
             $resultat = $this->gameplayService->validerGps(
                 $partie,
                 (float) $request->latitude,
@@ -89,6 +109,7 @@ class ProgressionController extends Controller
             );
 
             if ($resultat['succes']) {
+                // Stockage temporaire des points gagnés pour affichage dans la vue de succès
                 session()->flash('points_gagnes', $resultat['points_gagnes'] ?? 0);
                 session()->flash('score_total', $resultat['score_total'] ?? 0);
 

@@ -10,22 +10,33 @@ use App\Models\ProgressionPartie;
 use App\Models\Team;
 use Illuminate\Support\Str;
 
+/**
+ * Service gérant la logique métier de création et configuration des parties.
+ * 
+ * Centralise la création simultanée d'une session de jeu (Partie)
+ * et d'une équipe (Team) si nécessaire.
+ */
 class PartieService
 {
     /**
-     * Créer une nouvelle partie complète
+     * Crée une nouvelle partie complète avec son équipe associée.
+     * 
+     * @param array $data Données du formulaire (mode, durée, locomotion, etc.)
+     * @param int $createurId ID de l'utilisateur qui lance la partie
+     * @return Partie La partie créée avec ses relations chargées
      */
     public function creerPartie(array $data, int $createurId)
     {
         \Log::info('PartieService: Début création partie', ['data' => $data, 'createurId' => $createurId]);
         
+        // 1. Récupération de l'environnement choisi
         $environnement = Environnement::findOrFail($data['environnement_id']);
         \Log::info('PartieService: Environnement trouvé', ['nom' => $environnement->nom]);
 
-        // Génération du code de liaison
+        // 2. Génération du code de liaison unique (6 caractères alphanumériques)
         $codeLiaison = Str::upper(Str::random(6));
 
-        // Création de l'équipe si mode team
+        // 3. Création de l'équipe si le mode de jeu est "équipe"
         $teamId = null;
         if ($data['mode'] === 'team') {
             \Log::info('PartieService: Création équipe');
@@ -37,10 +48,11 @@ class PartieService
             ]);
             $teamId = $team->id;
 
-            // Ajout du créateur à l'équipe
+            // Le créateur est automatiquement ajouté avec le rôle 'challenger' (chef d'équipe)
             $team->users()->attach($createurId, ['role' => 'challenger']);
         }
 
+        // 4. Création de la session de jeu principale
         $partie = Partie::create([
             'environnement_id' => $environnement->id,
             'createur_id' => $createurId,
@@ -57,6 +69,7 @@ class PartieService
             'expire_at' => now()->addHours($environnement->duree_vie_lien_heures ?? 24),
         ]);
 
+        // 5. Mise à jour avec le lien de partage complet
         $partie->update([
             'lien_partage' => $partie->genererLienPartage(),
         ]);

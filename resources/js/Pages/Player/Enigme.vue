@@ -1,4 +1,14 @@
 <script setup>
+/**
+ * Composant principal de Jeu (Vue Énigme).
+ *
+ * C'est ici que le joueur interagit avec le jeu :
+ * - Lecture de l'énigme et affichage des images.
+ * - Saisie de la réponse textuelle.
+ * - Validation géographique (GPS) pour arriver sur un lieu.
+ * - Chat d'équipe en temps réel (WebSockets).
+ * - Utilisation des indices et visualisation de la carte.
+ */
 import { Head, useForm, router, usePage, Link } from '@inertiajs/vue3';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import CaveGameLayout from '@/Layouts/CaveGameLayout.vue';
@@ -8,13 +18,17 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 const props = defineProps({
-    partie: Object,
-    progression: Object,
-    enigme: Object,
+    partie: Object,      // Données de la session de jeu
+    progression: Object, // État de l'avancement (lieu actuel, score, temps)
+    enigme: Object,      // Contenu de l'énigme à résoudre
 });
 
 const page = usePage();
 
+/**
+ * Formulaire de soumission (Inertia useForm).
+ * Gère à la fois les réponses textes et les validations GPS.
+ */
 const form = useForm({
     reponse: '',
     latitude: null,
@@ -22,36 +36,39 @@ const form = useForm({
     precision: null,
 });
 
-const showHint = ref(false);
-const showSolution = ref(false);
-const showTeam = ref(false);
-const showChat = ref(false);
-const showSkipConfirm = ref(false);
-const showAbandonConfirm = ref(false);
-const showTimeExpired = ref(false);
-const revealedSolution = ref(null);
+// --- ÉTATS DE L'INTERFACE (Modales / Dialogs) ---
+const showHint = ref(false);           // Affiche l'indice
+const showSolution = ref(false);       // Demande la solution (abandon de l'énigme)
+const showTeam = ref(false);           // Liste des membres de l'équipe
+const showChat = ref(false);           // Fenêtre de chat
+const showSkipConfirm = ref(false);    // Confirmation pour passer l'énigme
+const showAbandonConfirm = ref(false); // Confirmation d'abandon de partie
+const showTimeExpired = ref(false);    // Alerte fin de temps
+const revealedSolution = ref(null);    // Stocke la solution si révélée
 const isRequestingSolution = ref(false);
-const isLocating = ref(false);
+
+// --- ÉTATS SYSTÈME ---
+const isLocating = ref(false);         // GPS en cours de recherche
 const isOffline = ref(!navigator.onLine);
 const gpsMessage = ref(null);
 const lastGpsCheck = ref(null);
 
+// --- ÉTATS CARTE ET GPS ---
 const lastKnownCoords = ref(null);
 const lastKnownTime = ref(null);
-
 const mapContainer = ref(null);
 const map = ref(null);
 const playerMarker = ref(null);
 const watchId = ref(null);
 
-// --- LOGIQUE DU CHAT D'ÉQUIPE ---
+// --- LOGIQUE DU CHAT D'ÉQUIPE (Temps Réel) ---
 const messages = ref([]);           // Stocke l'historique des messages
 const newMessage = ref('');         // Contenu du message en cours de saisie
 const chatScroll = ref(null);       // Référence DOM pour le scroll automatique
 const unreadCount = ref(0);         // Compteur de messages non lus pour le badge
 
 /**
- * Récupère les anciens messages depuis le serveur.
+ * Récupère l'historique des messages depuis le serveur via API.
  */
 const fetchMessages = async () => {
     if (!props.partie.team_id) return;
@@ -66,15 +83,16 @@ const fetchMessages = async () => {
 
 /**
  * Envoie un nouveau message au serveur.
+ * Utilise l'envoi optimiste (reset immédiat de l'input).
  */
 const sendMessage = async () => {
     if (!newMessage.value.trim() || !props.partie.team_id) return;
     const content = newMessage.value;
-    newMessage.value = ''; // Reset immédiat pour une sensation de fluidité
+    newMessage.value = '';
 
     try {
         const response = await window.axios.post(route('chat.send', props.partie.team_id), { content });
-        // S'assurer que le message n'est pas déjà dans la liste (si l'écho a déjà répondu)
+        // Ajout local immédiat si Echo n'a pas encore réagi
         if (!messages.value.find(m => m.id === response.data.id)) {
             messages.value.push(response.data);
             scrollToBottom();
