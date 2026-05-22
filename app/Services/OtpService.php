@@ -16,11 +16,15 @@ class OtpService
     {
         $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
+        // Mise à jour immédiate en base de données
+        // Chaque nouvel appel écrase l'ancien code, rendant les mails précédents invalides
         $user->update([
             'otp_code' => $code,
-            'otp_expires_at' => now()->addMinutes(15), // Code valide pendant 15 minutes
-            'otp_verified_at' => null, // reset
+            'otp_expires_at' => now()->addMinutes(15),
+            'otp_verified_at' => null,
         ]);
+
+        Log::info("Nouveau code OTP généré et enregistré en base pour {$user->email}. L'ancien code est désormais invalide.");
 
         try {
             Mail::to($user->email)->send(new OtpMail($code, $user->name));

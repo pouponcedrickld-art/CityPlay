@@ -5537,3 +5537,9 @@
 "} 
 [2026-05-22 12:49:11] local.INFO: Tentative de vérification OTP pour joueur@example.com {"code_saisi":"919897","code_attendu":"919897","expire_at":"null"} 
 [2026-05-22 12:49:11] local.WARNING: Vérification OTP échouée : pas de code ou de date d'expiration en base pour joueur@example.com  
+[2026-05-22 12:59:50] local.INFO: Tentative de vérification OTP pour joueur@example.com {"code_saisi":"919897","code_attendu":"919897","expire_at":"null"} 
+[2026-05-22 12:59:50] local.WARNING: Vérification OTP échouée : pas de code ou de date d'expiration en base pour joueur@example.com  
+[2026-05-22 13:03:29] local.INFO: Nouveau code OTP généré et enregistré en base pour joueur@example.com. L'ancien code est désormais invalide.  
+[2026-05-22 13:03:32] local.INFO: OTP envoyé par mail à joueur@example.com. Code: 466501  
+[2026-05-22 13:04:09] local.INFO: Tentative de vérification OTP pour joueur@example.com {"code_saisi":"466501","code_attendu":"466501","expire_at":"2026-05-22 13:18:28"} 
+[2026-05-22 13:04:09] local.INFO: Vérification OTP réussie pour joueur@example.com  
