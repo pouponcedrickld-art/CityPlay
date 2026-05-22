@@ -24,6 +24,7 @@ class EnigmeResolue implements ShouldBroadcast
     public $resoluPar;
     public $enigmeId;
     public $prochaineEnigmeId;
+    public $lieuId;
     public $message;
 
     /**
@@ -34,18 +35,21 @@ class EnigmeResolue implements ShouldBroadcast
      * @param int $enigmeId ID de l'énigme résolue
      * @param int|null $prochaineEnigmeId ID de la prochaine énigme (null si fini)
      * @param string $message Message à afficher
+     * @param int|null $lieuId ID du lieu découvert
      */
     public function __construct(
         Partie $partie,
         User $resoluPar,
         int $enigmeId,
         ?int $prochaineEnigmeId = null,
-        string $message = ''
+        string $message = '',
+        ?int $lieuId = null
     ) {
         $this->partie = $partie;
         $this->resoluPar = $resoluPar;
         $this->enigmeId = $enigmeId;
         $this->prochaineEnigmeId = $prochaineEnigmeId;
+        $this->lieuId = $lieuId;
         $this->message = $message ?: $resoluPar->name . ' a résolu l\'énigme !';
     }
 
@@ -90,6 +94,7 @@ class EnigmeResolue implements ShouldBroadcast
             ],
             'enigme_id' => $this->enigmeId,
             'prochaine_enigme_id' => $this->prochaineEnigmeId,
+            'lieu_id' => $this->lieuId,
             'message' => $this->message,
             'timestamp' => now()->toIso8601String(),
         ];

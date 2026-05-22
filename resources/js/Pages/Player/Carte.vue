@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import CaveGameLayout from '@/Layouts/CaveGameLayout.vue';
 import L from 'leaflet';
@@ -9,6 +9,8 @@ const props = defineProps({
     partie: Object,
     progression: Object,
 });
+
+const page = usePage();
 
 const mapContainer = ref(null);
 const map = ref(null);
@@ -21,9 +23,9 @@ let watchId = null;
 // Calcule le temps de trajet depuis la position actuelle jusqu'au lieu cible
 const calculerTempsTrajet = async () => {
     if (!playerPosition.value) return;
-    
+
     isLoadingTemps.value = true;
-    
+
     try {
         const response = await fetch(`/api/parties/${props.partie.id}/temps-trajet`, {
             method: 'POST',
@@ -37,9 +39,9 @@ const calculerTempsTrajet = async () => {
                 lng: playerPosition.value.lng,
             }),
         });
-        
+
         const data = await response.json();
-        
+
         if (data.succes) {
             tempsTrajet.value = data.data;
         }
@@ -52,8 +54,8 @@ const calculerTempsTrajet = async () => {
 
 // Watch la position pour recalculer automatiquement
 watch(playerPosition, (newPos, oldPos) => {
-    if (newPos && (!oldPos || 
-        Math.abs(newPos.lat - oldPos.lat) > 0.001 || 
+    if (newPos && (!oldPos ||
+        Math.abs(newPos.lat - oldPos.lat) > 0.001 ||
         Math.abs(newPos.lng - oldPos.lng) > 0.001)) {
         // Recalcule si la position a changé significativement (~100m)
         calculerTempsTrajet();
@@ -101,7 +103,7 @@ const initMap = () => {
 
                 // Sauvegarde la position pour le calcul temps trajet
                 playerPosition.value = { lat: latitude, lng: longitude };
-                
+
                 if (!playerMarker.value) {
                     playerMarker.value = L.marker(latlng).addTo(map.value);
                     map.value.setView(latlng, 16);
@@ -134,16 +136,40 @@ const getLocomotionIcon = (mode) => {
 
 onMounted(() => {
     initMap();
+
+    // Écoute sur le canal privé de la partie pour synchroniser la progression
+    window.Echo.private(`partie.${props.partie.id}`)
+        .listen('.EnigmeResolue', (e) => {
+            console.log('Progression mise à jour via WebSocket (Carte):', e);
+
+            // Si l'action a été faite par quelqu'un d'autre
+            if (e.resolu_par.id !== page.props.auth.user.id) {
+                if (e.lieu_id) {
+                    // Si résolue, on montre le succès
+                    router.visit(route('progression.success', {
+                        partie: props.partie.id,
+                        lieu: e.lieu_id
+                    }));
+                } else {
+                    // Sinon (passée), on va à la suivante
+                    router.visit(route('progression.enigme', props.partie.id), {
+                        replace: true
+                    });
+                }
+            }
+        });
 });
 
 onUnmounted(() => {
     if (watchId) navigator.geolocation.clearWatch(watchId);
+    window.Echo.leave(`partie.${props.partie.id}`);
     if (map.value) map.value.remove();
 });
 </script>
 
 <template>
     <CaveGameLayout>
+
         <Head title="Carte de la Quête" />
 
         <div class="h-screen w-full relative overflow-hidden flex flex-col">
@@ -196,15 +222,12 @@ onUnmounted(() => {
 
             <!-- Bouton de recentrage -->
             <div class="absolute bottom-6 right-6 z-10">
-                <button
-                    type="button"
-                    class="cave-btn relative"
-                    style="width:56px;height:56px;border-radius:50%;padding:0"
-                    @click="recenterMap"
-                    title="Recentrer sur ma position"
-                >
+                <button type="button" class="cave-btn relative"
+                    style="width:56px;height:56px;border-radius:50%;padding:0" @click="recenterMap"
+                    title="Recentrer sur ma position">
                     <i class="pi pi-crosshairs text-xl" />
-                    <span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                    <span
+                        class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
                         Ma position
                     </span>
                 </button>
