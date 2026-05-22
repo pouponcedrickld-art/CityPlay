@@ -30,6 +30,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     // PROGRESSION
     Route::get('parties/{partie}/progression', [ProgressionApiController::class, 'show']);
+    Route::post('parties/{partie}/temps-trajet', [ProgressionApiController::class, 'calculerTempsTrajet']);
 
     // GAMEPLAY
     Route::post('parties/{partie}/demarrer', [GameplayApiController::class, 'demarrer']);

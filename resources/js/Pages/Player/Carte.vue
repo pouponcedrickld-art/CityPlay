@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import CaveGameLayout from '@/Layouts/CaveGameLayout.vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -13,7 +13,52 @@ const props = defineProps({
 const mapContainer = ref(null);
 const map = ref(null);
 const playerMarker = ref(null);
+const playerPosition = ref(null);
+const tempsTrajet = ref(null);
+const isLoadingTemps = ref(false);
 let watchId = null;
+
+// Calcule le temps de trajet depuis la position actuelle jusqu'au lieu cible
+const calculerTempsTrajet = async () => {
+    if (!playerPosition.value) return;
+    
+    isLoadingTemps.value = true;
+    
+    try {
+        const response = await fetch(`/api/parties/${props.partie.id}/temps-trajet`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+                lat: playerPosition.value.lat,
+                lng: playerPosition.value.lng,
+            }),
+        });
+        
+        const data = await response.json();
+        
+        if (data.succes) {
+            tempsTrajet.value = data.data;
+        }
+    } catch (error) {
+        console.error('Erreur calcul temps trajet:', error);
+    } finally {
+        isLoadingTemps.value = false;
+    }
+};
+
+// Watch la position pour recalculer automatiquement
+watch(playerPosition, (newPos, oldPos) => {
+    if (newPos && (!oldPos || 
+        Math.abs(newPos.lat - oldPos.lat) > 0.001 || 
+        Math.abs(newPos.lng - oldPos.lng) > 0.001)) {
+        // Recalcule si la position a changé significativement (~100m)
+        calculerTempsTrajet();
+    }
+}, { immediate: false });
 
 const initMap = () => {
     if (!mapContainer.value) return;
@@ -54,6 +99,9 @@ const initMap = () => {
                 const { latitude, longitude } = position.coords;
                 const latlng = [latitude, longitude];
 
+                // Sauvegarde la position pour le calcul temps trajet
+                playerPosition.value = { lat: latitude, lng: longitude };
+                
                 if (!playerMarker.value) {
                     playerMarker.value = L.marker(latlng).addTo(map.value);
                     map.value.setView(latlng, 16);
@@ -71,6 +119,17 @@ const recenterMap = () => {
     if (playerMarker.value && map.value) {
         map.value.setView(playerMarker.value.getLatLng(), 16);
     }
+};
+
+// Retourne l'icône PrimeIcons correspondant au mode de locomotion
+const getLocomotionIcon = (mode) => {
+    const icons = {
+        'pied': 'pi pi-walking',
+        'velo': 'pi pi-bicycle',
+        'trottinette': 'pi pi-arrow-right', // Pas d'icône trottinette spécifique
+        'transports': 'pi pi-bus',
+    };
+    return icons[mode] || 'pi pi-map-marker';
 };
 
 onMounted(() => {
@@ -114,15 +173,40 @@ onUnmounted(() => {
             <!-- Map Full Screen -->
             <div ref="mapContainer" class="flex-1 z-0" />
 
+            <!-- Panneau d'info temps de trajet -->
+            <div v-if="tempsTrajet" class="absolute bottom-6 left-6 z-10 max-w-xs">
+                <div class="cave-card p-4 rounded-xl shadow-lg bg-slate-800/90 backdrop-blur border border-slate-600">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="pi pi-clock text-yellow-400"></i>
+                        <span class="text-sm font-semibold text-slate-200">Temps estimé</span>
+                    </div>
+                    <div class="flex items-baseline gap-1">
+                        <span class="text-2xl font-bold text-white">{{ tempsTrajet.temps_formate }}</span>
+                        <span class="text-xs text-slate-400">vers {{ tempsTrajet.lieu_nom }}</span>
+                    </div>
+                    <div class="mt-2 flex items-center gap-2 text-xs text-slate-400">
+                        <i class="pi pi-map-marker"></i>
+                        <span>{{ tempsTrajet.distance_km }} km</span>
+                        <span class="mx-1">•</span>
+                        <i :class="getLocomotionIcon(tempsTrajet.mode_locomotion)"></i>
+                        <span class="capitalize">{{ tempsTrajet.mode_locomotion }}</span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Bouton de recentrage -->
             <div class="absolute bottom-6 right-6 z-10">
                 <button
                     type="button"
-                    class="cave-btn"
+                    class="cave-btn relative"
                     style="width:56px;height:56px;border-radius:50%;padding:0"
                     @click="recenterMap"
+                    title="Recentrer sur ma position"
                 >
                     <i class="pi pi-crosshairs text-xl" />
+                    <span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded opacity-0 hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                        Ma position
+                    </span>
                 </button>
             </div>
         </div>

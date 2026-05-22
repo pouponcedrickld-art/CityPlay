@@ -40,16 +40,36 @@ class PartieService
         $teamId = null;
         if ($data['mode'] === 'team') {
             \Log::info('PartieService: Création équipe');
+            
+            // Récupère le créateur pour générer un nom d'équipe par défaut
+            $createur = \App\Models\User::find($createurId);
+            $nomCreateur = $createur?->name ?? $createur?->pseudo ?? 'Joueur';
+            
+            // Génère un nom d'équipe unique
+            $nomEquipe = 'Équipe ' . $nomCreateur;
+            $compteur = 1;
+            while (Team::where('nom', $nomEquipe)->exists()) {
+                $nomEquipe = 'Équipe ' . $nomCreateur . ' (' . $compteur . ')';
+                $compteur++;
+            }
+            
             $team = Team::create([
-                'nom' => 'Groupe de ' . auth()->user()->name,
+                'nom' => $nomEquipe,
+                'description' => 'Équipe créée pour une partie en groupe',
                 'createur_id' => $createurId,
                 'max_joueurs' => $data['nb_joueurs'] ?? 10,
                 'code_liaison' => $codeLiaison,
+                'environnement_id' => $environnement->id,
             ]);
             $teamId = $team->id;
 
             // Le créateur est automatiquement ajouté avec le rôle 'challenger' (chef d'équipe)
             $team->users()->attach($createurId, ['role' => 'challenger']);
+            
+            \Log::info('PartieService: Équipe créée avec succès', [
+                'team_id' => $teamId,
+                'nom' => $nomEquipe,
+            ]);
         }
 
         // 4. Création de la session de jeu principale
