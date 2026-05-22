@@ -44,12 +44,15 @@ const map = ref(null);
 const playerMarker = ref(null);
 const watchId = ref(null);
 
-// Logique de Chat
-const messages = ref([]);
-const newMessage = ref('');
-const chatScroll = ref(null);
-const unreadCount = ref(0);
+// --- LOGIQUE DU CHAT D'ÉQUIPE ---
+const messages = ref([]);           // Stocke l'historique des messages
+const newMessage = ref('');         // Contenu du message en cours de saisie
+const chatScroll = ref(null);       // Référence DOM pour le scroll automatique
+const unreadCount = ref(0);         // Compteur de messages non lus pour le badge
 
+/**
+ * Récupère les anciens messages depuis le serveur.
+ */
 const fetchMessages = async () => {
     if (!props.partie.team_id) return;
     try {
@@ -61,20 +64,26 @@ const fetchMessages = async () => {
     }
 };
 
+/**
+ * Envoie un nouveau message au serveur.
+ */
 const sendMessage = async () => {
     if (!newMessage.value.trim() || !props.partie.team_id) return;
     const content = newMessage.value;
-    newMessage.value = '';
+    newMessage.value = ''; // Reset immédiat pour une sensation de fluidité
 
     try {
         const response = await window.axios.post(route('chat.send', props.partie.team_id), { content });
-        messages.value.push(response.data);
+        messages.value.push(response.data); // Ajoute le message à la vue locale
         scrollToBottom();
     } catch (error) {
         console.error('Erreur envoi message:', error);
     }
 };
 
+/**
+ * Fait défiler le chat vers le bas pour voir le dernier message.
+ */
 const scrollToBottom = () => {
     setTimeout(() => {
         if (chatScroll.value) {
@@ -83,19 +92,25 @@ const scrollToBottom = () => {
     }, 50);
 };
 
+/**
+ * Initialise la connexion WebSocket (Laravel Echo) pour écouter les nouveaux messages.
+ */
 const initChat = () => {
     if (!props.partie.team_id) return;
 
     fetchMessages();
 
+    // Écoute sur le canal privé de l'équipe
     window.Echo.private(`team.${props.partie.team_id}`)
         .listen('TeamMessageSent', (e) => {
             messages.value.push(e.message);
+            // Si le chat est fermé, on incrémente le badge de notification
             if (!showChat.value) unreadCount.value++;
             scrollToBottom();
         });
 };
 
+// Reset du compteur de messages lus à l'ouverture du chat
 watch(showChat, (val) => {
     if (val) {
         unreadCount.value = 0;

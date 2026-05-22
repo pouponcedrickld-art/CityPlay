@@ -7,7 +7,7 @@ use App\Models\User;
 
 /**
  * Policy Partie
- * 
+ *
  * Définit les règles d'accès aux parties :
  * - Seul le créateur peut modifier/supprimer
  * - Personne ne peut modifier une partie verrouillée
@@ -16,14 +16,16 @@ use App\Models\User;
 class PartiePolicy
 {
     /**
-     * Autorise l'admin à tout faire
+     * Règle "before" : s'exécute avant toutes les autres vérifications.
+     * Si elle retourne true, l'accès est accordé sans vérifier le reste.
+     * Ici, on autorise l'administrateur à tout voir et tout faire sur n'importe quelle partie.
      */
     public function before(User $user, string $ability): ?bool
     {
         if ($user->is_admin || $user->hasRole('admin')) {
             return true;
         }
-        return null;
+        return null; // On continue vers les autres méthodes pour les non-admins
     }
 
     /**
@@ -63,7 +65,7 @@ class PartiePolicy
 
     /**
      * Détermine si l'utilisateur peut modifier une partie
-     * 
+     *
      * RÈGLE CLÉ : interdit si verrouillée
      */
     public function update(User $user, Partie $partie): bool

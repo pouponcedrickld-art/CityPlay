@@ -71,17 +71,18 @@ Route::middleware('auth')->group(function () {
             }
         });
 
-        // Dashboard joueur
+        // Dashboard joueur : Affiche les parties en cours et les environnements disponibles
         Route::get('/dashboard', [PartieController::class, 'index'])->name('dashboard');
 
-        // Classement
+        // Classement Mondial : Affiche les 50 meilleurs joueurs du projet
         Route::get('/classement', [ClassementController::class, 'index'])->name('player.classement');
 
-        // Chat d'équipe
+        // Système de Chat d'équipe en temps réel (WebSockets)
         Route::get('/teams/{team}/messages', [ChatController::class, 'getMessages'])->name('chat.messages');
         Route::post('/teams/{team}/messages', [ChatController::class, 'sendMessage'])->name('chat.send');
     });
 
+    // Rejoindre une partie via un code ou un lien de partage
     Route::post('/parties/rejoindre', [PartieController::class, 'rejoindre'])->name('parties.rejoindre.form');
 
         // Parties
