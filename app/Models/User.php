@@ -31,6 +31,7 @@ class User extends Authenticatable
         'consent_donnees',
         'otp_code',
         'otp_verified_at',
+        'otp_expires_at',
         'is_admin',
         'keep_account',
         'total_score',

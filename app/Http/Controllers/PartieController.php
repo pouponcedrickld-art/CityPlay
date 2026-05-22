@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Partie;
 use App\Models\Environnement;
-// use App\Models\Partie;
 use App\Services\GeoService;
 use App\Services\PartieService;
 use Illuminate\Http\Request;
