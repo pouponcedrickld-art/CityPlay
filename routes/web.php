@@ -143,6 +143,6 @@ Route::middleware('auth')->group(function () {
             Route::resource('invitations', AppInvitationController::class)->names('admin.invitations');
         });
     });
-});
+
 
 require __DIR__ . '/auth.php';
