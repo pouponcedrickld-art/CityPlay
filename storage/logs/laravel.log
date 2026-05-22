@@ -5286,3 +5286,38 @@
 #64 C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php(23): require_once('C://Users//halil....')
 #65 {main}
 "} 
+[2026-05-22 09:52:59] local.INFO: OTP envoyé par mail à joueur@example.com  
+[2026-05-22 09:53:09] local.INFO: OTP envoyé par mail à admin@example.com  
+[2026-05-22 09:53:17] local.INFO: Admin access check {"email":"admin@example.com","is_admin":true,"has_role_admin":true} 
+[2026-05-22 09:56:28] local.ERROR: Cannot use Illuminate\Contracts\Broadcasting\ShouldBroadcast as ShouldBroadcast because the name is already in use {"userId":3,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot use Illuminate\\Contracts\\Broadcasting\\ShouldBroadcast as ShouldBroadcast because the name is already in use at C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/app/Events/TeamMessageSent.php:14)
+[stacktrace]
+#0 {main}
+"} 
+[2026-05-22 10:03:03] local.ERROR: Cannot use Illuminate\Contracts\Broadcasting\ShouldBroadcast as ShouldBroadcast because the name is already in use {"userId":2,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot use Illuminate\\Contracts\\Broadcasting\\ShouldBroadcast as ShouldBroadcast because the name is already in use at C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/app/Events/TeamMessageSent.php:14)
+[stacktrace]
+#0 {main}
+"} 
+[2026-05-22 10:03:13] local.ERROR: Cannot use Illuminate\Contracts\Broadcasting\ShouldBroadcast as ShouldBroadcast because the name is already in use {"userId":2,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot use Illuminate\\Contracts\\Broadcasting\\ShouldBroadcast as ShouldBroadcast because the name is already in use at C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/app/Events/TeamMessageSent.php:14)
+[stacktrace]
+#0 {main}
+"} 
+[2026-05-22 10:03:30] local.ERROR: Cannot use Illuminate\Contracts\Broadcasting\ShouldBroadcast as ShouldBroadcast because the name is already in use {"userId":3,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot use Illuminate\\Contracts\\Broadcasting\\ShouldBroadcast as ShouldBroadcast because the name is already in use at C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/app/Events/TeamMessageSent.php:14)
+[stacktrace]
+#0 {main}
+"} 
+[2026-05-22 10:07:51] local.ERROR: Cannot use Illuminate\Contracts\Broadcasting\ShouldBroadcast as ShouldBroadcast because the name is already in use {"userId":3,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot use Illuminate\\Contracts\\Broadcasting\\ShouldBroadcast as ShouldBroadcast because the name is already in use at C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/app/Events/TeamMessageSent.php:14)
+[stacktrace]
+#0 {main}
+"} 
+[2026-05-22 10:08:00] local.ERROR: Cannot use Illuminate\Contracts\Broadcasting\ShouldBroadcast as ShouldBroadcast because the name is already in use {"userId":2,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot use Illuminate\\Contracts\\Broadcasting\\ShouldBroadcast as ShouldBroadcast because the name is already in use at C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/app/Events/TeamMessageSent.php:14)
+[stacktrace]
+#0 {main}
+"} 
+[2026-05-22 10:11:04] local.ERROR: Cannot use Illuminate\Contracts\Broadcasting\ShouldBroadcast as ShouldBroadcast because the name is already in use {"userId":2,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot use Illuminate\\Contracts\\Broadcasting\\ShouldBroadcast as ShouldBroadcast because the name is already in use at C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/app/Events/TeamMessageSent.php:14)
+[stacktrace]
+#0 {main}
+"} 
+[2026-05-22 10:11:28] local.ERROR: Cannot use Illuminate\Contracts\Broadcasting\ShouldBroadcast as ShouldBroadcast because the name is already in use {"userId":3,"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Cannot use Illuminate\\Contracts\\Broadcasting\\ShouldBroadcast as ShouldBroadcast because the name is already in use at C:/Users/halil.bangbola/Documents/_dev_projets/Laravel/CityPlay/app/Events/TeamMessageSent.php:14)
+[stacktrace]
+#0 {main}
+"} 

@@ -74,8 +74,11 @@ const sendMessage = async () => {
 
     try {
         const response = await window.axios.post(route('chat.send', props.partie.team_id), { content });
-        messages.value.push(response.data); // Ajoute le message à la vue locale
-        scrollToBottom();
+        // S'assurer que le message n'est pas déjà dans la liste (si l'écho a déjà répondu)
+        if (!messages.value.find(m => m.id === response.data.id)) {
+            messages.value.push(response.data);
+            scrollToBottom();
+        }
     } catch (error) {
         console.error('Erreur envoi message:', error);
     }
@@ -102,11 +105,15 @@ const initChat = () => {
 
     // Écoute sur le canal privé de l'équipe
     window.Echo.private(`team.${props.partie.team_id}`)
-        .listen('TeamMessageSent', (e) => {
-            messages.value.push(e.message);
-            // Si le chat est fermé, on incrémente le badge de notification
-            if (!showChat.value) unreadCount.value++;
-            scrollToBottom();
+        .listen('.TeamMessageSent', (e) => {
+            console.log('Nouveau message reçu via WebSocket:', e);
+            // Éviter les doublons
+            if (!messages.value.find(m => m.id === e.message.id)) {
+                messages.value.push(e.message);
+                // Si le chat est fermé, on incrémente le badge de notification
+                if (!showChat.value) unreadCount.value++;
+                scrollToBottom();
+            }
         });
 };
 
