@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\PartieController as AdminPartieController;
 use App\Http\Controllers\Admin\TeamController as AdminTeamController;
 use App\Http\Controllers\Admin\AppInvitationController;
 use App\Http\Controllers\OtpController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ClassementController;
 use App\Http\Controllers\PartieController;
 use App\Http\Controllers\ProgressionController;
@@ -76,7 +77,12 @@ Route::middleware('auth')->group(function () {
         // Classement
         Route::get('/classement', [ClassementController::class, 'index'])->name('player.classement');
 
-        Route::post('/parties/rejoindre', [PartieController::class, 'rejoindre'])->name('parties.rejoindre.form');
+        // Chat d'équipe
+        Route::get('/teams/{team}/messages', [ChatController::class, 'getMessages'])->name('chat.messages');
+        Route::post('/teams/{team}/messages', [ChatController::class, 'sendMessage'])->name('chat.send');
+    });
+
+    Route::post('/parties/rejoindre', [PartieController::class, 'rejoindre'])->name('parties.rejoindre.form');
 
         // Parties
         Route::get('/parties', [PartieController::class, 'index'])->name('parties.web.index');

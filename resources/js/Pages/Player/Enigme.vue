@@ -25,6 +25,7 @@ const form = useForm({
 const showHint = ref(false);
 const showSolution = ref(false);
 const showTeam = ref(false);
+const showChat = ref(false);
 const showSkipConfirm = ref(false);
 const showAbandonConfirm = ref(false);
 const showTimeExpired = ref(false);
@@ -41,7 +42,66 @@ const lastKnownTime = ref(null);
 const mapContainer = ref(null);
 const map = ref(null);
 const playerMarker = ref(null);
-let watchId = null;
+const watchId = ref(null);
+
+// Logique de Chat
+const messages = ref([]);
+const newMessage = ref('');
+const chatScroll = ref(null);
+const unreadCount = ref(0);
+
+const fetchMessages = async () => {
+    if (!props.partie.team_id) return;
+    try {
+        const response = await window.axios.get(route('chat.messages', props.partie.team_id));
+        messages.value = response.data;
+        scrollToBottom();
+    } catch (error) {
+        console.error('Erreur chargement messages:', error);
+    }
+};
+
+const sendMessage = async () => {
+    if (!newMessage.value.trim() || !props.partie.team_id) return;
+    const content = newMessage.value;
+    newMessage.value = '';
+
+    try {
+        const response = await window.axios.post(route('chat.send', props.partie.team_id), { content });
+        messages.value.push(response.data);
+        scrollToBottom();
+    } catch (error) {
+        console.error('Erreur envoi message:', error);
+    }
+};
+
+const scrollToBottom = () => {
+    setTimeout(() => {
+        if (chatScroll.value) {
+            chatScroll.value.scrollTop = chatScroll.value.scrollHeight;
+        }
+    }, 50);
+};
+
+const initChat = () => {
+    if (!props.partie.team_id) return;
+
+    fetchMessages();
+
+    window.Echo.private(`team.${props.partie.team_id}`)
+        .listen('TeamMessageSent', (e) => {
+            messages.value.push(e.message);
+            if (!showChat.value) unreadCount.value++;
+            scrollToBottom();
+        });
+};
+
+watch(showChat, (val) => {
+    if (val) {
+        unreadCount.value = 0;
+        scrollToBottom();
+    }
+});
 
 const initMap = () => {
     if (!mapContainer.value) return;
@@ -61,7 +121,7 @@ const initMap = () => {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map.value);
 
     if (navigator.geolocation) {
-        watchId = navigator.geolocation.watchPosition(
+        watchId.value = navigator.geolocation.watchPosition(
             (position) => {
                 const { latitude, longitude, accuracy } = position.coords;
                 const latlng = [latitude, longitude];
@@ -319,6 +379,7 @@ onMounted(() => {
     applyFlash();
     startTimer();
     initMap();
+    initChat();
     if (props.progression?.statut === 'en_cours' && timeLeft.value <= 0) {
         onTimerExpired();
     }
@@ -328,7 +389,10 @@ onUnmounted(() => {
     window.removeEventListener('online', updateOnlineStatus);
     window.removeEventListener('offline', updateOnlineStatus);
     if (timerInterval) clearInterval(timerInterval);
-    if (watchId) navigator.geolocation.clearWatch(watchId);
+    if (watchId.value) navigator.geolocation.clearWatch(watchId.value);
+    if (props.partie.team_id) {
+        window.Echo.leave(`team.${props.partie.team_id}`);
+    }
     if (map.value) {
         map.value.remove();
     }
@@ -442,6 +506,14 @@ onUnmounted(() => {
                         <span>{{ scoreActuel }}</span>
                     </div>
 
+                    <!-- Bouton Chat (si mode team) -->
+                    <button v-if="partie.mode === 'team'" type="button" class="cave-hud__btn relative" @click="showChat = true" title="Chat d'équipe">
+                        <i class="pi pi-comments" />
+                        <span v-if="unreadCount > 0" class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[8px] rounded-full flex items-center justify-center font-black animate-bounce">
+                            {{ unreadCount }}
+                        </span>
+                    </button>
+
                     <!-- Bouton Équipe (si mode team) -->
                     <button v-if="partie.mode === 'team'" type="button" class="cave-hud__btn" @click="showTeam = true" title="Membres de l'équipe">
                         <i class="pi pi-users" />
@@ -529,6 +601,13 @@ onUnmounted(() => {
                     </div>
 
                     <div class="cave-tool-grid">
+                        <button v-if="partie.mode === 'team'" type="button" class="cave-tool-btn relative" @click="showChat = true">
+                            <div class="icon-box"><i class="pi pi-comments" /></div>
+                            <span class="label">Chat</span>
+                            <span v-if="unreadCount > 0" class="absolute top-0 right-2 w-5 h-5 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-black">
+                                {{ unreadCount }}
+                            </span>
+                        </button>
                         <button v-if="partie.mode === 'team'" type="button" class="cave-tool-btn" @click="showTeam = true">
                             <div class="icon-box"><i class="pi pi-users" /></div>
                             <span class="label">Équipe</span>
@@ -552,6 +631,49 @@ onUnmounted(() => {
                     </div>
                 </div>
             </main>
+
+            <Dialog v-model:visible="showChat" modal header="Chat d'équipe" :style="{ width: '95vw', maxWidth: '500px' }" class="cave-game-dialog cave-chat-dialog">
+                <div class="flex flex-col h-[60vh]">
+                    <!-- Zone des messages -->
+                    <div ref="chatScroll" class="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-[rgba(61,34,16,0.05)] rounded-2xl border-2 border-[var(--cave-border-dark)] mb-4">
+                        <div v-for="msg in messages" :key="msg.id"
+                            class="flex flex-col"
+                            :class="msg.user_id === $page.props.auth.user.id ? 'items-end' : 'items-start'">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-[9px] font-black uppercase opacity-60">{{ msg.user.name }}</span>
+                                <span class="text-[8px] opacity-40">{{ new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }}</span>
+                            </div>
+                            <div class="px-4 py-2 rounded-2xl max-w-[85%] text-sm font-medium border-2"
+                                :class="msg.user_id === $page.props.auth.user.id
+                                    ? 'bg-[var(--cave-gold)] border-[var(--cave-gold-dark)] text-[var(--cave-border-dark)] rounded-tr-none shadow-[3px_3px_0_var(--cave-gold-dark)]'
+                                    : 'bg-white border-[var(--cave-border-dark)] text-[var(--cave-border-dark)] rounded-tl-none shadow-[3px_3px_0_var(--cave-border-darker)]'">
+                                {{ msg.content }}
+                            </div>
+                        </div>
+                        <div v-if="messages.length === 0" class="h-full flex flex-col items-center justify-center opacity-30 italic text-xs">
+                            <i class="pi pi-comments text-3xl mb-2"></i>
+                            <p>Aucun message. Lancez la discussion !</p>
+                        </div>
+                    </div>
+
+                    <!-- Input message -->
+                    <div class="flex gap-2">
+                        <InputText
+                            v-model="newMessage"
+                            placeholder="Votre message..."
+                            class="flex-1 cave-input"
+                            @keyup.enter="sendMessage"
+                        />
+                        <button
+                            type="button"
+                            class="w-12 h-12 bg-[var(--cave-gold)] border-3 border-[var(--cave-gold-dark)] rounded-xl flex items-center justify-center text-[var(--cave-border-dark)] shadow-[0_4px_0_var(--cave-gold-dark)] active:translate-y-1 active:shadow-none transition-all"
+                            @click="sendMessage"
+                        >
+                            <i class="pi pi-send" />
+                        </button>
+                    </div>
+                </div>
+            </Dialog>
 
             <Dialog v-model:visible="showTeam" modal header="Membres de l'équipe" :style="{ width: '90vw', maxWidth: '480px' }" class="cave-game-dialog">
                 <div class="space-y-3 py-2">

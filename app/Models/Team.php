@@ -30,4 +30,9 @@ class Team extends Model
     {
         return $this->belongsToMany(User::class, 'team_user');
     }
+
+    public function messages()
+    {
+        return $this->hasMany(TeamMessage::class);
+    }
 }
