@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\EnigmeResolue;
 use App\Http\Controllers\Controller;
 use App\Models\Partie;
 use App\Services\GameplayService;

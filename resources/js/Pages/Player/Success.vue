@@ -1,6 +1,7 @@
 <script setup>
-import { Head, router } from '@inertiajs/vue3';
+import { Head, router, usePage } from '@inertiajs/vue3';
 import CaveGameLayout from '@/Layouts/CaveGameLayout.vue';
+import { onMounted, onUnmounted } from 'vue';
 
 const props = defineProps({
     partie: Object,
@@ -10,6 +11,8 @@ const props = defineProps({
     score_total: { type: Number, default: 0 },
 });
 
+const page = usePage();
+
 const nextStep = () => {
     if (props.progression?.statut === 'terminee' || !props.progression?.enigme_courante_id) {
         router.get(route('progression.summary', props.partie.id));
@@ -17,6 +20,26 @@ const nextStep = () => {
     }
     router.get(route('progression.enigme', props.partie.id));
 };
+
+onMounted(() => {
+    // Écoute sur le canal privé de la partie pour synchroniser le passage à l'énigme suivante
+    window.Echo.private(`partie.${props.partie.id}`)
+        .listen('.EnigmeResolue', (e) => {
+            console.log('Progression mise à jour via WebSocket (Success):', e);
+            
+            // Si un coéquipier a passé l'énigme ou a validé le passage à la suivante
+            if (e.resolu_par.id !== page.props.auth.user.id) {
+                // On redirige vers la nouvelle énigme
+                router.visit(route('progression.enigme', props.partie.id), {
+                    replace: true
+                });
+            }
+        });
+});
+
+onUnmounted(() => {
+    window.Echo.leave(`partie.${props.partie.id}`);
+});
 </script>
 
 <template>

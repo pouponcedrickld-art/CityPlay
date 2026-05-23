@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\EnigmeResolue;
 use App\Models\Partie;
 use App\Models\Enigme;
 use App\Models\Lieu;
@@ -89,6 +90,8 @@ class ProgressionController extends Controller
 
         // --- CAS 1 : Validation par Géolocalisation (Arrivée sur un lieu) ---
         if ($request->has('latitude') && $request->has('longitude')) {
+            $enigmeIdResolue = $progression->enigme_courante_id;
+
             \Log::info('ProgressionController: Soumission GPS reçue', [
                 'partie_id' => $partie->id,
                 'lat' => $request->latitude,
@@ -112,6 +115,16 @@ class ProgressionController extends Controller
                 // Stockage temporaire des points gagnés pour affichage dans la vue de succès
                 session()->flash('points_gagnes', $resultat['points_gagnes'] ?? 0);
                 session()->flash('score_total', $resultat['score_total'] ?? 0);
+
+                // Déclenche l'événement WebSocket pour notifier tous les membres de l'équipe
+                broadcast(new EnigmeResolue(
+                    $partie,
+                    auth()->user(),
+                    $enigmeIdResolue,
+                    $partie->fresh()->progression->enigme_courante_id,
+                    auth()->user()->name . ' a validé la position GPS !',
+                    $resultat['lieu_id']
+                ))->toOthers();
 
                 return redirect()->route('progression.success', [
                     'partie' => $partie,
@@ -142,6 +155,7 @@ class ProgressionController extends Controller
 
         if ($reponseJoueur === $reponseAttendue) {
             $lieuId = $enigme->lieu_id;
+            $enigmeId = $enigme->id;
             $pointsGagnes = $progression->resoudreEnigmeCourante();
             $progression->refresh();
 
@@ -149,6 +163,16 @@ class ProgressionController extends Controller
             session()->flash('score_total', $progression->score);
 
             $progression->passerEnigmeSuivante();
+
+            // Déclenche l'événement WebSocket pour notifier tous les membres de l'équipe
+            broadcast(new EnigmeResolue(
+                $partie,
+                auth()->user(),
+                $enigmeId,
+                $progression->enigme_courante_id,
+                auth()->user()->name . ' a résolu l\'énigme ! Passage à la suivante...',
+                $lieuId
+            ))->toOthers();
 
             return redirect()->route('progression.success', [
                 'partie' => $partie,
@@ -208,7 +232,17 @@ class ProgressionController extends Controller
             return redirect()->route('progression.summary', $partie);
         }
 
+        $enigmeId = $progression->enigme_courante_id;
         $resultat = $this->gameplayService->passerEnigme($partie);
+
+        // Déclenche l'événement WebSocket pour notifier tous les membres de l'équipe
+        broadcast(new EnigmeResolue(
+            $partie,
+            auth()->user(),
+            $enigmeId,
+            $partie->fresh()->progression->enigme_courante_id,
+            auth()->user()->name . ' a passé l\'énigme.'
+        ))->toOthers();
 
         if ($resultat['partie_terminee'] ?? false) {
             return redirect()->route('progression.summary', $partie);
