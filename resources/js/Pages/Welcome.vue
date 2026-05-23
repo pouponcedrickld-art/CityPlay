@@ -6,6 +6,7 @@ import { gsap } from "gsap";
 // Import official logos
 import logoWhrite from "@/Layouts/logo_whrite.jpg";
 import logoDark from "@/Layouts/logo_dark.jpg";
+import backgroundImage from "@/Layouts/image.jpg";
 
 defineProps({
     canLogin: {
@@ -267,6 +268,40 @@ onMounted(() => {
 
     // 2. Cartoon Hero Entrance Timeline
     const tl = gsap.timeline();
+
+    // Game background parallax & float
+    gsap.to(".scene-img-bg", {
+        scale: 1.15,
+        duration: 20,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+    });
+
+    // Floating Game Icons Animation
+    gsap.utils.toArray(".game-icon").forEach((icon, i) => {
+        gsap.to(icon, {
+            y: "random(-20, 20)",
+            x: "random(-10, 10)",
+            rotation: "random(-15, 15)",
+            duration: "random(2, 4)",
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            delay: i * 0.2,
+        });
+    });
+
+    // Scan line animation
+    gsap.fromTo(".scan-line", {
+        top: "0%",
+    }, {
+        top: "100%",
+        duration: 4,
+        repeat: -1,
+        ease: "none",
+    });
+
     tl.fromTo(
         ".cyber-overlay",
         { opacity: 1 },
@@ -335,585 +370,23 @@ onMounted(() => {
 
         <!-- ══ MOBILE HERO (< 1024px) : Cartoon Welcome ══ -->
         <section class="section-hero section-hero--mobile">
-            <!-- ══ SVG SCENE BACKGROUND ══ -->
+            <!-- ══ GAME SCENE BACKGROUND ══ -->
             <div class="hero-scene" aria-hidden="true">
-                <svg
-                    class="scene-svg"
-                    viewBox="0 0 390 844"
-                    preserveAspectRatio="xMidYMid slice"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <!-- Sky gradient -->
-                    <defs>
-                        <linearGradient
-                            id="skyGrad"
-                            x1="0"
-                            y1="0"
-                            x2="0"
-                            y2="1"
-                        >
-                            <stop offset="0%" stop-color="#1a6fc4" />
-                            <stop offset="45%" stop-color="#4db8e8" />
-                            <stop offset="100%" stop-color="#a8e6cf" />
-                        </linearGradient>
-                        <linearGradient
-                            id="groundGrad"
-                            x1="0"
-                            y1="0"
-                            x2="0"
-                            y2="1"
-                        >
-                            <stop offset="0%" stop-color="#4caf50" />
-                            <stop offset="100%" stop-color="#2e7d32" />
-                        </linearGradient>
-                        <linearGradient
-                            id="hillGrad"
-                            x1="0"
-                            y1="0"
-                            x2="0"
-                            y2="1"
-                        >
-                            <stop offset="0%" stop-color="#66bb6a" />
-                            <stop offset="100%" stop-color="#388e3c" />
-                        </linearGradient>
-                        <linearGradient
-                            id="treeTrunkL"
-                            x1="0"
-                            y1="0"
-                            x2="1"
-                            y2="0"
-                        >
-                            <stop offset="0%" stop-color="#5d4037" />
-                            <stop offset="100%" stop-color="#3e2723" />
-                        </linearGradient>
-                        <linearGradient
-                            id="mountainGrad"
-                            x1="0"
-                            y1="0"
-                            x2="0"
-                            y2="1"
-                        >
-                            <stop offset="0%" stop-color="#7986cb" />
-                            <stop offset="100%" stop-color="#5c6bc0" />
-                        </linearGradient>
-                        <linearGradient
-                            id="sunGrad"
-                            cx="50%"
-                            cy="50%"
-                            r="50%"
-                            fx="50%"
-                            fy="50%"
-                            gradientUnits="objectBoundingBox"
-                        >
-                            <stop offset="0%" stop-color="#fff9c4" />
-                            <stop offset="100%" stop-color="#ffcc02" />
-                        </linearGradient>
-                        <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
-                            <stop
-                                offset="0%"
-                                stop-color="#fff176"
-                                stop-opacity="0.6"
-                            />
-                            <stop
-                                offset="100%"
-                                stop-color="#ffcc02"
-                                stop-opacity="0"
-                            />
-                        </radialGradient>
-                        <linearGradient
-                            id="vignetteGrad"
-                            x1="0"
-                            y1="0"
-                            x2="0"
-                            y2="1"
-                        >
-                            <stop offset="0%" stop-color="rgba(0,0,0,0)" />
-                            <stop offset="60%" stop-color="rgba(0,0,0,0)" />
-                            <stop offset="100%" stop-color="rgba(0,0,0,0.82)" />
-                        </linearGradient>
-                        <filter id="blur4">
-                            <feGaussianBlur stdDeviation="4" />
-                        </filter>
-                        <filter id="blur2">
-                            <feGaussianBlur stdDeviation="2" />
-                        </filter>
-                    </defs>
+                <img
+                    :src="backgroundImage"
+                    alt="Game Background"
+                    class="scene-img-bg"
+                />
+                <div class="scene-overlay"></div>
+            </div>
 
-                    <!-- Sky -->
-                    <rect width="390" height="844" fill="url(#skyGrad)" />
-
-                    <!-- Sun glow -->
-                    <circle
-                        cx="195"
-                        cy="200"
-                        r="90"
-                        fill="url(#sunGlow)"
-                        filter="url(#blur4)"
-                    />
-                    <!-- Sun -->
-                    <circle cx="195" cy="210" r="38" fill="#fff176" />
-                    <circle cx="195" cy="210" r="30" fill="#ffee58" />
-
-                    <!-- Distant mountains -->
-                    <polygon
-                        points="60,420 160,260 260,420"
-                        fill="#7986cb"
-                        opacity="0.55"
-                    />
-                    <polygon
-                        points="140,420 230,290 320,420"
-                        fill="#9fa8da"
-                        opacity="0.45"
-                    />
-                    <polygon
-                        points="200,420 290,310 380,420"
-                        fill="#7986cb"
-                        opacity="0.4"
-                    />
-
-                    <!-- Mid ground hills -->
-                    <ellipse
-                        cx="195"
-                        cy="500"
-                        rx="260"
-                        ry="100"
-                        fill="#81c784"
-                    />
-                    <ellipse cx="80" cy="520" rx="140" ry="80" fill="#66bb6a" />
-                    <ellipse
-                        cx="310"
-                        cy="510"
-                        rx="140"
-                        ry="75"
-                        fill="#66bb6a"
-                    />
-
-                    <!-- Ground -->
-                    <rect
-                        x="0"
-                        y="490"
-                        width="390"
-                        height="354"
-                        fill="url(#groundGrad)"
-                    />
-
-                    <!-- Path -->
-                    <path
-                        d="M155,844 Q175,650 185,530 Q190,490 195,480 Q200,490 205,530 Q215,650 235,844Z"
-                        fill="#a5d6a7"
-                        opacity="0.7"
-                    />
-                    <path
-                        d="M162,844 Q180,660 188,535 Q192,495 195,485 Q198,495 202,535 Q210,660 228,844Z"
-                        fill="#c8e6c9"
-                        opacity="0.5"
-                    />
-
-                    <!-- ── LEFT BIG TREE ── -->
-                    <!-- Trunk -->
-                    <rect
-                        x="-18"
-                        y="280"
-                        width="55"
-                        height="320"
-                        rx="20"
-                        fill="url(#treeTrunkL)"
-                    />
-                    <!-- Roots -->
-                    <ellipse
-                        cx="10"
-                        cy="590"
-                        rx="40"
-                        ry="12"
-                        fill="#3e2723"
-                        opacity="0.6"
-                    />
-                    <!-- Foliage layers -->
-                    <ellipse cx="30" cy="200" rx="95" ry="110" fill="#2e7d32" />
-                    <ellipse cx="15" cy="170" rx="80" ry="95" fill="#388e3c" />
-                    <ellipse cx="40" cy="145" rx="70" ry="80" fill="#43a047" />
-                    <ellipse cx="20" cy="125" rx="55" ry="65" fill="#4caf50" />
-                    <!-- Highlight -->
-                    <ellipse
-                        cx="50"
-                        cy="140"
-                        rx="25"
-                        ry="30"
-                        fill="#66bb6a"
-                        opacity="0.5"
-                    />
-
-                    <!-- ── RIGHT BIG TREE ── -->
-                    <rect
-                        x="353"
-                        y="300"
-                        width="55"
-                        height="300"
-                        rx="20"
-                        fill="url(#treeTrunkL)"
-                    />
-                    <ellipse
-                        cx="380"
-                        cy="590"
-                        rx="40"
-                        ry="12"
-                        fill="#3e2723"
-                        opacity="0.6"
-                    />
-                    <ellipse
-                        cx="360"
-                        cy="215"
-                        rx="90"
-                        ry="105"
-                        fill="#1b5e20"
-                    />
-                    <ellipse cx="375" cy="185" rx="78" ry="90" fill="#2e7d32" />
-                    <ellipse cx="355" cy="160" rx="68" ry="78" fill="#388e3c" />
-                    <ellipse cx="370" cy="140" rx="52" ry="62" fill="#43a047" />
-                    <ellipse
-                        cx="345"
-                        cy="135"
-                        rx="28"
-                        ry="32"
-                        fill="#66bb6a"
-                        opacity="0.45"
-                    />
-
-                    <!-- Hanging vines left -->
-                    <path
-                        d="M55,0 Q45,80 60,160 Q70,220 55,300"
-                        stroke="#33691e"
-                        stroke-width="3"
-                        fill="none"
-                        opacity="0.8"
-                    />
-                    <path
-                        d="M80,0 Q65,100 75,180 Q85,240 70,320"
-                        stroke="#558b2f"
-                        stroke-width="2.5"
-                        fill="none"
-                        opacity="0.7"
-                    />
-                    <ellipse
-                        cx="60"
-                        cy="160"
-                        rx="8"
-                        ry="10"
-                        fill="#4caf50"
-                        opacity="0.8"
-                    />
-                    <ellipse
-                        cx="75"
-                        cy="200"
-                        rx="7"
-                        ry="9"
-                        fill="#66bb6a"
-                        opacity="0.7"
-                    />
-                    <ellipse
-                        cx="55"
-                        cy="300"
-                        rx="9"
-                        ry="11"
-                        fill="#4caf50"
-                        opacity="0.75"
-                    />
-
-                    <!-- Hanging vines right -->
-                    <path
-                        d="M335,0 Q345,90 330,170 Q320,230 335,310"
-                        stroke="#33691e"
-                        stroke-width="3"
-                        fill="none"
-                        opacity="0.8"
-                    />
-                    <path
-                        d="M310,0 Q325,110 315,190 Q305,250 320,330"
-                        stroke="#558b2f"
-                        stroke-width="2.5"
-                        fill="none"
-                        opacity="0.7"
-                    />
-                    <ellipse
-                        cx="330"
-                        cy="170"
-                        rx="8"
-                        ry="10"
-                        fill="#4caf50"
-                        opacity="0.8"
-                    />
-                    <ellipse
-                        cx="315"
-                        cy="210"
-                        rx="7"
-                        ry="9"
-                        fill="#66bb6a"
-                        opacity="0.7"
-                    />
-                    <ellipse
-                        cx="335"
-                        cy="310"
-                        rx="9"
-                        ry="11"
-                        fill="#4caf50"
-                        opacity="0.75"
-                    />
-
-                    <!-- Small bushes foreground -->
-                    <ellipse cx="60" cy="600" rx="50" ry="30" fill="#2e7d32" />
-                    <ellipse cx="50" cy="590" rx="38" ry="24" fill="#388e3c" />
-                    <ellipse cx="330" cy="605" rx="48" ry="28" fill="#2e7d32" />
-                    <ellipse cx="340" cy="595" rx="36" ry="22" fill="#388e3c" />
-
-                    <!-- Foreground grass tufts -->
-                    <ellipse cx="0" cy="700" rx="80" ry="40" fill="#1b5e20" />
-                    <ellipse cx="390" cy="710" rx="80" ry="40" fill="#1b5e20" />
-                    <ellipse cx="100" cy="750" rx="60" ry="30" fill="#2e7d32" />
-                    <ellipse cx="290" cy="755" rx="60" ry="30" fill="#2e7d32" />
-
-                    <!-- ── EXPLORER CHARACTER (seen from behind) ── -->
-                    <!-- Shadow -->
-                    <ellipse
-                        cx="195"
-                        cy="590"
-                        rx="28"
-                        ry="8"
-                        fill="#1b5e20"
-                        opacity="0.5"
-                    />
-                    <!-- Legs -->
-                    <rect
-                        x="181"
-                        y="548"
-                        width="12"
-                        height="38"
-                        rx="6"
-                        fill="#6d4c41"
-                    />
-                    <rect
-                        x="197"
-                        y="548"
-                        width="12"
-                        height="38"
-                        rx="6"
-                        fill="#5d4037"
-                    />
-                    <!-- Boots -->
-                    <ellipse cx="187" cy="586" rx="9" ry="6" fill="#3e2723" />
-                    <ellipse cx="203" cy="586" rx="9" ry="6" fill="#3e2723" />
-                    <!-- Body -->
-                    <rect
-                        x="175"
-                        y="490"
-                        width="40"
-                        height="62"
-                        rx="14"
-                        fill="#8d6e63"
-                    />
-                    <!-- Belt -->
-                    <rect
-                        x="175"
-                        y="538"
-                        width="40"
-                        height="8"
-                        rx="3"
-                        fill="#5d4037"
-                    />
-                    <rect
-                        x="191"
-                        y="536"
-                        width="8"
-                        height="12"
-                        rx="2"
-                        fill="#ffd54f"
-                    />
-                    <!-- Backpack -->
-                    <rect
-                        x="162"
-                        y="495"
-                        width="22"
-                        height="40"
-                        rx="8"
-                        fill="#4caf50"
-                    />
-                    <rect
-                        x="164"
-                        y="497"
-                        width="18"
-                        height="36"
-                        rx="6"
-                        fill="#66bb6a"
-                    />
-                    <!-- Backpack strap -->
-                    <path
-                        d="M175,495 Q168,510 170,535"
-                        stroke="#388e3c"
-                        stroke-width="3"
-                        fill="none"
-                    />
-                    <!-- Arms -->
-                    <rect
-                        x="215"
-                        y="498"
-                        width="10"
-                        height="30"
-                        rx="5"
-                        fill="#8d6e63"
-                    />
-                    <rect
-                        x="165"
-                        y="498"
-                        width="10"
-                        height="28"
-                        rx="5"
-                        fill="#8d6e63"
-                    />
-                    <!-- Hands -->
-                    <circle cx="220" cy="530" r="6" fill="#a1887f" />
-                    <circle cx="170" cy="528" r="6" fill="#a1887f" />
-                    <!-- Neck -->
-                    <rect
-                        x="188"
-                        y="478"
-                        width="14"
-                        height="14"
-                        rx="5"
-                        fill="#a1887f"
-                    />
-                    <!-- Head -->
-                    <ellipse cx="195" cy="468" rx="20" ry="18" fill="#a1887f" />
-                    <!-- Hair -->
-                    <ellipse cx="195" cy="455" rx="18" ry="10" fill="#5d4037" />
-                    <!-- Hat brim -->
-                    <ellipse cx="195" cy="452" rx="26" ry="7" fill="#f9a825" />
-                    <!-- Hat body -->
-                    <ellipse cx="195" cy="438" rx="20" ry="16" fill="#fbc02d" />
-                    <!-- Hat highlight -->
-                    <ellipse
-                        cx="200"
-                        cy="433"
-                        rx="8"
-                        ry="5"
-                        fill="#fff176"
-                        opacity="0.5"
-                    />
-                    <!-- Hat band -->
-                    <rect
-                        x="175"
-                        y="448"
-                        width="40"
-                        height="6"
-                        rx="3"
-                        fill="#e65100"
-                    />
-                    <!-- Map in hand -->
-                    <rect
-                        x="222"
-                        y="518"
-                        width="16"
-                        height="20"
-                        rx="3"
-                        fill="#fff9c4"
-                        transform="rotate(-15,230,528)"
-                    />
-                    <line
-                        x1="225"
-                        y1="522"
-                        x2="235"
-                        y2="522"
-                        stroke="#bdbdbd"
-                        stroke-width="1.5"
-                        transform="rotate(-15,230,528)"
-                    />
-                    <line
-                        x1="225"
-                        y1="526"
-                        x2="233"
-                        y2="526"
-                        stroke="#bdbdbd"
-                        stroke-width="1.5"
-                        transform="rotate(-15,230,528)"
-                    />
-
-                    <!-- ── MAGICAL SPARKLES ── -->
-                    <g class="sparkles">
-                        <circle
-                            cx="120"
-                            cy="350"
-                            r="3"
-                            fill="#fff9c4"
-                            opacity="0.9"
-                        />
-                        <circle
-                            cx="270"
-                            cy="320"
-                            r="2.5"
-                            fill="#e1f5fe"
-                            opacity="0.85"
-                        />
-                        <circle
-                            cx="80"
-                            cy="420"
-                            r="2"
-                            fill="#f3e5f5"
-                            opacity="0.8"
-                        />
-                        <circle
-                            cx="310"
-                            cy="380"
-                            r="3"
-                            fill="#fff9c4"
-                            opacity="0.9"
-                        />
-                        <circle
-                            cx="155"
-                            cy="290"
-                            r="2"
-                            fill="#e8f5e9"
-                            opacity="0.75"
-                        />
-                        <circle
-                            cx="240"
-                            cy="400"
-                            r="2.5"
-                            fill="#fff3e0"
-                            opacity="0.8"
-                        />
-                        <circle
-                            cx="340"
-                            cy="450"
-                            r="2"
-                            fill="#e1f5fe"
-                            opacity="0.7"
-                        />
-                        <circle
-                            cx="50"
-                            cy="370"
-                            r="2.5"
-                            fill="#f3e5f5"
-                            opacity="0.8"
-                        />
-                        <!-- Star sparkles -->
-                        <path
-                            d="M130,310 L132,305 L134,310 L139,312 L134,314 L132,319 L130,314 L125,312Z"
-                            fill="#fff9c4"
-                            opacity="0.9"
-                        />
-                        <path
-                            d="M260,360 L262,355 L264,360 L269,362 L264,364 L262,369 L260,364 L255,362Z"
-                            fill="#e1f5fe"
-                            opacity="0.85"
-                        />
-                        <path
-                            d="M320,290 L322,285 L324,290 L329,292 L324,294 L322,299 L320,294 L315,292Z"
-                            fill="#fff176"
-                            opacity="0.8"
-                        />
-                    </g>
-
-                    <!-- Bottom vignette for button readability -->
-                    <rect width="390" height="844" fill="url(#vignetteGrad)" />
-                </svg>
+            <!-- ══ FLOATING GAME ELEMENTS (GSAP Animated) ══ -->
+            <div class="game-elements" aria-hidden="true">
+                <div class="game-icon float-icon-1"><i class="pi pi-star-fill"></i></div>
+                <div class="game-icon float-icon-2"><i class="pi pi-trophy"></i></div>
+                <div class="game-icon float-icon-3"><i class="pi pi-map-marker"></i></div>
+                <div class="game-icon float-icon-4"><i class="pi pi-bolt"></i></div>
+                <div class="scan-line"></div>
             </div>
 
             <!-- ══ FLOATING PARTICLES (CSS animated) ══ -->
@@ -1584,16 +1057,60 @@ section {
     overflow: hidden;
 }
 
-/* ── CARTOON SCENE ── */
+/* ── GAME SCENE ── */
 .hero-scene {
     position: absolute;
     inset: 0;
     z-index: 1;
+    overflow: hidden;
 }
-.scene-svg {
+.scene-img-bg {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transform: scale(1.1); /* Slightly larger for parallax */
+}
+.scene-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.3) 0%,
+        rgba(0, 0, 0, 0.1) 40%,
+        rgba(4, 5, 8, 0.8) 100%
+    );
+    z-index: 2;
+}
+
+/* ── GAME ELEMENTS & ICONS ── */
+.game-elements {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+}
+.game-icon {
+    position: absolute;
+    font-size: 1.5rem;
+    color: #ffd700;
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6));
+    opacity: 0.8;
+}
+.float-icon-1 { top: 20%; left: 10%; }
+.float-icon-2 { top: 15%; right: 15%; color: #ff6b35; }
+.float-icon-3 { bottom: 40%; left: 15%; color: #4caf50; }
+.float-icon-4 { bottom: 35%; right: 10%; color: #29b6f6; }
+
+.scan-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255, 149, 0, 0.5), transparent);
+    box-shadow: 0 0 10px rgba(255, 149, 0, 0.3);
+    z-index: 4;
+    opacity: 0.3;
 }
 
 /* ── SPARKLE ANIMATION ── */
