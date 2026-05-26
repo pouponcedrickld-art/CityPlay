@@ -411,7 +411,10 @@ class PartieController extends Controller
     {
         $this->authorize('update', $partie);
 
-        $code = Str::upper(Str::random(4)).'-'.Str::random(4);
+        // On utilise la même logique que PartieService pour la cohérence
+        do {
+            $code = strtoupper(Str::random(6));
+        } while (Partie::where('code_liaison', $code)->exists() || \App\Models\Team::where('code_liaison', $code)->exists());
 
         $partie->update([
             'code_liaison' => $code,

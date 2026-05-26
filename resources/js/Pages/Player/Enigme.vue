@@ -470,7 +470,7 @@ const onTimerExpired = () => {
         .post(route("progression.store", props.partie.id), {
             temps_restant: 0,
         })
-        .catch(() => {});
+        .catch(() => { });
 };
 
 const startTimer = () => {
@@ -486,7 +486,7 @@ const startTimer = () => {
                     .post(route("progression.store", props.partie.id), {
                         temps_restant: timeLeft.value,
                     })
-                    .catch(() => {});
+                    .catch(() => { });
             }
         } else if (!showTimeExpired.value && !revealedSolution.value) {
             onTimerExpired();
@@ -523,17 +523,13 @@ onUnmounted(() => {
 
 <template>
     <CaveGameLayout>
-        <Head
-            :title="'Énigme - ' + (partie?.environnement?.nom || 'En cours')"
-        />
+
+        <Head :title="'Énigme - ' + (partie?.environnement?.nom || 'En cours')" />
 
         <div v-if="showTimeExpired && !revealedSolution" class="cave-overlay">
             <div class="cave-overlay__card">
                 <div class="cave-overlay__header">
-                    <div
-                        class="cave-logo-icon"
-                        style="width: 64px; height: 64px; margin: 0 auto 12px"
-                    >
+                    <div class="cave-logo-icon" style="width: 64px; height: 64px; margin: 0 auto 12px">
                         <i class="pi pi-clock text-2xl" />
                     </div>
                     <h2 class="cave-result-title" style="font-size: 1.25rem">
@@ -545,28 +541,16 @@ onUnmounted(() => {
                         Le chrono est terminé pour cette énigme. Que
                         souhaitez-vous faire ?
                     </p>
-                    <button
-                        type="button"
-                        class="cave-btn"
-                        @click="skipAfterTimeout"
-                    >
+                    <button type="button" class="cave-btn" @click="skipAfterTimeout">
                         <i class="cave-btn__icon pi pi-fast-forward" />
                         <span class="cave-btn__label">Passer l'énigme</span>
                     </button>
-                    <button
-                        type="button"
-                        class="cave-btn cave-btn--survival"
-                        :disabled="isRequestingSolution"
-                        @click="requestSolutionAfterTimeout"
-                    >
-                        <i
-                            class="cave-btn__icon"
-                            :class="
-                                isRequestingSolution
-                                    ? 'pi pi-spin pi-spinner'
-                                    : 'pi pi-eye'
-                            "
-                        />
+                    <button type="button" class="cave-btn cave-btn--survival" :disabled="isRequestingSolution"
+                        @click="requestSolutionAfterTimeout">
+                        <i class="cave-btn__icon" :class="isRequestingSolution
+                            ? 'pi pi-spin pi-spinner'
+                            : 'pi pi-eye'
+                            " />
                         <span class="cave-btn__label">{{
                             isRequestingSolution
                                 ? "Chargement..."
@@ -583,10 +567,7 @@ onUnmounted(() => {
         <div v-if="revealedSolution" class="cave-overlay">
             <div class="cave-overlay__card">
                 <div class="cave-overlay__header">
-                    <div
-                        class="cave-logo-icon"
-                        style="width: 64px; height: 64px; margin: 0 auto 12px"
-                    >
+                    <div class="cave-logo-icon" style="width: 64px; height: 64px; margin: 0 auto 12px">
                         <i class="pi pi-eye text-2xl" />
                     </div>
                     <h2 class="cave-result-title" style="font-size: 1.25rem">
@@ -594,21 +575,19 @@ onUnmounted(() => {
                     </h2>
                 </div>
                 <div class="cave-overlay__body cave-btn-stack">
-                    <p class="cave-panel__text text-center" style="margin: 0">
-                        {{ revealedSolution }}
+                    <div
+                        class="bg-[var(--cave-rock-dark)] p-4 rounded-xl border-2 border-[var(--cave-border-dark)] mb-2">
+                        <p class="cave-panel__text text-center font-bold text-lg" style="margin: 0">
+                            {{ revealedSolution }}
+                        </p>
+                    </div>
+                    <p class="cave-hint text-center text-red-700 font-bold mb-4">
+                        <i class="pi pi-info-circle mr-1" />
+                        Cette énigme est marquée comme "passée". Aucun point n'a été ajouté à votre score.
                     </p>
-                    <p class="cave-flash cave-flash--error" style="margin: 0">
-                        Aucun point ne sera attribué pour cette énigme.
-                    </p>
-                    <button
-                        type="button"
-                        class="cave-btn w-full"
-                        @click="continueAfterSolution"
-                    >
+                    <button type="button" class="cave-btn w-full" @click="continueAfterSolution">
                         <i class="cave-btn__icon pi pi-arrow-right" />
-                        <span class="cave-btn__label"
-                            >Continuer la mission</span
-                        >
+                        <span class="cave-btn__label">Continuer l'aventure</span>
                     </button>
                 </div>
             </div>
@@ -617,10 +596,7 @@ onUnmounted(() => {
         <div v-if="progression?.statut === 'pause'" class="cave-overlay">
             <div class="cave-overlay__card">
                 <div class="cave-overlay__header">
-                    <div
-                        class="cave-logo-icon"
-                        style="width: 64px; height: 64px; margin: 0 auto 12px"
-                    >
+                    <div class="cave-logo-icon" style="width: 64px; height: 64px; margin: 0 auto 12px">
                         <i class="pi pi-pause text-2xl" />
                     </div>
                     <h2 class="cave-result-title" style="font-size: 1.25rem">
@@ -636,45 +612,25 @@ onUnmounted(() => {
                     </p>
 
                     <button type="button" class="cave-btn" @click="togglePause">
-                        <i class="cave-btn__icon pi pi-play" /><span
-                            class="cave-btn__label"
-                            >Reprendre</span
-                        >
+                        <i class="cave-btn__icon pi pi-play" /><span class="cave-btn__label">Reprendre</span>
                     </button>
-                    <button
-                        type="button"
-                        class="cave-btn cave-btn--ghost"
-                        @click="router.get(route('dashboard'))"
-                    >
-                        <i class="cave-btn__icon pi pi-home" /><span
-                            class="cave-btn__label"
-                            >Retour au camp</span
-                        >
+                    <button type="button" class="cave-btn cave-btn--ghost" @click="router.get(route('dashboard'))">
+                        <i class="cave-btn__icon pi pi-home" /><span class="cave-btn__label">Retour au camp</span>
                     </button>
-                    <button
-                        type="button"
-                        class="cave-btn cave-btn--danger"
-                        @click="showAbandonConfirm = true"
-                    >
-                        <i class="cave-btn__icon pi pi-flag" /><span
-                            class="cave-btn__label"
-                            >Terminer la quête</span
-                        >
+                    <button type="button" class="cave-btn cave-btn--danger" @click="showAbandonConfirm = true">
+                        <i class="cave-btn__icon pi pi-flag" /><span class="cave-btn__label">Terminer la quête</span>
                     </button>
                 </div>
             </div>
         </div>
 
-        <div
-            class="transition-opacity duration-300"
-            :class="{
-                'opacity-50 pointer-events-none':
-                    isOffline ||
-                    progression?.statut === 'pause' ||
-                    showTimeExpired ||
-                    revealedSolution,
-            }"
-        >
+        <div class="transition-opacity duration-300" :class="{
+            'opacity-50 pointer-events-none':
+                isOffline ||
+                progression?.statut === 'pause' ||
+                showTimeExpired ||
+                revealedSolution,
+        }">
             <div v-if="isOffline" class="cave-offline-banner sticky top-0 z-50">
                 <i class="pi pi-wifi mr-2" /> Connexion perdue
             </div>
@@ -683,35 +639,19 @@ onUnmounted(() => {
                 <div class="flex items-center gap-3">
                     <div class="cave-step-ring">
                         <svg class="w-12 h-12 -rotate-90" viewBox="0 0 48 48">
-                            <circle
-                                cx="24"
-                                cy="24"
-                                r="20"
-                                stroke="currentColor"
-                                stroke-width="4"
-                                fill="transparent"
-                                opacity="0.2"
-                            />
-                            <circle
-                                cx="24"
-                                cy="24"
-                                r="20"
-                                stroke="currentColor"
-                                stroke-width="4"
-                                fill="transparent"
-                                :stroke-dasharray="125.6"
-                                :stroke-dashoffset="
-                                    125.6 *
+                            <circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="4" fill="transparent"
+                                opacity="0.2" />
+                            <circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="4" fill="transparent"
+                                :stroke-dasharray="125.6" :stroke-dashoffset="125.6 *
                                     (1 -
                                         (progression?.lieux_decouverts?.length +
                                             1) /
-                                            ((progression?.lieux_restants
+                                        ((progression?.lieux_restants
+                                            ?.length || 0) +
+                                            (progression?.lieux_decouverts
                                                 ?.length || 0) +
-                                                (progression?.lieux_decouverts
-                                                    ?.length || 0) +
-                                                1))
-                                "
-                            />
+                                            1))
+                                    " />
                         </svg>
                         <span class="cave-step-ring__label">{{
                             (progression?.lieux_decouverts?.length || 0) + 1
@@ -719,101 +659,71 @@ onUnmounted(() => {
                     </div>
                     <div>
                         <p class="cave-hud__mission">Mission</p>
-                        <p
-                            class="cave-hud__title truncate max-w-[120px] lg:max-w-xs"
-                        >
+                        <p class="cave-hud__title truncate max-w-[120px] lg:max-w-xs">
                             {{ partie?.environnement?.nom }}
                         </p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
                     <!-- Bouton Dashboard (Mobile) -->
-                    <Link
-                        :href="route('dashboard')"
-                        class="cave-hud__btn lg:hidden"
-                        title="Dashboard"
-                    >
+                    <Link :href="route('dashboard')" class="cave-hud__btn lg:hidden" title="Dashboard">
                         <i class="pi pi-home" />
                     </Link>
 
-                    <div
-                        class="cave-hud__score"
-                        :title="'Score de la mission: ' + scoreActuel + ' pts'"
-                    >
+                    <div class="cave-hud__score" :title="'Score de la mission: ' + scoreActuel + ' pts'">
                         <i class="pi pi-star" />
                         <span>{{ scoreActuel }}</span>
                     </div>
 
                     <!-- Bouton Chat (si mode team) -->
-                    <button
-                        v-if="partie.mode === 'team'"
-                        type="button"
-                        class="cave-hud__btn relative"
-                        @click="showChat = true"
-                        title="Chat d'équipe"
-                    >
+                    <button v-if="partie.mode === 'team'" type="button" class="cave-hud__btn relative"
+                        @click="showChat = true" title="Chat d'équipe">
                         <i class="pi pi-comments" />
-                        <span
-                            v-if="unreadCount > 0"
-                            class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[8px] rounded-full flex items-center justify-center font-black animate-bounce"
-                        >
+                        <span v-if="unreadCount > 0"
+                            class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[8px] rounded-full flex items-center justify-center font-black animate-bounce">
                             {{ unreadCount }}
                         </span>
                     </button>
 
                     <!-- Bouton Équipe (si mode team) -->
-                    <button
-                        v-if="partie.mode === 'team'"
-                        type="button"
-                        class="cave-hud__btn"
-                        @click="showTeam = true"
-                        title="Membres de l'équipe"
-                    >
+                    <button v-if="partie.mode === 'team'" type="button" class="cave-hud__btn" @click="showTeam = true"
+                        title="Membres de l'équipe">
                         <i class="pi pi-users" />
                     </button>
 
-                    <div
-                        class="cave-hud__score cave-hud__score--gold"
-                        :title="
-                            'Score global: ' +
-                            ($page.props.auth.user.total_score || 0) +
-                            ' pts'
-                        "
-                    >
+                    <div class="cave-hud__score cave-hud__score--gold" :title="'Score global: ' +
+                        ($page.props.auth.user.total_score || 0) +
+                        ' pts'
+                        ">
                         <i class="pi pi-star-fill" />
                         <span>{{
                             $page.props.auth.user.total_score || 0
                         }}</span>
                     </div>
-                    <div
-                        class="cave-hud__timer"
-                        :class="{ 'cave-hud__timer--urgent': timeLeft < 300 }"
-                    >
+
+                    <!-- Monnaie Virtuelle (CityCoins) -->
+                    <div class="cave-hud__score cave-hud__score--coins" :title="'CityCoins: ' +
+                        ($page.props.auth.user.balance_coins || 0)
+                        ">
+                        <i class="pi pi-database" />
+                        <span>{{
+                            $page.props.auth.user.balance_coins || 0
+                        }}</span>
+                    </div>
+                    <div class="cave-hud__timer" :class="{ 'cave-hud__timer--urgent': timeLeft < 300 }">
                         <span>{{ formatTime(timeLeft) }}</span>
                         <i class="pi pi-clock" />
                     </div>
-                    <Link
-                        :href="route('progression.carte', partie.id)"
-                        class="cave-hud__btn"
-                        title="Carte"
-                    >
+                    <Link :href="route('progression.carte', partie.id)" class="cave-hud__btn" title="Carte">
                         <i class="pi pi-map" />
                     </Link>
-                    <button
-                        type="button"
-                        class="cave-hud__btn"
-                        @click="togglePause"
-                    >
+                    <button type="button" class="cave-hud__btn" @click="togglePause">
                         <i class="pi pi-pause" />
                     </button>
 
                     <!-- Bouton Admin -->
-                    <Link
-                        v-if="$page.props.auth.user.is_admin"
-                        :href="route('admin.dashboard')"
-                        class="cave-hud__btn cave-hud__btn--admin"
-                        title="Dashboard Admin"
-                    >
+                    <Link v-if="$page.props.auth.user.is_admin" :href="route('admin.dashboard')"
+                        class="cave-hud__btn cave-hud__btn--admin" title="Dashboard Admin">
                         <i class="pi pi-cog" />
                     </Link>
                 </div>
@@ -822,19 +732,11 @@ onUnmounted(() => {
             <main class="cave-game-content cave-game-content--split">
                 <article class="cave-panel">
                     <div v-if="enigme?.image_url" class="relative">
-                        <img
-                            :src="enigme.image_url"
-                            class="cave-panel__img"
-                            :alt="enigme?.titre"
-                        />
-                        <div
-                            class="cave-level-card__overlay absolute inset-0"
-                        />
+                        <img :src="enigme.image_url" class="cave-panel__img" :alt="enigme?.titre" />
+                        <div class="cave-level-card__overlay absolute inset-0" />
                     </div>
-                    <div
-                        v-else
-                        class="cave-panel__img-placeholder flex items-center justify-center bg-[var(--cave-rock-dark)] h-[200px] lg:h-[320px] xl:h-[400px]"
-                    >
+                    <div v-else
+                        class="cave-panel__img-placeholder flex items-center justify-center bg-[var(--cave-rock-dark)] h-[200px] lg:h-[320px] xl:h-[400px]">
                         <i class="pi pi-question-circle text-4xl opacity-20" />
                     </div>
                     <div class="cave-panel__body">
@@ -842,9 +744,7 @@ onUnmounted(() => {
                             <span class="cave-badge cave-badge--gold">{{
                                 enigme?.type
                             }}</span>
-                            <span class="cave-badge cave-badge--pts"
-                                >+{{ pointsEnigme }} pts si réussi</span
-                            >
+                            <span class="cave-badge cave-badge--pts">+{{ pointsEnigme }} pts si réussi</span>
                         </div>
                         <h2 class="cave-panel__title">
                             {{ enigme?.titre || "Défi secret" }}
@@ -861,87 +761,79 @@ onUnmounted(() => {
 
                 <div class="cave-game-sidebar-col">
                     <div
-                        class="cave-panel cave-radar-box p-0 overflow-hidden relative h-[200px] lg:h-[280px] xl:h-[320px]"
-                    >
+                        class="cave-panel cave-radar-box p-0 overflow-hidden relative h-[200px] lg:h-[280px] xl:h-[320px]">
                         <div ref="mapContainer" class="absolute inset-0 z-0" />
+                        <div class="cave-radar-pulse absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full pointer-events-none"
+                            :class="{ 'cave-radar-pulse--active': isLocating }" />
                         <div
-                            class="cave-radar-pulse absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full pointer-events-none"
-                            :class="{ 'cave-radar-pulse--active': isLocating }"
-                        />
-                        <div
-                            class="relative z-10 flex flex-col items-center text-center gap-1 py-4 pointer-events-none bg-gradient-to-b from-white/20 to-transparent"
-                        >
-                            <div
-                                class="cave-tool-btn__icon"
-                                style="
+                            class="relative z-10 flex flex-col items-center text-center gap-1 py-4 pointer-events-none bg-gradient-to-b from-white/20 to-transparent">
+                            <div class="cave-tool-btn__icon" style="
                                     width: 40px;
                                     height: 40px;
                                     font-size: 1.2rem;
                                     background: rgba(255, 255, 255, 0.4);
-                                "
-                            >
-                                <i
-                                    class="pi pi-map-marker"
-                                    :class="{ 'animate-ping': isLocating }"
-                                />
+                                ">
+                                <i class="pi pi-map-marker" :class="{ 'animate-ping': isLocating }" />
                             </div>
-                            <h3
-                                class="cave-section-title"
-                                style="font-size: 0.7rem; margin: 0"
-                            >
+                            <h3 class="cave-section-title" style="font-size: 0.7rem; margin: 0">
                                 Radar de zone
                             </h3>
                         </div>
 
-                        <button
-                            type="button"
-                            class="absolute bottom-2 right-2 z-10 cave-hud__btn flex items-center gap-2 px-3"
-                            style="
+                        <button type="button"
+                            class="absolute bottom-2 right-2 z-10 cave-hud__btn flex items-center gap-2 px-3" style="
                                 width: auto;
                                 height: 32px;
                                 background: var(--cave-rock-light);
                                 color: var(--cave-border-dark);
                                 border: 2px solid var(--cave-border-dark);
                                 border-radius: 12px;
-                            "
-                            @click="recenterMap"
-                        >
+                            " @click="recenterMap">
                             <i class="pi pi-crosshairs text-xs" />
                             <span class="text-[9px] font-black uppercase tracking-tighter">Ma position</span>
                         </button>
                     </div>
 
-                    <div
-                        v-if="gpsMessage"
-                        class="cave-flash"
-                        :class="
-                            gpsMessage.type === 'error'
-                                ? 'cave-flash--error'
-                                : 'cave-flash--info'
-                        "
-                    >
+                    <div v-if="gpsMessage" class="cave-flash" :class="gpsMessage.type === 'error'
+                        ? 'cave-flash--error'
+                        : 'cave-flash--info'
+                        ">
+                        <i class="pi pi-exclamation-triangle mr-2" v-if="gpsMessage.type === 'error'" />
+                        <i class="pi pi-info-circle mr-2" v-else />
                         {{ gpsMessage.text }}
                     </div>
 
-                    <button
-                        type="button"
-                        class="cave-btn w-full"
-                        :disabled="
-                            isLocating ||
-                            isOffline ||
-                            !gpsDisponible ||
-                            form.processing
-                        "
-                        @click="checkLocation"
-                    >
-                        <i
-                            class="cave-btn__icon"
-                            :class="
-                                isLocating || form.processing
-                                    ? 'pi pi-spin pi-spinner'
-                                    : 'pi pi-compass'
-                            "
-                        />
+                    <!-- Retour détaillé GPS après tentative échouée -->
+                    <div v-if="lastGpsCheck && !isLocating" class="cave-gps-result animate-fade-in">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[10px] uppercase font-bold opacity-60">Dernier scan GPS</span>
+                            <i class="pi pi-compass animate-spin-slow text-xs" />
+                        </div>
+                        <p class="mb-2 text-[11px] leading-tight">
+                            <span v-if="lastGpsCheck.distance">
+                                Vous êtes à environ <strong>{{ Math.round(lastGpsCheck.distance) }}m</strong> du but.
+                            </span>
+                            <span v-if="lastGpsCheck.precision && lastGpsCheck.precision > 50">
+                                <br />Attention : votre signal GPS est instable (Précision: ±{{
+                                    Math.round(lastGpsCheck.precision) }}m).
+                            </span>
+                        </p>
+                        <div class="w-full bg-black/10 h-1.5 rounded-full overflow-hidden">
+                            <div class="h-full bg-[var(--cave-gold)] transition-all duration-1000"
+                                :style="{ width: Math.max(5, Math.min(100, (1 - (lastGpsCheck.distance / 500)) * 100)) + '%' }">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="cave-btn w-full" :disabled="isLocating ||
+                        isOffline ||
+                        !gpsDisponible ||
+                        form.processing
+                        " @click="checkLocation">
+                        <i class="cave-btn__icon" :class="isLocating || form.processing
+                            ? 'pi pi-spin pi-spinner'
+                            : 'pi pi-compass'
+                            " />
                         <span class="cave-btn__label">
                             {{
                                 isLocating || form.processing
@@ -952,101 +844,64 @@ onUnmounted(() => {
                     </button>
 
                     <div class="cave-panel cave-panel__body space-y-3">
-                        <h3
-                            class="cave-section-title"
-                            style="font-size: 0.75rem; margin: 0"
-                        >
+                        <h3 class="cave-section-title" style="font-size: 0.75rem; margin: 0">
                             Réponse texte
                         </h3>
-                        <form
-                            class="relative"
-                            @submit.prevent="submitTextAnswer"
-                        >
-                            <InputText
-                                v-model="form.reponse"
-                                placeholder="Code ou réponse..."
-                                class="cave-game-input w-full"
-                                :disabled="form.processing || isOffline"
-                            />
-                            <button
-                                v-if="form.reponse"
-                                type="submit"
+                        <form class="relative" @submit.prevent="submitTextAnswer">
+                            <InputText v-model="form.reponse" placeholder="Code ou réponse..."
+                                class="cave-game-input w-full" :class="{ 'border-red-500': form.errors.reponse }"
+                                :disabled="form.processing || isOffline" />
+                            <button v-if="form.reponse" type="submit"
                                 class="cave-copy-btn absolute right-2 top-1/2 -translate-y-1/2"
-                                :disabled="form.processing"
-                            >
-                                <i
-                                    :class="
-                                        form.processing
-                                            ? 'pi pi-spin pi-spinner'
-                                            : 'pi pi-send'
-                                    "
-                                />
+                                :disabled="form.processing">
+                                <i :class="form.processing
+                                    ? 'pi pi-spin pi-spinner'
+                                    : 'pi pi-send'
+                                    " />
                             </button>
                         </form>
+                        <span v-if="form.errors.reponse" class="cave-field-error text-[10px]">{{ form.errors.reponse
+                            }}</span>
                     </div>
 
                     <div class="cave-tool-grid">
-                        <button
-                            v-if="partie.mode === 'team'"
-                            type="button"
-                            class="cave-tool-btn relative"
-                            @click="showChat = true"
-                        >
+                        <button v-if="partie.mode === 'team'" type="button" class="cave-tool-btn relative"
+                            @click="showChat = true">
                             <div class="icon-box">
                                 <i class="pi pi-comments" />
                             </div>
                             <span class="label">Chat</span>
-                            <span
-                                v-if="unreadCount > 0"
-                                class="absolute top-0 right-2 w-5 h-5 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-black"
-                            >
+                            <span v-if="unreadCount > 0"
+                                class="absolute top-0 right-2 w-5 h-5 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-black">
                                 {{ unreadCount }}
                             </span>
                         </button>
-                        <button
-                            v-if="partie.mode === 'team'"
-                            type="button"
-                            class="cave-tool-btn"
-                            @click="showTeam = true"
-                        >
+                        <button v-if="partie.mode === 'team'" type="button" class="cave-tool-btn"
+                            @click="showTeam = true">
                             <div class="icon-box">
                                 <i class="pi pi-users" />
                             </div>
                             <span class="label">Équipe</span>
                         </button>
-                        <button
-                            type="button"
-                            class="cave-tool-btn"
-                            @click="showHint = true"
-                        >
+                        <button type="button" class="cave-tool-btn" @click="showHint = true">
                             <div class="icon-box">
                                 <i class="pi pi-question" />
                             </div>
                             <span class="label">Indice</span>
                         </button>
-                        <button
-                            type="button"
-                            class="cave-tool-btn"
-                            @click="showSolution = true"
-                        >
+                        <button type="button" class="cave-tool-btn" @click="showSolution = true">
                             <div class="icon-box"><i class="pi pi-eye" /></div>
                             <span class="label">Solution</span>
                         </button>
-                        <button
-                            type="button"
-                            class="cave-tool-btn cave-tool-btn--danger"
-                            @click="showSkipConfirm = true"
-                        >
+                        <button type="button" class="cave-tool-btn cave-tool-btn--danger"
+                            @click="showSkipConfirm = true">
                             <div class="icon-box">
                                 <i class="pi pi-fast-forward" />
                             </div>
                             <span class="label">Passer</span>
                         </button>
-                        <button
-                            type="button"
-                            class="cave-tool-btn cave-tool-btn--danger"
-                            @click="showAbandonConfirm = true"
-                        >
+                        <button type="button" class="cave-tool-btn cave-tool-btn--danger"
+                            @click="showAbandonConfirm = true">
                             <div class="icon-box">
                                 <i class="pi pi-power-off" />
                             </div>
@@ -1056,53 +911,34 @@ onUnmounted(() => {
                 </div>
             </main>
 
-            <Dialog
-                v-model:visible="showChat"
-                modal
-                header="Chat d'équipe"
-                :style="{ width: '95vw', maxWidth: '500px' }"
-                class="cave-game-dialog cave-chat-dialog"
-            >
+            <Dialog v-model:visible="showChat" modal header="Chat d'équipe"
+                :style="{ width: '95vw', maxWidth: '500px' }" class="cave-game-dialog cave-chat-dialog">
                 <div class="flex flex-col h-[60vh]">
                     <!-- Zone des messages -->
-                    <div
-                        ref="chatScroll"
-                        class="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-[rgba(61,34,16,0.05)] rounded-2xl border-2 border-[var(--cave-border-dark)] mb-4"
-                    >
-                        <div
-                            v-for="msg in messages"
-                            :key="msg.id"
-                            class="flex gap-3 mb-4"
-                            :class="
-                                msg.user_id === $page.props.auth.user.id
-                                    ? 'flex-row-reverse'
-                                    : 'flex-row'
-                            "
-                        >
+                    <div ref="chatScroll"
+                        class="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-[rgba(61,34,16,0.05)] rounded-2xl border-2 border-[var(--cave-border-dark)] mb-4">
+                        <div v-for="msg in messages" :key="msg.id" class="flex gap-3 mb-4" :class="msg.user_id === $page.props.auth.user.id
+                            ? 'flex-row-reverse'
+                            : 'flex-row'
+                            ">
                             <!-- Avatar -->
                             <div class="flex-shrink-0">
-                                <div v-if="msg.user?.full_avatar_url" 
-                                     class="w-8 h-8 rounded-full border-2 border-[var(--cave-border-dark)] overflow-hidden bg-white shadow-sm">
+                                <div v-if="msg.user?.full_avatar_url"
+                                    class="w-8 h-8 rounded-full border-2 border-[var(--cave-border-dark)] overflow-hidden bg-white shadow-sm">
                                     <img :src="msg.user.full_avatar_url" class="w-full h-full object-cover" />
                                 </div>
-                                <div v-else 
-                                     class="w-8 h-8 rounded-full border-2 border-[var(--cave-border-dark)] bg-[#D4C5B3] flex items-center justify-center text-xs font-bold text-[#4A3525] shadow-sm">
+                                <div v-else
+                                    class="w-8 h-8 rounded-full border-2 border-[var(--cave-border-dark)] bg-[#D4C5B3] flex items-center justify-center text-xs font-bold text-[#4A3525] shadow-sm">
                                     {{ msg.user?.name?.charAt(0) || '?' }}
                                 </div>
                             </div>
 
-                            <div class="flex flex-col"
-                                :class="
-                                    msg.user_id === $page.props.auth.user.id
-                                        ? 'items-end'
-                                        : 'items-start'
-                                "
-                            >
+                            <div class="flex flex-col" :class="msg.user_id === $page.props.auth.user.id
+                                ? 'items-end'
+                                : 'items-start'
+                                ">
                                 <div class="flex items-center gap-2 mb-1">
-                                    <span
-                                        class="text-[9px] font-black uppercase opacity-60"
-                                        >{{ msg.user.name }}</span
-                                    >
+                                    <span class="text-[9px] font-black uppercase opacity-60">{{ msg.user.name }}</span>
                                     <span class="text-[8px] opacity-40">{{
                                         new Date(msg.created_at).toLocaleTimeString(
                                             [],
@@ -1110,22 +946,16 @@ onUnmounted(() => {
                                         )
                                     }}</span>
                                 </div>
-                                <div
-                                    class="px-4 py-2 rounded-2xl max-w-[85%] text-sm font-medium border-2"
-                                    :class="
-                                        msg.user_id === $page.props.auth.user.id
-                                            ? 'bg-[var(--cave-gold)] border-[var(--cave-gold-dark)] text-[var(--cave-border-dark)] rounded-tr-none shadow-[3px_3px_0_var(--cave-gold-dark)]'
-                                            : 'bg-white border-[var(--cave-border-dark)] text-[var(--cave-border-dark)] rounded-tl-none shadow-[3px_3px_0_var(--cave-border-darker)]'
-                                    "
-                                >
+                                <div class="px-4 py-2 rounded-2xl max-w-[85%] text-sm font-medium border-2" :class="msg.user_id === $page.props.auth.user.id
+                                    ? 'bg-[var(--cave-gold)] border-[var(--cave-gold-dark)] text-[var(--cave-border-dark)] rounded-tr-none shadow-[3px_3px_0_var(--cave-gold-dark)]'
+                                    : 'bg-white border-[var(--cave-border-dark)] text-[var(--cave-border-dark)] rounded-tl-none shadow-[3px_3px_0_var(--cave-border-darker)]'
+                                    ">
                                     {{ msg.content }}
                                 </div>
                             </div>
                         </div>
-                        <div
-                            v-if="messages.length === 0"
-                            class="h-full flex flex-col items-center justify-center opacity-30 italic text-xs"
-                        >
+                        <div v-if="messages.length === 0"
+                            class="h-full flex flex-col items-center justify-center opacity-30 italic text-xs">
                             <i class="pi pi-comments text-3xl mb-2"></i>
                             <p>Aucun message. Lancez la discussion !</p>
                         </div>
@@ -1133,72 +963,51 @@ onUnmounted(() => {
 
                     <!-- Input message -->
                     <div class="flex gap-2">
-                        <InputText
-                            v-model="newMessage"
-                            placeholder="Votre message..."
-                            class="flex-1 cave-input"
-                            @keyup.enter="sendMessage"
-                        />
-                        <button
-                            type="button"
+                        <InputText v-model="newMessage" placeholder="Votre message..." class="flex-1 cave-input"
+                            @keyup.enter="sendMessage" />
+                        <button type="button"
                             class="w-12 h-12 bg-[var(--cave-gold)] border-3 border-[var(--cave-gold-dark)] rounded-xl flex items-center justify-center text-[var(--cave-border-dark)] shadow-[0_4px_0_var(--cave-gold-dark)] active:translate-y-1 active:shadow-none transition-all"
-                            @click="sendMessage"
-                        >
+                            @click="sendMessage">
                             <i class="pi pi-send" />
                         </button>
                     </div>
                 </div>
             </Dialog>
 
-            <Dialog
-                v-model:visible="showTeam"
-                modal
-                header="Membres de l'équipe"
-                :style="{ width: '90vw', maxWidth: '480px' }"
-                class="cave-game-dialog"
-            >
+            <Dialog v-model:visible="showTeam" modal header="Membres de l'équipe"
+                :style="{ width: '90vw', maxWidth: '480px' }" class="cave-game-dialog">
                 <div class="space-y-3 py-2">
-                    <div
-                        v-for="member in partie.team?.users"
-                        :key="member.id"
+                    <div v-for="member in partie.team?.users" :key="member.id"
                         class="flex items-center justify-between p-3 rounded-2xl border-2 border-[var(--cave-border-dark)] bg-white shadow-[0_4px_0_var(--cave-border-darker)]"
                         :class="{
                             'bg-[rgba(255,215,0,0.05)]':
                                 member.id === $page.props.auth.user.id,
-                        }"
-                    >
+                        }">
                         <div class="flex items-center gap-3">
-                            <div v-if="member?.full_avatar_url" 
-                                 class="w-10 h-10 rounded-xl border-2 border-[var(--cave-border-dark)] overflow-hidden bg-white shadow-sm">
+                            <div v-if="member?.full_avatar_url"
+                                class="w-10 h-10 rounded-xl border-2 border-[var(--cave-border-dark)] overflow-hidden bg-white shadow-sm">
                                 <img :src="member.full_avatar_url" class="w-full h-full object-cover" />
                             </div>
                             <div v-else
-                                class="w-10 h-10 rounded-xl bg-[var(--cave-rock-light)] border-2 border-[var(--cave-border-dark)] flex items-center justify-center font-black shadow-sm"
-                            >
+                                class="w-10 h-10 rounded-xl bg-[var(--cave-rock-light)] border-2 border-[var(--cave-border-dark)] flex items-center justify-center font-black shadow-sm">
                                 {{ member?.name?.charAt(0).toUpperCase() || '?' }}
                             </div>
                             <div>
-                                <p
-                                    class="font-black text-sm uppercase leading-none"
-                                >
+                                <p class="font-black text-sm uppercase leading-none">
                                     {{ member?.name }}
                                 </p>
                                 <span
                                     class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border border-[var(--cave-border-dark)]"
-                                    :class="
-                                        member?.pivot?.role === 'challenger'
-                                            ? 'bg-orange-100 text-orange-700'
-                                            : 'bg-blue-100 text-blue-700'
-                                    "
-                                >
+                                    :class="member?.pivot?.role === 'challenger'
+                                        ? 'bg-orange-100 text-orange-700'
+                                        : 'bg-blue-100 text-blue-700'
+                                        ">
                                     {{ member?.pivot?.role || 'participant' }}
                                 </span>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p
-                                class="text-[9px] font-black uppercase opacity-50"
-                            >
+                            <p class="text-[9px] font-black uppercase opacity-50">
                                 Score Global
                             </p>
                             <p class="text-sm font-black text-orange-600">
@@ -1209,29 +1018,16 @@ onUnmounted(() => {
                     </div>
                 </div>
                 <template #footer>
-                    <button
-                        type="button"
-                        class="cave-btn w-full"
-                        @click="showTeam = false"
-                    >
+                    <button type="button" class="cave-btn w-full" @click="showTeam = false">
                         Fermer
                     </button>
                 </template>
             </Dialog>
 
-            <Dialog
-                v-model:visible="showHint"
-                modal
-                header="Indice"
-                :style="{ width: '90vw', maxWidth: '420px' }"
-                class="cave-game-dialog"
-            >
+            <Dialog v-model:visible="showHint" modal header="Indice" :style="{ width: '90vw', maxWidth: '420px' }"
+                class="cave-game-dialog">
                 <div class="cave-overlay__body">
-                    <p
-                        v-if="enigme?.indice"
-                        class="cave-panel__text text-center"
-                        style="margin: 0"
-                    >
+                    <p v-if="enigme?.indice" class="cave-panel__text text-center" style="margin: 0">
                         {{ enigme.indice }}
                     </p>
                     <p v-else class="cave-hint text-center">
@@ -1239,23 +1035,14 @@ onUnmounted(() => {
                     </p>
                 </div>
                 <template #footer>
-                    <button
-                        type="button"
-                        class="cave-btn w-full"
-                        @click="showHint = false"
-                    >
+                    <button type="button" class="cave-btn w-full" @click="showHint = false">
                         Compris
                     </button>
                 </template>
             </Dialog>
 
-            <Dialog
-                v-model:visible="showSolution"
-                modal
-                header="Solution"
-                :style="{ width: '90vw', maxWidth: '420px' }"
-                class="cave-game-dialog"
-            >
+            <Dialog v-model:visible="showSolution" modal header="Solution" :style="{ width: '90vw', maxWidth: '420px' }"
+                class="cave-game-dialog">
                 <p class="cave-flash cave-flash--error mb-3">
                     Voir la solution annule vos points pour ce défi.
                 </p>
@@ -1265,19 +1052,11 @@ onUnmounted(() => {
                 </p>
                 <template #footer>
                     <div class="flex gap-2">
-                        <button
-                            type="button"
-                            class="cave-btn cave-btn--ghost flex-1"
-                            @click="showSolution = false"
-                        >
+                        <button type="button" class="cave-btn cave-btn--ghost flex-1" @click="showSolution = false">
                             Annuler
                         </button>
-                        <button
-                            type="button"
-                            class="cave-btn cave-btn--danger flex-1"
-                            :disabled="isRequestingSolution"
-                            @click="requestSolutionManual"
-                        >
+                        <button type="button" class="cave-btn cave-btn--danger flex-1" :disabled="isRequestingSolution"
+                            @click="requestSolutionManual">
                             {{
                                 isRequestingSolution
                                     ? "Chargement..."
@@ -1288,61 +1067,36 @@ onUnmounted(() => {
                 </template>
             </Dialog>
 
-            <Dialog
-                v-model:visible="showSkipConfirm"
-                modal
-                header="Passer ?"
-                :style="{ width: '90vw', maxWidth: '420px' }"
-                class="cave-game-dialog"
-            >
+            <Dialog v-model:visible="showSkipConfirm" modal header="Passer ?"
+                :style="{ width: '90vw', maxWidth: '420px' }" class="cave-game-dialog">
                 <p class="cave-panel__text" style="margin: 0">
                     Passer ce défi sans gagner de points ?
                 </p>
                 <template #footer>
                     <div class="flex gap-2">
-                        <button
-                            type="button"
-                            class="cave-btn cave-btn--ghost flex-1"
-                            @click="showSkipConfirm = false"
-                        >
+                        <button type="button" class="cave-btn cave-btn--ghost flex-1" @click="showSkipConfirm = false">
                             Non
                         </button>
-                        <button
-                            type="button"
-                            class="cave-btn flex-1"
-                            @click="confirmSkip"
-                        >
+                        <button type="button" class="cave-btn flex-1" @click="confirmSkip">
                             Oui
                         </button>
                     </div>
                 </template>
             </Dialog>
 
-            <Dialog
-                v-model:visible="showAbandonConfirm"
-                modal
-                header="Abandonner ?"
-                :style="{ width: '90vw', maxWidth: '420px' }"
-                class="cave-game-dialog"
-            >
+            <Dialog v-model:visible="showAbandonConfirm" modal header="Abandonner ?"
+                :style="{ width: '90vw', maxWidth: '420px' }" class="cave-game-dialog">
                 <p class="cave-panel__text" style="margin: 0">
                     Votre progression sera sauvegardée mais la mission s'arrête
                     ici.
                 </p>
                 <template #footer>
                     <div class="flex gap-2">
-                        <button
-                            type="button"
-                            class="cave-btn cave-btn--ghost flex-1"
-                            @click="showAbandonConfirm = false"
-                        >
+                        <button type="button" class="cave-btn cave-btn--ghost flex-1"
+                            @click="showAbandonConfirm = false">
                             Continuer
                         </button>
-                        <button
-                            type="button"
-                            class="cave-btn cave-btn--danger flex-1"
-                            @click="confirmAbandon"
-                        >
+                        <button type="button" class="cave-btn cave-btn--danger flex-1" @click="confirmAbandon">
                             Abandonner
                         </button>
                     </div>
@@ -1354,11 +1108,9 @@ onUnmounted(() => {
 
 <style scoped>
 .cave-level-card__overlay {
-    background: linear-gradient(
-        to top,
-        rgba(61, 34, 16, 0.75),
-        transparent 55%
-    );
+    background: linear-gradient(to top,
+            rgba(61, 34, 16, 0.75),
+            transparent 55%);
 }
 
 .cave-step-ring svg circle:last-child {

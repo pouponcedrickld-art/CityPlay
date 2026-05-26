@@ -52,6 +52,7 @@ onUnmounted(() => {
 
 <template>
     <CaveGameLayout>
+
         <Head title="Échec de mission" />
 
         <div class="cave-result-screen">
@@ -60,34 +61,23 @@ onUnmounted(() => {
                     <i class="pi pi-times" />
                 </div>
                 <h1 class="cave-result-title">Mission compromise</h1>
-                <p
-                    class="cave-result-sub"
-                    style="color: var(--cave-btn-survival)"
-                >
+                <p class="cave-result-sub" style="color: var(--cave-btn-survival)">
                     Code erroné
                 </p>
                 <p class="cave-result-message">
-                    {{
+                    "{{
                         partie.environnement?.message_mauvaise_reponse ||
                         `Ce n'est pas la bonne réponse. Reprenez vos
-    esprits, l'indice est peut-être juste sous vos yeux.`
-                    }}
+                    esprits, l'indice est peut-être juste sous vos yeux.`
+                    }}"
                 </p>
 
                 <div class="cave-btn-stack">
-                    <button
-                        type="button"
-                        class="cave-btn cave-btn--danger"
-                        @click="tryAgain"
-                    >
+                    <button type="button" class="cave-btn cave-btn--danger" @click="tryAgain">
                         <i class="cave-btn__icon pi pi-refresh" />
                         <span class="cave-btn__label">Réessayer</span>
                     </button>
-                    <button
-                        type="button"
-                        class="cave-btn cave-btn--ghost"
-                        @click="skip"
-                    >
+                    <button type="button" class="cave-btn cave-btn--ghost" @click="skip">
                         <span class="cave-btn__label">Passer l'énigme</span>
                     </button>
                 </div>

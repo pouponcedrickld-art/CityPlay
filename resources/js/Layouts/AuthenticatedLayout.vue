@@ -41,7 +41,9 @@ const isGameMode = computed(() => {
 onMounted(() => {
     initTheme();
 
-    router.on('start', () => {
+    router.on('start', (event) => {
+        if (event.detail.visit.preserveState) return;
+        
         showLoader.value = true;
     });
     router.on('finish', () => {

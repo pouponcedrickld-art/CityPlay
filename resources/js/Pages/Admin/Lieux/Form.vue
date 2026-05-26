@@ -42,9 +42,11 @@
           <div class="field mb-3">
             <label>Rechercher une adresse</label>
             <div class="p-inputgroup">
-              <InputText v-model="searchQuery" placeholder="Ex: Place de la Bourse, Bordeaux" @keyup.enter="searchAddress" />
+              <InputText v-model="searchQuery" placeholder="Ex: Place de la Bourse, Bordeaux" @input="onSearchInput"
+                @keyup.enter="searchAddress" />
               <Button icon="pi pi-search" :loading="isSearching" @click="searchAddress" />
             </div>
+            <small v-if="searchError" class="p-error mt-1 block">{{ searchError }}</small>
             <ul v-if="searchResults.length" class="search-results">
               <li v-for="res in searchResults" :key="res.place_id" @click="selectAddress(res)">
                 {{ res.display_name }}
@@ -55,8 +57,8 @@
           <!-- Carte Interactive -->
           <div class="map-wrapper mb-4">
             <div class="map-toolbar">
-              <Button type="button" icon="pi pi-map-marker" label="Me localiser"
-                size="small" outlined @click="locateUser" />
+              <Button type="button" icon="pi pi-map-marker" label="Me localiser" size="small" outlined
+                @click="locateUser" />
             </div>
             <div ref="mapContainer" class="map-container"></div>
             <small class="hint mt-2 block">
@@ -86,8 +88,7 @@
 
           <!-- Lien Google Maps pour vérification -->
           <a v-if="form.latitude && form.longitude"
-            :href="`https://maps.google.com/?q=${form.latitude},${form.longitude}`"
-            target="_blank" class="map-link">
+            :href="`https://maps.google.com/?q=${form.latitude},${form.longitude}`" target="_blank" class="map-link">
             <i class="pi pi-external-link" /> Vérifier sur Google Maps
           </a>
         </section>
@@ -99,7 +100,7 @@
           <!-- Photos existantes -->
           <div v-if="existingPhotos.length" class="photos-grid">
             <div v-for="(photo, i) in existingPhotos" :key="i" class="photo-thumb">
-              <img :src="`/storage/${photo}`" :alt="`Photo ${i+1}`" />
+              <img :src="`/storage/${photo}`" :alt="`Photo ${i + 1}`" />
               <button type="button" class="photo-remove" @click="removeExistingPhoto(i)">
                 <i class="pi pi-times" />
               </button>
@@ -107,19 +108,19 @@
           </div>
 
           <!-- Upload nouvelles photos -->
-          <div v-if="canAddMorePhotos" class="upload-zone" @click="$refs.photoInput.click()"
-            @dragover.prevent @drop.prevent="handleDrop">
+          <div v-if="canAddMorePhotos" class="upload-zone" @click="$refs.photoInput.click()" @dragover.prevent
+            @drop.prevent="handleDrop">
             <i class="pi pi-upload" />
             <p>Cliquez ou glissez des photos ici</p>
             <small>JPG, PNG · max 2 Mo chacune · {{ remainingSlots }} emplacement(s) restant(s)</small>
-            <input ref="photoInput" type="file" accept="image/*" :multiple="remainingSlots > 1"
-              class="hidden-input" @change="handleFileSelect" />
+            <input ref="photoInput" type="file" accept="image/*" :multiple="remainingSlots > 1" class="hidden-input"
+              @change="handleFileSelect" />
           </div>
 
           <!-- Aperçu nouvelles photos -->
           <div v-if="newPhotosPreviews.length" class="photos-grid">
             <div v-for="(preview, i) in newPhotosPreviews" :key="i" class="photo-thumb new-photo">
-              <img :src="preview" :alt="`Nouvelle photo ${i+1}`" />
+              <img :src="preview" :alt="`Nouvelle photo ${i + 1}`" />
               <button type="button" class="photo-remove" @click="removeNewPhoto(i)">
                 <i class="pi pi-times" />
               </button>
@@ -175,18 +176,39 @@ const marker = ref(null)
 const searchQuery = ref('')
 const isSearching = ref(false)
 const searchResults = ref([])
+const searchError = ref(null)
+
+let searchTimeout = null
 
 const searchAddress = async () => {
-  if (!searchQuery.value) return
+  if (!searchQuery.value || searchQuery.value.length < 3) return
+
   isSearching.value = true
+  searchError.value = null
+
   try {
     const response = await fetch(route('admin.lieux.search', { q: searchQuery.value }))
-    searchResults.value = await response.json()
+    if (!response.ok) throw new Error('Erreur lors de la recherche')
+
+    const data = await response.json()
+    searchResults.value = data
+
+    if (data.length === 0) {
+      searchError.value = "Aucun résultat trouvé pour cette adresse."
+    }
   } catch (e) {
     console.error(e)
+    searchError.value = "Service de recherche indisponible. Réessayez plus tard."
   } finally {
     isSearching.value = false
   }
+}
+
+const onSearchInput = () => {
+  if (searchTimeout) clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(() => {
+    searchAddress()
+  }, 500)
 }
 
 const selectAddress = (res) => {
@@ -293,21 +315,21 @@ const locateUser = () => {
 
 // Photos existantes (édition)
 const existingPhotos = ref(props.lieu?.photos ?? [])
-const newPhotosFiles  = ref([])
+const newPhotosFiles = ref([])
 const newPhotosPreviews = ref([])
 
 const MAX_PHOTOS = 4
 const canAddMorePhotos = computed(() => existingPhotos.value.length + newPhotosFiles.value.length < MAX_PHOTOS)
-const remainingSlots   = computed(() => MAX_PHOTOS - existingPhotos.value.length - newPhotosFiles.value.length)
+const remainingSlots = computed(() => MAX_PHOTOS - existingPhotos.value.length - newPhotosFiles.value.length)
 
 const form = useForm({
-  nom:            props.lieu?.nom ?? '',
-  ordre:          props.lieu?.ordre ?? 1,
-  latitude:       props.lieu?.latitude ? parseFloat(props.lieu.latitude) : null,
-  longitude:      props.lieu?.longitude ? parseFloat(props.lieu.longitude) : null,
-  rayon_metres:   props.lieu?.rayon_metres ?? 50,
-  description:    props.lieu?.description ?? '',
-  photos:         [],
+  nom: props.lieu?.nom ?? '',
+  ordre: props.lieu?.ordre ?? 1,
+  latitude: props.lieu?.latitude ? parseFloat(props.lieu.latitude) : null,
+  longitude: props.lieu?.longitude ? parseFloat(props.lieu.longitude) : null,
+  rayon_metres: props.lieu?.rayon_metres ?? 50,
+  description: props.lieu?.description ?? '',
+  photos: [],
   existing_photos: existingPhotos.value,
 })
 
@@ -363,26 +385,105 @@ const breadcrumbs = computed(() => [
 </script>
 
 <style scoped>
-.form-page     { max-width: 800px; }
-.page-title    { font-size: 1.4rem; font-weight: 700; color: #1a202c; margin-bottom: 1.5rem; }
-.form-card     { background: #fff; border: 1px solid #e5e9f0; border-radius: 12px; padding: 1.75rem; display: flex; flex-direction: column; gap: 2rem; }
-.form-section  { display: flex; flex-direction: column; gap: 1rem; }
-.section-title { font-size: 1rem; font-weight: 600; color: #2d3748; padding-bottom: 0.5rem; border-bottom: 1px solid #e5e9f0; display: flex; align-items: center; gap: 0.5rem; }
-.section-badge { font-size: 0.7rem; font-weight: 600; background: #ebf8ff; color: #2b6cb0; padding: 0.1rem 0.5rem; border-radius: 99px; }
-.field       { display: flex; flex-direction: column; gap: 0.35rem; }
-.field label { font-size: 0.875rem; font-weight: 500; color: #4a5568; }
-.field-row   { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
-.char-count  { color: #a0aec0; font-size: 0.75rem; text-align: right; }
-.hint        { color: #a0aec0; font-size: 0.75rem; }
-.required    { color: #e53e3e; }
-.map-link    { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.82rem; color: #3182ce; text-decoration: none; }
-.map-link:hover { text-decoration: underline; }
+.form-page {
+  max-width: 800px;
+}
+
+.page-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 1.5rem;
+}
+
+.form-card {
+  background: #fff;
+  border: 1px solid #e5e9f0;
+  border-radius: 12px;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2d3748;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e5e9f0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: #ebf8ff;
+  color: #2b6cb0;
+  padding: 0.1rem 0.5rem;
+  border-radius: 99px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4a5568;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.char-count {
+  color: #a0aec0;
+  font-size: 0.75rem;
+  text-align: right;
+}
+
+.hint {
+  color: #a0aec0;
+  font-size: 0.75rem;
+}
+
+.required {
+  color: #e53e3e;
+}
+
+.map-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: #3182ce;
+  text-decoration: none;
+}
+
+.map-link:hover {
+  text-decoration: underline;
+}
 
 .photos-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 0.75rem;
 }
+
 .photo-thumb {
   position: relative;
   aspect-ratio: 1;
@@ -390,22 +491,44 @@ const breadcrumbs = computed(() => [
   overflow: hidden;
   border: 2px solid #e5e9f0;
 }
-.photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+.photo-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .photo-remove {
-  position: absolute; top: 4px; right: 4px;
-  background: rgba(0,0,0,0.55);
-  border: none; border-radius: 50%;
-  width: 22px; height: 22px;
-  color: #fff; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(0, 0, 0, 0.55);
+  border: none;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 0.65rem;
 }
-.new-photo { border-color: #90cdf4; }
+
+.new-photo {
+  border-color: #90cdf4;
+}
+
 .new-badge {
-  position: absolute; bottom: 4px; left: 4px;
-  background: #2b6cb0; color: #fff;
-  font-size: 0.6rem; font-weight: 600;
-  padding: 0.1rem 0.4rem; border-radius: 4px;
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  background: #2b6cb0;
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
 }
 
 .upload-zone {
@@ -417,11 +540,31 @@ const breadcrumbs = computed(() => [
   color: #718096;
   transition: all 0.15s;
 }
-.upload-zone:hover { border-color: #63b3ed; color: #2b6cb0; background: #ebf8ff20; }
-.upload-zone i    { font-size: 1.5rem; display: block; margin-bottom: 0.5rem; }
-.upload-zone p    { margin: 0 0 0.25rem; font-size: 0.875rem; }
-.upload-zone small { font-size: 0.75rem; }
-.hidden-input { display: none; }
+
+.upload-zone:hover {
+  border-color: #63b3ed;
+  color: #2b6cb0;
+  background: #ebf8ff20;
+}
+
+.upload-zone i {
+  font-size: 1.5rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.upload-zone p {
+  margin: 0 0 0.25rem;
+  font-size: 0.875rem;
+}
+
+.upload-zone small {
+  font-size: 0.75rem;
+}
+
+.hidden-input {
+  display: none;
+}
 
 .map-wrapper {
   width: 100%;
@@ -430,6 +573,7 @@ const breadcrumbs = computed(() => [
   border: 1px solid #e5e9f0;
   position: relative;
 }
+
 .map-toolbar {
   position: absolute;
   top: 10px;
@@ -438,8 +582,9 @@ const breadcrumbs = computed(() => [
   background: white;
   padding: 4px;
   border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 .map-container {
   height: 300px;
   width: 100%;
@@ -457,23 +602,33 @@ const breadcrumbs = computed(() => [
   overflow-y: auto;
   z-index: 10;
 }
+
 .search-results li {
   padding: 8px 12px;
   font-size: 0.85rem;
   cursor: pointer;
   border-bottom: 1px solid #f7fafc;
 }
+
 .search-results li:hover {
   background: #f7fafc;
   color: #2b6cb0;
 }
+
 :root.light-theme .search-results {
   background: #fff;
   border-color: #ddd;
 }
+
 :root.light-theme .search-results li {
   color: #333;
 }
 
-.form-actions { display: flex; justify-content: flex-end; gap: 0.75rem; padding-top: 0.5rem; border-top: 1px solid #e5e9f0; }
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e5e9f0;
+}
 </style>

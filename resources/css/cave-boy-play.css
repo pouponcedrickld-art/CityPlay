@@ -1302,6 +1302,15 @@
   color: #8B4513;
 }
 
+.cave-hud__score--coins {
+  background: linear-gradient(180deg, #E0F2FE, #00E5FF);
+  border-color: #008BA3;
+}
+
+.cave-hud__score--coins i {
+  color: #007791;
+}
+
 .cave-gps-result {
   padding: 12px 14px;
   border: 3px solid var(--cave-border-dark);

@@ -1,33 +1,51 @@
 <template>
-  <div class="mobile-auth-container md:hidden block h-screen w-full relative overflow-hidden transition-colors duration-500" :class="isDark ? 'bg-black' : 'bg-white'">
-    
+  <div
+    class="mobile-auth-container md:hidden block h-screen w-full relative overflow-hidden transition-colors duration-500"
+    :class="isDark ? 'bg-black' : 'bg-white'">
+
+    <VideoLoader :show="showLoader" />
+
     <!-- Top Header with Logo -->
-    <div class="mobile-auth-header header-wave absolute top-0 left-0 w-full overflow-hidden transition-colors duration-500" :class="isDark ? 'bg-[#040508]' : 'bg-[#f3f4f6]'" :style="{ height: currentView === 'welcome' ? '50vh' : '35vh' }">
-      
-      <img :src="isDark ? logoWhrite : logoDark" alt="CityPlay Logo" class="auth-logo absolute top-0 left-0 w-full h-full" style="object-fit: fill;" />
-      
+    <div
+      class="mobile-auth-header header-wave absolute top-0 left-0 w-full overflow-hidden transition-colors duration-500"
+      :class="isDark ? 'bg-[#040508]' : 'bg-[#f3f4f6]'"
+      :style="{ height: currentView === 'welcome' ? '50vh' : '35vh' }">
+
+      <img :src="isDark ? logoWhrite : logoDark" alt="CityPlay Logo"
+        class="auth-logo absolute top-0 left-0 w-full h-full" style="object-fit: fill;" />
+
       <!-- SVG curve transition matching the theme -->
-      <svg class="mobile-auth-curve wave-curve absolute bottom-0 left-0 w-full h-[40px] transition-colors duration-500 z-10" style="transform: translateY(99%)" viewBox="0 0 1440 320" preserveAspectRatio="none">
-        <path :fill="isDark ? '#111827' : '#ffffff'" fill-opacity="1" d="M0,160L80,144C160,128,320,96,480,112C640,128,800,192,960,202.7C1120,213,1280,171,1360,149.3L1440,128L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"></path>
+      <svg
+        class="mobile-auth-curve wave-curve absolute bottom-0 left-0 w-full h-[40px] transition-colors duration-500 z-10"
+        style="transform: translateY(99%)" viewBox="0 0 1440 320" preserveAspectRatio="none">
+        <path :fill="isDark ? '#111827' : '#ffffff'" fill-opacity="1"
+          d="M0,160L80,144C160,128,320,96,480,112C640,128,800,192,960,202.7C1120,213,1280,171,1360,149.3L1440,128L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z">
+        </path>
       </svg>
     </div>
 
     <!-- Content Area -->
-    <div class="mobile-auth-content form-container absolute bottom-0 left-0 w-full z-10 transition-colors duration-500" :class="isDark ? 'bg-[#111827]' : 'bg-white'" :style="{ height: currentView === 'welcome' ? '50vh' : '65vh', paddingTop: '1rem' }">
-      
+    <div class="mobile-auth-content form-container absolute bottom-0 left-0 w-full z-10 transition-colors duration-500"
+      :class="isDark ? 'bg-[#111827]' : 'bg-white'"
+      :style="{ height: currentView === 'welcome' ? '50vh' : '65vh', paddingTop: '1rem' }">
+
       <!-- WELCOME VIEW -->
       <div v-if="currentView === 'welcome'" class="welcome-view px-8 h-full flex flex-col justify-center">
-        <h1 class="welcome-title text-4xl font-black uppercase tracking-tight mb-2" :class="isDark ? 'text-white' : 'text-[#1F2937]'">
+        <h1 class="welcome-title text-4xl font-black uppercase tracking-tight mb-2"
+          :class="isDark ? 'text-white' : 'text-[#1F2937]'">
           {{ mode === 'login' ? 'Welcome Back' : 'Join Guild' }}
         </h1>
         <p class="welcome-subtitle text-sm" :class="isDark ? 'text-gray-400' : 'text-[#6B7280]'">
           {{ mode === 'login' ? 'Prêt à reprendre votre quête ?' : 'Créez votre légende aujourd\'hui.' }}
         </p>
-        
+
         <div class="mt-auto mb-12 self-end">
-          <button class="continue-btn flex items-center gap-3 font-bold active:scale-95 transition-transform" :class="isDark ? 'text-gray-400' : 'text-[#6B7280]'" @click="goToForm" @touchstart="hapticFeedback">
+          <button class="continue-btn flex items-center gap-3 font-bold active:scale-95 transition-transform"
+            :class="isDark ? 'text-gray-400' : 'text-[#6B7280]'" @click="goToForm" @touchstart="hapticFeedback">
             <span class="text-sm">Continuer</span>
-            <div class="w-10 h-10 rounded-full flex items-center justify-center shadow-[0_4px_12px_rgba(255,149,0,0.3)] text-black" :class="isDark ? 'bg-[#FF9500]' : 'bg-[#059669] text-white'">
+            <div
+              class="w-10 h-10 rounded-full flex items-center justify-center shadow-[0_4px_12px_rgba(255,149,0,0.3)] text-black"
+              :class="isDark ? 'bg-[#FF9500]' : 'bg-[#059669] text-white'">
               <i class="pi pi-arrow-right font-bold"></i>
             </div>
           </button>
@@ -40,31 +58,46 @@
           <h1 class="text-3xl font-black uppercase tracking-tight" :class="isDark ? 'text-white' : 'text-[#1F2937]'">
             {{ mode === 'login' ? 'Sign in' : 'Register' }}
           </h1>
-          <div class="w-10 h-[3px] mt-1 ml-1 rounded-full transition-colors duration-500" :class="isDark ? 'bg-[#FF9500]' : 'bg-[#059669]'"></div>
+          <div class="w-10 h-[3px] mt-1 ml-1 rounded-full transition-colors duration-500"
+            :class="isDark ? 'bg-[#FF9500]' : 'bg-[#059669]'"></div>
         </div>
-        
+
         <form @submit.prevent="handleAuth" class="space-y-5">
-          
+
           <!-- REGISTER FIELDS (Name, Pseudo) -->
           <template v-if="mode === 'register'">
             <div class="form-field">
-              <label class="field-label block text-[10px] uppercase font-black tracking-widest mb-1" :class="isDark ? 'text-gray-400' : 'text-[#6B7280]'">Nom Réel</label>
+              <label class="field-label block text-[10px] uppercase font-black tracking-widest mb-1"
+                :class="isDark ? 'text-gray-400' : 'text-[#6B7280]'">Nom Réel</label>
               <div class="input-wrapper relative">
-                <i class="pi pi-user absolute left-1 top-1/2 -translate-y-1/2 text-sm" :class="isDark ? 'text-gray-500' : 'text-[#6B7280]'"></i>
-                <input type="text" class="auth-input w-full pl-8 pr-3 py-2 border-none bg-transparent text-sm font-bold focus:ring-0" :class="isDark ? 'text-white placeholder-gray-600' : 'text-[#111827] placeholder-gray-400'" placeholder="Koffi Mensah" v-model="form.name" @focus="focusInput" @blur="blurInput" />
-                <div class="input-border-bottom absolute bottom-0 left-0 w-full h-[1px]" :class="isDark ? 'bg-white/10' : 'bg-[#E5E7EB]'"></div>
-                <div class="input-border-focus absolute bottom-0 left-0 w-full h-[2px] scale-x-0 origin-left" :class="isDark ? 'bg-[#FF9500]' : 'bg-[#059669]'"></div>
+                <i class="pi pi-user absolute left-1 top-1/2 -translate-y-1/2 text-sm"
+                  :class="isDark ? 'text-gray-500' : 'text-[#6B7280]'"></i>
+                <input type="text"
+                  class="auth-input w-full pl-8 pr-3 py-2 border-none bg-transparent text-sm font-bold focus:ring-0"
+                  :class="isDark ? 'text-white placeholder-gray-600' : 'text-[#111827] placeholder-gray-400'"
+                  placeholder="Koffi Mensah" v-model="form.name" @focus="focusInput" @blur="blurInput" />
+                <div class="input-border-bottom absolute bottom-0 left-0 w-full h-[1px]"
+                  :class="isDark ? 'bg-white/10' : 'bg-[#E5E7EB]'"></div>
+                <div class="input-border-focus absolute bottom-0 left-0 w-full h-[2px] scale-x-0 origin-left"
+                  :class="isDark ? 'bg-[#FF9500]' : 'bg-[#059669]'"></div>
               </div>
               <div v-if="form.errors.name" class="text-red-500 text-xs mt-1 font-bold">{{ form.errors.name }}</div>
             </div>
 
             <div class="form-field">
-              <label class="field-label block text-[10px] uppercase font-black tracking-widest mb-1" :class="isDark ? 'text-gray-400' : 'text-[#6B7280]'">Pseudo</label>
+              <label class="field-label block text-[10px] uppercase font-black tracking-widest mb-1"
+                :class="isDark ? 'text-gray-400' : 'text-[#6B7280]'">Pseudo</label>
               <div class="input-wrapper relative">
-                <i class="pi pi-compass absolute left-1 top-1/2 -translate-y-1/2 text-sm" :class="isDark ? 'text-gray-500' : 'text-[#6B7280]'"></i>
-                <input type="text" class="auth-input w-full pl-8 pr-3 py-2 border-none bg-transparent text-sm font-bold focus:ring-0" :class="isDark ? 'text-white placeholder-gray-600' : 'text-[#111827] placeholder-gray-400'" placeholder="Amazone" v-model="form.pseudo" @focus="focusInput" @blur="blurInput" />
-                <div class="input-border-bottom absolute bottom-0 left-0 w-full h-[1px]" :class="isDark ? 'bg-white/10' : 'bg-[#E5E7EB]'"></div>
-                <div class="input-border-focus absolute bottom-0 left-0 w-full h-[2px] scale-x-0 origin-left" :class="isDark ? 'bg-[#FF9500]' : 'bg-[#059669]'"></div>
+                <i class="pi pi-compass absolute left-1 top-1/2 -translate-y-1/2 text-sm"
+                  :class="isDark ? 'text-gray-500' : 'text-[#6B7280]'"></i>
+                <input type="text"
+                  class="auth-input w-full pl-8 pr-3 py-2 border-none bg-transparent text-sm font-bold focus:ring-0"
+                  :class="isDark ? 'text-white placeholder-gray-600' : 'text-[#111827] placeholder-gray-400'"
+                  placeholder="Amazone" v-model="form.pseudo" @focus="focusInput" @blur="blurInput" />
+                <div class="input-border-bottom absolute bottom-0 left-0 w-full h-[1px]"
+                  :class="isDark ? 'bg-white/10' : 'bg-[#E5E7EB]'"></div>
+                <div class="input-border-focus absolute bottom-0 left-0 w-full h-[2px] scale-x-0 origin-left"
+                  :class="isDark ? 'bg-[#FF9500]' : 'bg-[#059669]'"></div>
               </div>
               <div v-if="form.errors.pseudo" class="text-red-500 text-xs mt-1 font-bold">{{ form.errors.pseudo }}</div>
             </div>
@@ -72,52 +105,89 @@
 
           <!-- COMMON FIELDS (Email, Password) -->
           <div class="form-field">
-            <label class="field-label block text-[10px] uppercase font-black tracking-widest mb-1" :class="isDark ? 'text-gray-400' : 'text-[#6B7280]'">Email</label>
+            <label class="field-label block text-[10px] uppercase font-black tracking-widest mb-1"
+              :class="isDark ? 'text-gray-400' : 'text-[#6B7280]'">Email</label>
             <div class="input-wrapper relative">
-              <i class="pi pi-envelope absolute left-1 top-1/2 -translate-y-1/2 text-sm" :class="isDark ? 'text-gray-500' : 'text-[#6B7280]'"></i>
-              <input type="email" placeholder="explorateur@email.com" class="auth-input w-full pl-8 pr-3 py-2 border-none bg-transparent text-sm font-bold focus:ring-0" :class="isDark ? 'text-white placeholder-gray-600' : 'text-[#111827] placeholder-gray-400'" v-model="form.email" @focus="focusInput" @blur="blurInput" />
-              <div class="input-border-bottom absolute bottom-0 left-0 w-full h-[1px]" :class="isDark ? 'bg-white/10' : 'bg-[#E5E7EB]'"></div>
-              <div class="input-border-focus absolute bottom-0 left-0 w-full h-[2px] scale-x-0 origin-left" :class="isDark ? 'bg-[#FF9500]' : 'bg-[#059669]'"></div>
+              <i class="pi pi-envelope absolute left-1 top-1/2 -translate-y-1/2 text-sm"
+                :class="isDark ? 'text-gray-500' : 'text-[#6B7280]'"></i>
+              <input type="email" placeholder="explorateur@email.com"
+                class="auth-input w-full pl-8 pr-3 py-2 border-none bg-transparent text-sm font-bold focus:ring-0"
+                :class="isDark ? 'text-white placeholder-gray-600' : 'text-[#111827] placeholder-gray-400'"
+                v-model="form.email" @focus="focusInput" @blur="blurInput" />
+              <div class="input-border-bottom absolute bottom-0 left-0 w-full h-[1px]"
+                :class="isDark ? 'bg-white/10' : 'bg-[#E5E7EB]'"></div>
+              <div class="input-border-focus absolute bottom-0 left-0 w-full h-[2px] scale-x-0 origin-left"
+                :class="isDark ? 'bg-[#FF9500]' : 'bg-[#059669]'"></div>
             </div>
             <div v-if="form.errors.email" class="text-red-500 text-xs mt-1 font-bold">{{ form.errors.email }}</div>
           </div>
 
           <div class="form-field">
-            <label class="field-label block text-[10px] uppercase font-black tracking-widest mb-1" :class="isDark ? 'text-gray-400' : 'text-[#6B7280]'">Password</label>
+            <label class="field-label block text-[10px] uppercase font-black tracking-widest mb-1"
+              :class="isDark ? 'text-gray-400' : 'text-[#6B7280]'">Password</label>
             <div class="input-wrapper relative">
-              <i class="pi pi-lock absolute left-1 top-1/2 -translate-y-1/2 text-sm" :class="isDark ? 'text-gray-500' : 'text-[#6B7280]'"></i>
-              <input :type="showPassword ? 'text' : 'password'" placeholder="••••••••" class="auth-input w-full pl-8 pr-8 py-2 border-none bg-transparent text-sm font-bold focus:ring-0" :class="isDark ? 'text-white placeholder-gray-600' : 'text-[#111827] placeholder-gray-400'" v-model="form.password" @focus="focusInput" @blur="blurInput" />
-              <i class="pi absolute right-1 top-1/2 -translate-y-1/2 text-sm cursor-pointer p-1" :class="[showPassword ? 'pi-eye-slash' : 'pi-eye', isDark ? 'text-gray-500' : 'text-[#6B7280]']" @click="togglePassword" ref="eyeIcon"></i>
-              <div class="input-border-bottom absolute bottom-0 left-0 w-full h-[1px]" :class="isDark ? 'bg-white/10' : 'bg-[#E5E7EB]'"></div>
-              <div class="input-border-focus absolute bottom-0 left-0 w-full h-[2px] scale-x-0 origin-left" :class="isDark ? 'bg-[#FF9500]' : 'bg-[#059669]'"></div>
+              <i class="pi pi-lock absolute left-1 top-1/2 -translate-y-1/2 text-sm"
+                :class="isDark ? 'text-gray-500' : 'text-[#6B7280]'"></i>
+              <input :type="showPassword ? 'text' : 'password'" placeholder="••••••••"
+                class="auth-input w-full pl-8 pr-8 py-2 border-none bg-transparent text-sm font-bold focus:ring-0"
+                :class="isDark ? 'text-white placeholder-gray-600' : 'text-[#111827] placeholder-gray-400'"
+                v-model="form.password" @focus="focusInput" @blur="blurInput" />
+              <i class="pi absolute right-1 top-1/2 -translate-y-1/2 text-sm cursor-pointer p-1"
+                :class="[showPassword ? 'pi-eye-slash' : 'pi-eye', isDark ? 'text-gray-500' : 'text-[#6B7280]']"
+                @click="togglePassword" ref="eyeIcon"></i>
+              <div class="input-border-bottom absolute bottom-0 left-0 w-full h-[1px]"
+                :class="isDark ? 'bg-white/10' : 'bg-[#E5E7EB]'"></div>
+              <div class="input-border-focus absolute bottom-0 left-0 w-full h-[2px] scale-x-0 origin-left"
+                :class="isDark ? 'bg-[#FF9500]' : 'bg-[#059669]'"></div>
             </div>
-            <div v-if="form.errors.password" class="text-red-500 text-xs mt-1 font-bold">{{ form.errors.password }}</div>
+            <div v-if="form.errors.password" class="text-red-500 text-xs mt-1 font-bold">{{ form.errors.password }}
+            </div>
           </div>
 
           <!-- REGISTER FIELD (Password Confirm) -->
           <template v-if="mode === 'register'">
             <div class="form-field">
-              <label class="field-label block text-[10px] uppercase font-black tracking-widest mb-1" :class="isDark ? 'text-gray-400' : 'text-[#6B7280]'">Confirmer Password</label>
+              <label class="field-label block text-[10px] uppercase font-black tracking-widest mb-1"
+                :class="isDark ? 'text-gray-400' : 'text-[#6B7280]'">Confirmer Password</label>
               <div class="input-wrapper relative">
-                <i class="pi pi-lock absolute left-1 top-1/2 -translate-y-1/2 text-sm" :class="isDark ? 'text-gray-500' : 'text-[#6B7280]'"></i>
-                <input :type="showPassword ? 'text' : 'password'" placeholder="••••••••" class="auth-input w-full pl-8 pr-3 py-2 border-none bg-transparent text-sm font-bold focus:ring-0" :class="isDark ? 'text-white placeholder-gray-600' : 'text-[#111827] placeholder-gray-400'" v-model="form.password_confirmation" @focus="focusInput" @blur="blurInput" />
-                <div class="input-border-bottom absolute bottom-0 left-0 w-full h-[1px]" :class="isDark ? 'bg-white/10' : 'bg-[#E5E7EB]'"></div>
-                <div class="input-border-focus absolute bottom-0 left-0 w-full h-[2px] scale-x-0 origin-left" :class="isDark ? 'bg-[#FF9500]' : 'bg-[#059669]'"></div>
+                <i class="pi pi-lock absolute left-1 top-1/2 -translate-y-1/2 text-sm"
+                  :class="isDark ? 'text-gray-500' : 'text-[#6B7280]'"></i>
+                <input :type="showPassword ? 'text' : 'password'" placeholder="••••••••"
+                  class="auth-input w-full pl-8 pr-3 py-2 border-none bg-transparent text-sm font-bold focus:ring-0"
+                  :class="isDark ? 'text-white placeholder-gray-600' : 'text-[#111827] placeholder-gray-400'"
+                  v-model="form.password_confirmation" @focus="focusInput" @blur="blurInput" />
+                <div class="input-border-bottom absolute bottom-0 left-0 w-full h-[1px]"
+                  :class="isDark ? 'bg-white/10' : 'bg-[#E5E7EB]'"></div>
+                <div class="input-border-focus absolute bottom-0 left-0 w-full h-[2px] scale-x-0 origin-left"
+                  :class="isDark ? 'bg-[#FF9500]' : 'bg-[#059669]'"></div>
               </div>
-              <div v-if="form.errors.password_confirmation" class="text-red-500 text-xs mt-1 font-bold">{{ form.errors.password_confirmation }}</div>
+              <div v-if="form.errors.password_confirmation" class="text-red-500 text-xs mt-1 font-bold">{{
+                form.errors.password_confirmation }}</div>
             </div>
-            
+
             <div class="form-field flex items-start gap-2 mt-2">
-              <div class="custom-checkbox mt-0.5 w-4 h-4 rounded-sm border flex items-center justify-center transition-colors flex-shrink-0" :class="[form.consent_cgu ? (isDark ? 'bg-[#FF9500] border-[#FF9500]' : 'bg-[#059669] border-[#059669]') : (isDark ? 'border-gray-600' : 'border-gray-400')]" @click.prevent="form.consent_cgu = !form.consent_cgu">
-                <i v-if="form.consent_cgu" class="pi pi-check text-[10px]" :class="isDark ? 'text-black' : 'text-white'"></i>
+              <div
+                class="custom-checkbox mt-0.5 w-4 h-4 rounded-sm border flex items-center justify-center transition-colors flex-shrink-0"
+                :class="[form.consent_cgu ? (isDark ? 'bg-[#FF9500] border-[#FF9500]' : 'bg-[#059669] border-[#059669]') : (isDark ? 'border-gray-600' : 'border-gray-400')]"
+                @click.prevent="form.consent_cgu = !form.consent_cgu">
+                <i v-if="form.consent_cgu" class="pi pi-check text-[10px]"
+                  :class="isDark ? 'text-black' : 'text-white'"></i>
               </div>
-              <span class="text-[10px] font-bold leading-tight" :class="isDark ? 'text-gray-400' : 'text-gray-600'">J'accepte les CGU et la charte de confidentialité</span>
+              <span class="text-[10px] font-bold leading-tight"
+                :class="isDark ? 'text-gray-400' : 'text-gray-600'">J'accepte les CGU et la charte de
+                confidentialité</span>
             </div>
             <div class="form-field flex items-start gap-2 mt-2">
-              <div class="custom-checkbox mt-0.5 w-4 h-4 rounded-sm border flex items-center justify-center transition-colors flex-shrink-0" :class="[form.consent_donnees ? (isDark ? 'bg-[#FF9500] border-[#FF9500]' : 'bg-[#059669] border-[#059669]') : (isDark ? 'border-gray-600' : 'border-gray-400')]" @click.prevent="form.consent_donnees = !form.consent_donnees">
-                <i v-if="form.consent_donnees" class="pi pi-check text-[10px]" :class="isDark ? 'text-black' : 'text-white'"></i>
+              <div
+                class="custom-checkbox mt-0.5 w-4 h-4 rounded-sm border flex items-center justify-center transition-colors flex-shrink-0"
+                :class="[form.consent_donnees ? (isDark ? 'bg-[#FF9500] border-[#FF9500]' : 'bg-[#059669] border-[#059669]') : (isDark ? 'border-gray-600' : 'border-gray-400')]"
+                @click.prevent="form.consent_donnees = !form.consent_donnees">
+                <i v-if="form.consent_donnees" class="pi pi-check text-[10px]"
+                  :class="isDark ? 'text-black' : 'text-white'"></i>
               </div>
-              <span class="text-[10px] font-bold leading-tight" :class="isDark ? 'text-gray-400' : 'text-gray-600'">J'accepte l'utilisation de mes données de géolocalisation</span>
+              <span class="text-[10px] font-bold leading-tight"
+                :class="isDark ? 'text-gray-400' : 'text-gray-600'">J'accepte l'utilisation de mes données de
+                géolocalisation</span>
             </div>
           </template>
 
@@ -125,24 +195,34 @@
           <template v-if="mode === 'login'">
             <div class="form-field flex justify-between items-center mt-2">
               <label class="flex items-center gap-2 cursor-pointer remember-label">
-                <div class="custom-checkbox w-4 h-4 rounded-sm border flex items-center justify-center transition-colors" :class="[form.remember ? (isDark ? 'bg-[#FF9500] border-[#FF9500]' : 'bg-[#059669] border-[#059669]') : (isDark ? 'border-gray-600' : 'border-gray-400')]">
+                <div
+                  class="custom-checkbox w-4 h-4 rounded-sm border flex items-center justify-center transition-colors"
+                  :class="[form.remember ? (isDark ? 'bg-[#FF9500] border-[#FF9500]' : 'bg-[#059669] border-[#059669]') : (isDark ? 'border-gray-600' : 'border-gray-400')]">
                   <input type="checkbox" v-model="form.remember" class="hidden" />
-                  <i v-if="form.remember" class="pi pi-check text-[10px]" :class="isDark ? 'text-black' : 'text-white'"></i>
+                  <i v-if="form.remember" class="pi pi-check text-[10px]"
+                    :class="isDark ? 'text-black' : 'text-white'"></i>
                 </div>
-                <span class="text-xs font-bold" :class="isDark ? 'text-gray-300' : 'text-[#1F2937]'">Rester connecté</span>
+                <span class="text-xs font-bold" :class="isDark ? 'text-gray-300' : 'text-[#1F2937]'">Rester
+                  connecté</span>
               </label>
-              <Link v-if="canResetPassword" :href="route('password.request')" class="text-[10px] uppercase font-black tracking-widest" :class="isDark ? 'text-[#FF9500]' : 'text-[#059669]'">Boussole perdue ?</Link>
+              <Link v-if="canResetPassword" :href="route('password.request')"
+                class="text-[10px] uppercase font-black tracking-widest"
+                :class="isDark ? 'text-[#FF9500]' : 'text-[#059669]'">Boussole perdue ?</Link>
             </div>
           </template>
 
           <!-- SUBMIT BUTTON -->
-          <button type="submit" class="login-btn w-full mt-6 text-black font-black uppercase tracking-widest text-sm rounded-xl h-14 shadow-[0_5px_0_rgba(0,0,0,0.2)] active:shadow-none active:translate-y-[5px] relative overflow-hidden transition-all flex items-center justify-center gap-2" :class="isDark ? 'bg-[#FF9500] shadow-[0_5px_0_#cc7a00]' : 'bg-[#059669] text-white shadow-[0_5px_0_#047857]'" ref="loginBtnRef" :disabled="form.processing" @touchstart="hapticFeedback" style="opacity: 1 !important; visibility: visible !important;">
+          <button type="submit"
+            class="login-btn w-full mt-6 text-black font-black uppercase tracking-widest text-sm rounded-xl h-14 shadow-[0_5px_0_rgba(0,0,0,0.2)] active:shadow-none active:translate-y-[5px] relative overflow-hidden transition-all flex items-center justify-center gap-2"
+            :class="isDark ? 'bg-[#FF9500] shadow-[0_5px_0_#cc7a00]' : 'bg-[#059669] text-white shadow-[0_5px_0_#047857]'"
+            ref="loginBtnRef" :disabled="form.processing" @touchstart="hapticFeedback"
+            style="opacity: 1 !important; visibility: visible !important;">
             <span>{{ mode === 'login' ? 'Connexion' : 'Créer mon compte' }}</span>
             <i class="pi" :class="mode === 'login' ? 'pi-sign-in' : 'pi-user-plus'"></i>
           </button>
 
           <!-- FOOTER LINK -->
-         
+
         </form>
       </div>
     </div>
@@ -151,8 +231,9 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick, inject } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
 import { gsap } from 'gsap';
+import VideoLoader from '@/Components/VideoLoader.vue';
 
 // Import logos
 import logoWhrite from '@/Layouts/logo_whrite.jpg';
@@ -169,10 +250,20 @@ const props = defineProps({
 
 const currentView = ref('welcome');
 const showPassword = ref(false);
+const showLoader = ref(false);
 const eyeIcon = ref(null);
 const loginBtnRef = ref(null);
 
 onMounted(() => {
+  // Listen for navigation starts to show loader on login/register redirect
+  router.on('start', () => {
+    showLoader.value = true;
+  });
+
+  router.on('finish', () => {
+    showLoader.value = false;
+  });
+
   // Intro animations
   const tl = gsap.timeline();
   tl.from(".header-wave", { y: "-10%", opacity: 0, duration: 0.8, ease: "power3.out" })
@@ -247,8 +338,13 @@ const handleAuth = () => {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Bungee&display=swap');
 
-.font-bungee { font-family: 'Bungee', cursive; }
-.font-fredoka { font-family: 'Fredoka', sans-serif; }
+.font-bungee {
+  font-family: 'Bungee', cursive;
+}
+
+.font-fredoka {
+  font-family: 'Fredoka', sans-serif;
+}
 
 .mobile-auth-container {
   font-family: 'Outfit', sans-serif;
@@ -276,10 +372,16 @@ const handleAuth = () => {
 }
 
 /* Scrollbar styling for mobile forms if needed */
-.form-view::-webkit-scrollbar { width: 4px; }
-.form-view::-webkit-scrollbar-track { background: transparent; }
+.form-view::-webkit-scrollbar {
+  width: 4px;
+}
+
+.form-view::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 .form-view::-webkit-scrollbar-thumb {
-    background: rgba(128, 128, 128, 0.2);
-    border-radius: 2px;
+  background: rgba(128, 128, 128, 0.2);
+  border-radius: 2px;
 }
 </style>

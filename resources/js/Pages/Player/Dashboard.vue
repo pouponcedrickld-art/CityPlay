@@ -1,5 +1,6 @@
 <template>
     <CavePlayLayout wide>
+
         <Head title="Tableau de Bord" />
 
         <!-- Vies / score joueur -->
@@ -21,7 +22,7 @@
             <div class="flex flex-col items-center">
                 <span class="cave-lives-label">CityCoins</span>
                 <span class="cave-score-value" style="color: #FFD700;">
-                    {{ $page.props.auth.user.balance_coins || 0 }} <span class="star">🪙</span>
+                    {{ $page.props.auth.user.balance_coins || 0 }} <span class="star">C</span>
                 </span>
             </div>
         </div>
@@ -29,16 +30,16 @@
         <h2 class="cave-section-title">Camp de base</h2>
         <div class="flex flex-col items-center mb-6">
             <div class="relative mb-3">
-                <div v-if="$page.props.auth.user.avatar_path" 
-                     class="w-20 h-20 rounded-full border-4 border-[#4A3525] overflow-hidden shadow-lg bg-white">
-                    <img :src="$page.props.auth.user.avatar_path" class="w-full h-full object-cover" />
+                <div v-if="$page.props.auth.user.full_avatar_url"
+                    class="w-20 h-20 rounded-full border-4 border-[#4A3525] overflow-hidden shadow-lg bg-white">
+                    <img :src="$page.props.auth.user.full_avatar_url" class="w-full h-full object-cover" />
                 </div>
-                <div v-else 
-                     class="w-20 h-20 rounded-full border-4 border-[#4A3525] bg-[#D4C5B3] flex items-center justify-center text-3xl font-bold text-[#4A3525] shadow-lg">
+                <div v-else
+                    class="w-20 h-20 rounded-full border-4 border-[#4A3525] bg-[#D4C5B3] flex items-center justify-center text-3xl font-bold text-[#4A3525] shadow-lg">
                     {{ $page.props.auth.user.name.charAt(0) }}
                 </div>
-                <Link :href="route('profile.edit')" 
-                      class="absolute bottom-0 right-0 w-8 h-8 bg-[#FF9500] border-2 border-[#4A3525] rounded-full flex items-center justify-center text-white shadow-md hover:scale-110 transition-transform">
+                <Link :href="route('profile.edit')"
+                    class="absolute bottom-0 right-0 w-8 h-8 bg-[#FF9500] border-2 border-[#4A3525] rounded-full flex items-center justify-center text-white shadow-md hover:scale-110 transition-transform">
                     <i class="pi pi-pencil text-xs" />
                 </Link>
             </div>
@@ -57,15 +58,12 @@
                 <i class="cave-btn__icon pi pi-search" />
                 <span class="cave-btn__label">Trouver une équipe</span>
             </Link>
-            <Link v-if="$page.props.auth.user.created_teams_count > 0" :href="route('teams.requests.index')" class="cave-btn cave-btn--survival" style="text-decoration:none">
+            <Link v-if="$page.props.auth.user.created_teams_count > 0" :href="route('teams.requests.index')"
+                class="cave-btn cave-btn--survival" style="text-decoration:none">
                 <i class="cave-btn__icon pi pi-bell" />
                 <span class="cave-btn__label">Demandes d'adhésion</span>
             </Link>
-            <Link
-                :href="route('parties.web.create') + '?tab=join'"
-                class="cave-btn"
-                style="text-decoration:none"
-            >
+            <Link :href="route('parties.web.create') + '?tab=join'" class="cave-btn" style="text-decoration:none">
                 <i class="cave-btn__icon pi pi-key" />
                 <div class="cave-btn__content">
                     <span class="cave-btn__label">Rejoindre une équipe</span>
@@ -78,20 +76,15 @@
         <section v-if="equipesCreees.length" class="mb-6">
             <h3 class="cave-section-title" style="font-size:0.85rem">Mes équipes</h3>
             <div class="cave-levels-grid cave-levels-grid--multi">
-                <div
-                    v-for="partie in equipesCreees"
-                    :key="'team-' + partie.id"
-                    class="cave-mission-card"
-                    style="animation-delay: 0.1s"
-                >
-                    <span
-                        class="cave-mission-card__status"
-                        :class="partie.statut === 'en_attente' ? 'cave-mission-card__status--waiting' : 'cave-mission-card__status--active'"
-                    >
+                <div v-for="partie in equipesCreees" :key="'team-' + partie.id" class="cave-mission-card"
+                    style="animation-delay: 0.1s">
+                    <span class="cave-mission-card__status"
+                        :class="partie.statut === 'en_attente' ? 'cave-mission-card__status--waiting' : 'cave-mission-card__status--active'">
                         {{ getStatutLabel(partie.statut) }}
                     </span>
                     <h4 class="cave-mission-card__title">{{ partie.environnement?.nom }}</h4>
-                    <p class="text-[10px] font-bold uppercase mb-3" style="color: var(--cave-border-dark); opacity: 0.6">
+                    <p class="text-[10px] font-bold uppercase mb-3"
+                        style="color: var(--cave-border-dark); opacity: 0.6">
                         {{ partie.nb_membres || 1 }} / {{ partie.parametres?.nb_joueurs || 10 }} joueurs
                     </p>
 
@@ -101,11 +94,8 @@
                         </p>
                         <div class="cave-invite-row">
                             <span class="text-[9px] truncate flex-1 opacity-70">{{ partie.lien_invitation }}</span>
-                            <button
-                                type="button"
-                                class="cave-copy-btn"
-                                @click="copyText(partie.lien_invitation, partie.id + '-link')"
-                            >
+                            <button type="button" class="cave-copy-btn"
+                                @click="copyText(partie.lien_invitation, partie.id + '-link')">
                                 <i :class="copiedId === partie.id + '-link' ? 'pi pi-check' : 'pi pi-copy'" />
                             </button>
                         </div>
@@ -114,22 +104,15 @@
                         </p>
                         <div class="cave-invite-row">
                             <span class="cave-invite-code">{{ partie.code_liaison }}</span>
-                            <button
-                                type="button"
-                                class="cave-copy-btn"
-                                @click="copyText(partie.code_liaison, partie.id + '-code')"
-                            >
+                            <button type="button" class="cave-copy-btn"
+                                @click="copyText(partie.code_liaison, partie.id + '-code')">
                                 <i :class="copiedId === partie.id + '-code' ? 'pi pi-check' : 'pi pi-copy'" />
                             </button>
                         </div>
                     </div>
 
-                    <Link
-                        v-if="partie.statut === 'en_attente'"
-                        :href="route('parties.team-setup', partie.id)"
-                        class="cave-btn mt-3"
-                        style="text-decoration:none; min-height:48px; padding:10px"
-                    >
+                    <Link v-if="partie.statut === 'en_attente'" :href="route('parties.team-setup', partie.id)"
+                        class="cave-btn mt-3" style="text-decoration:none; min-height:48px; padding:10px">
                         <i class="cave-btn__icon pi pi-cog" />
                         <span class="cave-btn__label">Gérer l'équipe</span>
                     </Link>
@@ -141,29 +124,25 @@
         <section class="mb-6">
             <div class="flex items-center justify-between mb-2">
                 <h3 class="cave-section-title" style="font-size:0.85rem; margin-bottom: 0">Missions actives</h3>
-                <Link :href="route('player.classement')" class="text-[10px] font-black uppercase text-orange-600 hover:underline">Voir tout le classement</Link>
+                <Link :href="route('player.classement')"
+                    class="text-[10px] font-black uppercase text-orange-600 hover:underline">Voir tout le classement
+                </Link>
             </div>
 
             <div v-if="parties.length" class="cave-levels-grid cave-levels-grid--multi">
-                <Link
-                    v-for="partie in parties"
-                    :key="partie.id"
-                    :href="route('progression.enigme', partie.id)"
-                    class="cave-mission-card"
-                >
+                <Link v-for="partie in parties" :key="partie.id" :href="route('progression.enigme', partie.id)"
+                    class="cave-mission-card">
                     <span class="cave-mission-card__status cave-mission-card__status--active">
                         {{ getStatutLabel(partie.statut) }}
                     </span>
                     <h4 class="cave-mission-card__title">{{ partie.environnement?.nom }}</h4>
-                    <div class="flex justify-between text-[9px] font-bold uppercase mb-2" style="color: var(--cave-border-dark); opacity: 0.7">
+                    <div class="flex justify-between text-[9px] font-bold uppercase mb-2"
+                        style="color: var(--cave-border-dark); opacity: 0.7">
                         <span>{{ partie.progression?.score || 0 }} pts</span>
                         <span>{{ progressionPct(partie) }}%</span>
                     </div>
                     <div class="cave-progress-track">
-                        <div
-                            class="cave-progress-fill"
-                            :style="{ width: progressionPct(partie) + '%' }"
-                        ></div>
+                        <div class="cave-progress-fill" :style="{ width: progressionPct(partie) + '%' }"></div>
                     </div>
                 </Link>
             </div>
@@ -187,9 +166,11 @@
                         </span>
                         <span class="text-xs font-bold uppercase">{{ player.name }}</span>
                     </div>
-                    <span class="text-xs font-black">{{ player.total_score }} <span class="opacity-50 text-[9px]">pts</span></span>
+                    <span class="text-xs font-black">{{ player.total_score }} <span
+                            class="opacity-50 text-[9px]">pts</span></span>
                 </div>
-                <Link :href="route('player.classement')" class="cave-btn mt-2" style="min-height:36px; font-size: 0.7rem; text-decoration: none">
+                <Link :href="route('player.classement')" class="cave-btn mt-2"
+                    style="min-height:36px; font-size: 0.7rem; text-decoration: none">
                     <i class="cave-btn__icon pi pi-trophy" style="font-size: 0.8rem" />
                     <span class="cave-btn__label">Classement complet</span>
                 </Link>
@@ -205,18 +186,11 @@
                 <i class="pi pi-spin pi-spinner" /> Localisation...
             </p>
             <div class="cave-levels-grid cave-levels-grid--multi">
-                <article
-                    v-for="env in environnements"
-                    :key="env.id"
-                    class="cave-level-card"
-                    @click="router.get(route('parties.web.create'))"
-                >
+                <article v-for="env in environnements" :key="env.id" class="cave-level-card"
+                    @click="router.get(route('parties.web.create'))">
                     <div class="cave-level-card__img-wrap" style="height:90px">
-                        <img
-                            :src="env.image_url || 'https://images.unsplash.com/photo-1519307212971-dd9561667ffb?auto=format&fit=crop&q=80&w=400'"
-                            :alt="env.nom"
-                            class="cave-level-card__img"
-                        />
+                        <img :src="env.image_url || 'https://images.unsplash.com/photo-1519307212971-dd9561667ffb?auto=format&fit=crop&q=80&w=400'"
+                            :alt="env.nom" class="cave-level-card__img" />
                         <div class="cave-level-card__overlay" />
                         <span v-if="env.distance_km != null" class="cave-level-card__badge">
                             {{ env.distance_km }} km

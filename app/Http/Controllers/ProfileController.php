@@ -30,21 +30,15 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        \Log::info('ProfileController: Tentative de mise à jour', [
-            'user_id' => auth()->id(),
-            'has_file' => $request->hasFile('avatar'),
-            'file_name' => $request->hasFile('avatar') ? $request->file('avatar')->getClientOriginalName() : 'none',
-        ]);
-
         $user = $request->user();
-        $user->fill($request->safe()->except('avatar'));
+        $user->fill($request->validated());
 
         if ($request->hasFile('avatar')) {
-            // Supprimer l'ancien avatar si existant
+            // Supprimer l'ancien avatar s'il existe
             if ($user->avatar_path) {
                 Storage::disk('public')->delete($user->avatar_path);
             }
-
+            
             $path = $request->file('avatar')->store('avatars', 'public');
             $user->avatar_path = $path;
         }

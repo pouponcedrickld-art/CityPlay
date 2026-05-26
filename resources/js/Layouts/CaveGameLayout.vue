@@ -8,7 +8,9 @@ let loaderDelayTimer = null;
 
 onMounted(() => {
     document.documentElement.classList.add('cave-theme');
-    router.on('start', () => {
+    router.on('start', (event) => {
+        if (event.detail.visit.preserveState) return;
+        
         if (loaderDelayTimer) clearTimeout(loaderDelayTimer);
         loaderDelayTimer = setTimeout(() => {
             showLoader.value = true;

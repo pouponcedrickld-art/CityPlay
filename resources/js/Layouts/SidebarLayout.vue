@@ -12,13 +12,13 @@ const visible = ref(false);
 const showLoader = ref(false);
 
 onMounted(() => {
-    router.on('start', () => {
+    router.on('start', (event) => {
+        if (event.detail.visit.preserveState) return;
+        
         showLoader.value = true;
     });
     router.on('finish', () => {
-        setTimeout(() => {
-            showLoader.value = false;
-        }, 1200);
+        showLoader.value = false;
     });
     router.on('error', () => {
         showLoader.value = false;
