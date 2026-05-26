@@ -18,7 +18,16 @@ const props = defineProps({
 const page = usePage();
 const showLoader = ref(false);
 const isSidebarVisible = ref(true); // État de la sidebar desktop (toggleable)
+const isMobileMenuOpen = ref(false); // Pour le menu "Plus" mobile
 let loaderDelayTimer = null;
+
+const toggleMobileMenu = () => {
+    isMobileMenuOpen.value = !isMobileMenuOpen.value;
+};
+
+const closeMobileMenu = () => {
+    isMobileMenuOpen.value = false;
+};
 
 /**
  * Bascule l'affichage de la sidebar sur Desktop.
@@ -189,18 +198,251 @@ const innerClass = computed(() => [
             </div>
         </div>
 
-        <!-- Nav mobile -->
-        <nav v-if="!immersive" class="cave-bottom-nav lg:hidden" aria-label="Navigation jeu">
-            <Link
-                v-for="item in navItems"
-                :key="'m-' + item.label"
-                :href="navHref(item)"
-                class="cave-nav-stone"
-                :class="{ 'cave-nav-stone--active': isActive(item) }"
-                :title="item.label"
-            >
-                <i :class="item.icon" />
-            </Link>
+        <!-- Nav mobile (Admin Style) -->
+        <nav v-if="!immersive" class="mobile-bottom-nav lg:hidden flex bg-[#D4C5B3]">
+            <div class="nav-items-container">
+                <!-- Home -->
+                <Link :href="route('dashboard')" class="nav-item-bottom" :class="{ 'active': route().current('dashboard') }">
+                    <i class="pi pi-home"></i>
+                    <span>Home</span>
+                </Link>
+
+                <!-- Classement -->
+                <Link :href="route('player.classement')" class="nav-item-bottom" :class="{ 'active': route().current('player.classement') }">
+                    <i class="pi pi-trophy"></i>
+                    <span>Elite</span>
+                </Link>
+
+                <!-- Jouer (Center FAB) -->
+                <div class="nav-item-center-wrapper">
+                    <Link :href="route('parties.web.create')" class="nav-item-center">
+                        <div class="center-btn-inner bg-[#FCD116] border-[#4A3525]">
+                            <i class="pi pi-play text-[#4A3525]"></i>
+                        </div>
+                        <span class="text-[#4A3525]">Jouer</span>
+                    </Link>
+                </div>
+
+                <!-- Map/Parcours -->
+                <Link :href="route('parties.web.create')" class="nav-item-bottom" :class="{ 'active': route().current('parties.web.create') && !page.url.includes('tab=join') }">
+                    <i class="pi pi-map"></i>
+                    <span>Quêtes</span>
+                </Link>
+
+                <!-- Plus Menu -->
+                <button class="nav-item-bottom" :class="{ 'active': isMobileMenuOpen }" @click="toggleMobileMenu">
+                    <i class="pi pi-ellipsis-h"></i>
+                    <span>Plus</span>
+                </button>
+            </div>
         </nav>
+
+        <!-- Mobile Action Sheet (Admin Style) -->
+        <div v-if="isMobileMenuOpen" class="mobile-sheet-overlay" @click="closeMobileMenu"></div>
+        <div class="mobile-action-sheet" :class="{ 'open': isMobileMenuOpen }">
+            <div class="sheet-handle" @click="closeMobileMenu"></div>
+            <div class="sheet-content">
+                <h3 class="sheet-title">Aventure Menu</h3>
+                <Link :href="route('profile.edit')" class="sheet-item" @click="closeMobileMenu">
+                    <i class="pi pi-cog"></i>
+                    <span>Réglages Profil</span>
+                </Link>
+                <Link :href="route('parties.web.create', { tab: 'join' })" class="sheet-item" @click="closeMobileMenu">
+                    <i class="pi pi-users"></i>
+                    <span>Rejoindre Guilde</span>
+                </Link>
+                <Link v-if="page.props.auth.user?.is_admin" :href="route('admin.dashboard')" class="sheet-item" @click="closeMobileMenu">
+                    <i class="pi pi-shield"></i>
+                    <span>Dashboard Admin</span>
+                </Link>
+                <Link :href="route('logout')" method="post" as="button" class="sheet-item text-red-600" @click="closeMobileMenu">
+                    <i class="pi pi-sign-out text-red-600"></i>
+                    <span>Déconnexion</span>
+                </Link>
+            </div>
+        </div>
     </div>
 </template>
+
+<style scoped>
+/* Import gaming fonts */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Bungee&display=swap');
+
+.font-bungee { font-family: 'Bungee', cursive; }
+.font-fredoka { font-family: 'Fredoka', sans-serif; }
+
+/* Existing CavePlay styles... */
+
+/* --- MOBILE BOTTOM NAV (Admin Style) --- */
+.mobile-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 75px;
+    border-radius: 25px 25px 0 0;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+    z-index: 100;
+    align-items: center;
+    padding: 0 10px;
+    border-top: 2px solid rgba(74, 53, 37, 0.1);
+}
+
+.nav-items-container {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    align-items: flex-end;
+    height: 100%;
+    padding-bottom: 12px;
+    position: relative;
+}
+
+.nav-item-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    color: rgba(74, 53, 37, 0.5);
+    text-decoration: none;
+    font-size: 10px;
+    font-weight: 700;
+    width: 20%;
+    background: transparent;
+    border: none;
+    height: 100%;
+    position: relative;
+    font-family: 'Fredoka', sans-serif;
+    text-transform: uppercase;
+}
+
+.nav-item-bottom i {
+    font-size: 22px;
+    transition: all 0.3s ease;
+}
+
+.nav-item-bottom.active {
+    color: #4A3525;
+}
+
+.nav-item-bottom.active i {
+    transform: translateY(-3px);
+}
+
+.nav-item-center-wrapper {
+    width: 20%;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    height: 100%;
+}
+
+.nav-item-center {
+    position: absolute;
+    bottom: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    font-size: 10px;
+    font-weight: 800;
+    font-family: 'Bungee', cursive;
+    text-transform: uppercase;
+}
+
+.center-btn-inner {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(-15px);
+    border-width: 3px;
+    border-style: solid;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.center-btn-inner:active {
+    transform: translateY(-12px) scale(0.9);
+}
+
+.center-btn-inner i {
+    font-size: 24px;
+}
+
+/* Action Sheet */
+.mobile-sheet-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.mobile-action-sheet {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #D4C5B3;
+    border-radius: 30px 30px 0 0;
+    z-index: 1001;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 1.5rem 1.5rem 3rem;
+    border-top: 4px solid #4A3525;
+}
+
+.mobile-action-sheet.open {
+    transform: translateY(0);
+}
+
+.sheet-handle {
+    width: 50px;
+    height: 5px;
+    background: rgba(74, 53, 37, 0.2);
+    border-radius: 3px;
+    margin: 0 auto 2rem;
+}
+
+.sheet-title {
+    font-family: 'Bungee', cursive;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #4A3525;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.sheet-item {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1.25rem 1rem;
+    color: #4A3525;
+    text-decoration: none;
+    font-weight: 700;
+    font-family: 'Fredoka', sans-serif;
+    border-bottom: 1px solid rgba(74, 53, 37, 0.1);
+    border-radius: 12px;
+    transition: background 0.2s;
+}
+
+.sheet-item:active {
+    background: rgba(74, 53, 37, 0.05);
+}
+
+.sheet-item i {
+    font-size: 1.4rem;
+    color: #4A3525;
+    width: 28px;
+    text-align: center;
+}
+
+/* Rest of CavePlayLayout styles... */
+</style>

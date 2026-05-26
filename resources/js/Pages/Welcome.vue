@@ -2,6 +2,7 @@
 import { Head, Link } from "@inertiajs/vue3";
 import { onMounted, ref } from "vue";
 import { gsap } from "gsap";
+import VideoLoader from "@/Components/VideoLoader.vue";
 
 // Import official logos
 import logoWhrite from "@/Layouts/logo_whrite.jpg";
@@ -26,8 +27,9 @@ defineProps({
 });
 
 const introVideo = ref(null);
-
 const isDark = ref(true);
+const isLoading = ref(true); // Loading state for mobile
+const videoLoaded = ref(false);
 
 const initTheme = () => {
     isDark.value = localStorage.getItem("theme") !== "light";
@@ -293,14 +295,18 @@ onMounted(() => {
     });
 
     // Scan line animation
-    gsap.fromTo(".scan-line", {
-        top: "0%",
-    }, {
-        top: "100%",
-        duration: 4,
-        repeat: -1,
-        ease: "none",
-    });
+    gsap.fromTo(
+        ".scan-line",
+        {
+            top: "0%",
+        },
+        {
+            top: "100%",
+            duration: 4,
+            repeat: -1,
+            ease: "none",
+        },
+    );
 
     tl.fromTo(
         ".cyber-overlay",
@@ -355,6 +361,11 @@ onMounted(() => {
     document.querySelectorAll(".scroll-reveal-section").forEach((section) => {
         observer.observe(section);
     });
+
+    // Hide loader after a short delay
+    setTimeout(() => {
+        isLoading.value = false;
+    }, 2000);
 });
 </script>
 
@@ -362,6 +373,9 @@ onMounted(() => {
     <Head title="Welcome to CityPlay" />
 
     <div class="welcome-container font-outfit">
+        <!-- Video Background Loader -->
+        <VideoLoader :show="isLoading" />
+
         <!-- Cyber Glitch Intro Overlay -->
         <div class="cyber-overlay" />
 
@@ -382,10 +396,18 @@ onMounted(() => {
 
             <!-- ══ FLOATING GAME ELEMENTS (GSAP Animated) ══ -->
             <div class="game-elements" aria-hidden="true">
-                <div class="game-icon float-icon-1"><i class="pi pi-star-fill"></i></div>
-                <div class="game-icon float-icon-2"><i class="pi pi-trophy"></i></div>
-                <div class="game-icon float-icon-3"><i class="pi pi-map-marker"></i></div>
-                <div class="game-icon float-icon-4"><i class="pi pi-bolt"></i></div>
+                <div class="game-icon float-icon-1">
+                    <i class="pi pi-star-fill"></i>
+                </div>
+                <div class="game-icon float-icon-2">
+                    <i class="pi pi-trophy"></i>
+                </div>
+                <div class="game-icon float-icon-3">
+                    <i class="pi pi-map-marker"></i>
+                </div>
+                <div class="game-icon float-icon-4">
+                    <i class="pi pi-bolt"></i>
+                </div>
                 <div class="scan-line"></div>
             </div>
 
@@ -437,7 +459,7 @@ onMounted(() => {
                 </template>
 
                 <!-- Scroll hint -->
-                <a href="#concept" class="scroll-hint">
+                <a href="#concept" class="scroll-hint hidden lg:flex">
                     <span>En savoir plus</span>
                     <i class="pi pi-angle-down bounce-arrow"></i>
                 </a>
@@ -556,7 +578,10 @@ onMounted(() => {
         </section>
 
         <!-- Section 2: Comment ça marche (Gameplay Timeline) -->
-        <section id="concept" class="section-gameplay scroll-reveal-section">
+        <section
+            id="concept"
+            class="section-gameplay scroll-reveal-section hidden lg:block"
+        >
             <div class="section-header scroll-anim-item">
                 <span class="section-badge">Gameplay</span>
                 <h2>Comment ça marche ?</h2>
@@ -654,7 +679,10 @@ onMounted(() => {
         </section>
 
         <!-- Section 3: Les Environnements / Cités Épiques -->
-        <section id="cites" class="section-cites scroll-reveal-section">
+        <section
+            id="cites"
+            class="section-cites scroll-reveal-section hidden lg:block"
+        >
             <div class="section-header scroll-anim-item">
                 <span class="section-badge">Zones de jeu</span>
                 <h2>Les Cités Mythiques</h2>
@@ -754,7 +782,7 @@ onMounted(() => {
         <!-- Section 4: Le Panthéon des Aventuriers (Dynamic Leaderboard) -->
         <section
             id="leaderboard"
-            class="section-leaderboard scroll-reveal-section"
+            class="section-leaderboard scroll-reveal-section hidden lg:block"
         >
             <div class="section-header scroll-anim-item">
                 <span class="section-badge">Hauts Faits</span>
@@ -818,7 +846,10 @@ onMounted(() => {
         </section>
 
         <!-- Section 5: F.A.Q (Interactive Accordions) -->
-        <section id="faq" class="section-faq scroll-reveal-section">
+        <section
+            id="faq"
+            class="section-faq scroll-reveal-section hidden lg:block"
+        >
             <div class="section-header scroll-anim-item">
                 <span class="section-badge">Aide</span>
                 <h2>F.A.Q. de la Quête</h2>
@@ -1096,10 +1127,25 @@ section {
     filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6));
     opacity: 0.8;
 }
-.float-icon-1 { top: 20%; left: 10%; }
-.float-icon-2 { top: 15%; right: 15%; color: #ff6b35; }
-.float-icon-3 { bottom: 40%; left: 15%; color: #4caf50; }
-.float-icon-4 { bottom: 35%; right: 10%; color: #29b6f6; }
+.float-icon-1 {
+    top: 20%;
+    left: 10%;
+}
+.float-icon-2 {
+    top: 15%;
+    right: 15%;
+    color: #ff6b35;
+}
+.float-icon-3 {
+    bottom: 40%;
+    left: 15%;
+    color: #4caf50;
+}
+.float-icon-4 {
+    bottom: 35%;
+    right: 10%;
+    color: #29b6f6;
+}
 
 .scan-line {
     position: absolute;
@@ -1107,7 +1153,12 @@ section {
     left: 0;
     width: 100%;
     height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(255, 149, 0, 0.5), transparent);
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 149, 0, 0.5),
+        transparent
+    );
     box-shadow: 0 0 10px rgba(255, 149, 0, 0.3);
     z-index: 4;
     opacity: 0.3;

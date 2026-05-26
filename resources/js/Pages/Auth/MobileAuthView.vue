@@ -245,6 +245,11 @@ const handleAuth = () => {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Bungee&display=swap');
+
+.font-bungee { font-family: 'Bungee', cursive; }
+.font-fredoka { font-family: 'Fredoka', sans-serif; }
+
 .mobile-auth-container {
   font-family: 'Outfit', sans-serif;
 }
