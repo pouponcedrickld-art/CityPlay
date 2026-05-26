@@ -64,7 +64,7 @@ const submit = () => {
                     <!-- Priorité à la preview locale, puis à l'avatar stocké, puis aux initiales -->
                     <div v-if="avatarPreview || user.avatar_path" 
                          class="w-24 h-24 rounded-full border-4 border-[#4A3525] overflow-hidden shadow-lg bg-white">
-                        <img :src="avatarPreview || user.avatar_path" class="w-full h-full object-cover" />
+                        <img :key="user.avatar_path" :src="avatarPreview || user.avatar_path" class="w-full h-full object-cover" />
                     </div>
                     <div v-else 
                          class="w-24 h-24 rounded-full border-4 border-[#4A3525] bg-[#D4C5B3] flex items-center justify-center text-4xl font-bold text-[#4A3525] shadow-lg">

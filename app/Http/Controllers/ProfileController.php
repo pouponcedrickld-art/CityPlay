@@ -30,6 +30,12 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
+        \Log::info('ProfileController: Tentative de mise à jour', [
+            'user_id' => auth()->id(),
+            'has_file' => $request->hasFile('avatar'),
+            'file_name' => $request->hasFile('avatar') ? $request->file('avatar')->getClientOriginalName() : 'none',
+        ]);
+
         $user = $request->user();
         $user->fill($request->safe()->except('avatar'));
 

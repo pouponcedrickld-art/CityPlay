@@ -89,8 +89,8 @@ class InvitationService
 
         } while ($attempts < self::MAX_ATTEMPTS);
 
-        // Si toutes les tentatives échouent, exception
-        throw new \Exception('Impossible de générer un code d\'invitation unique après ' . self::MAX_ATTEMPTS . ' tentatives.');
+        // Si toutes les tentatives échouent (extrêmement rare), on ajoute un suffixe aléatoire plus long
+        return substr(strtoupper(Str::random(10)), 0, 4) . '-' . substr(strtoupper(Str::random(10)), 0, 4);
     }
 
     /**

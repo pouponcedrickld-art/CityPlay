@@ -123,6 +123,10 @@ const scrollToBottom = () => {
  * et les mises à jour de progression.
  */
 const initChat = () => {
+    if (!window.Echo) {
+        console.warn("Laravel Echo n'est pas initialisé. Vérifiez votre configuration Reverb.");
+        return;
+    }
     // Écoute sur le canal privé de l'équipe (Chat)
     if (props.partie.team_id) {
         fetchMessages();
@@ -891,24 +895,19 @@ onUnmounted(() => {
 
                         <button
                             type="button"
-                            class="absolute bottom-2 right-2 z-10 cave-hud__btn"
+                            class="absolute bottom-2 right-2 z-10 cave-hud__btn flex items-center gap-2 px-3"
                             style="
-                                width: 32px;
+                                width: auto;
                                 height: 32px;
                                 background: var(--cave-rock-light);
                                 color: var(--cave-border-dark);
                                 border: 2px solid var(--cave-border-dark);
+                                border-radius: 12px;
                             "
                             @click="recenterMap"
                         >
-                            <i class="pi pi-crosshairs text-sm" />
-
-                        <button type="button" class="absolute bottom-2 right-2 z-10 cave-hud__btn flex items-center gap-2 px-3"
-                            style="width:auto;height:32px;background:var(--cave-rock-light);color:var(--cave-border-dark);border:2px solid var(--cave-border-dark);border-radius:12px"
-                            @click="recenterMap">
                             <i class="pi pi-crosshairs text-xs" />
                             <span class="text-[9px] font-black uppercase tracking-tighter">Ma position</span>
-
                         </button>
                     </div>
 

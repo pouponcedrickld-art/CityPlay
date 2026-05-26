@@ -34,7 +34,7 @@ class PartieService
         \Log::info('PartieService: Environnement trouvé', ['nom' => $environnement->nom]);
 
         // 2. Génération du code de liaison unique (6 caractères alphanumériques)
-        $codeLiaison = Str::upper(Str::random(6));
+        $codeLiaison = $this->genererCodeUnique();
 
         // 3. Création de l'équipe si le mode de jeu est "équipe"
         $teamId = null;
@@ -98,8 +98,19 @@ class PartieService
         ]);
 
         \Log::info('PartieService: Fin création partie', ['id' => $partie->id]);
-        return $partie->load('environnement');
+
+        return $partie->load(['environnement', 'team.users']);
+    }
+
+    /**
+     * Génère un code de liaison unique de 6 caractères.
+     */
+    private function genererCodeUnique(): string
+    {
+        do {
+            $code = strtoupper(Str::random(6));
+        } while (Partie::where('code_liaison', $code)->exists() || Team::where('code_liaison', $code)->exists());
+
+        return $code;
     }
 }
-
-
