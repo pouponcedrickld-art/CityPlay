@@ -47,7 +47,7 @@ class HandleInertiaRequests extends Middleware
                     'pseudo' => $request->user()->pseudo,
                     'total_score' => (int) $request->user()->total_score,
                     'balance_coins' => (int) $request->user()->balance_coins,
-                    'avatar_path' => $request->user()->avatar_path ? asset('storage/' . $request->user()->avatar_path) : null,
+                    'avatar_path' => $request->user()->avatar_path ? "/storage/" . $request->user()->avatar_path : null,
                     'created_teams_count' => $request->user()->createdTeams()->count(),
                     'is_admin' => (bool) $request->user()->is_admin,
                     'roles' => $request->user()->getRoleNames(), // Spatie roles

@@ -1,6 +1,6 @@
 <script setup>
 import { Link, useForm, usePage } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 const props = defineProps({
     mustVerifyEmail: Boolean,
@@ -21,6 +21,15 @@ const form = useForm({
 
 const avatarPreview = ref(null);
 
+// Mettre à jour le formulaire quand l'utilisateur change (ex: après un succès)
+watch(user, (newUser) => {
+    if (newUser) {
+        form.name = newUser.name;
+        form.pseudo = newUser.pseudo || '';
+        form.email = newUser.email;
+    }
+}, { deep: true });
+
 const onFileChange = (e) => {
     const file = e.target.files[0];
     form.avatar = file;
@@ -36,6 +45,7 @@ const submit = () => {
         onSuccess: () => {
             form.avatar = null;
             avatarPreview.value = null;
+            // Pas besoin de rafraîchir manuellement, Inertia s'en occupe
         },
     });
 };

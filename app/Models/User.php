@@ -70,7 +70,7 @@ class User extends Authenticatable
 
     public function getFullAvatarUrlAttribute()
     {
-        return $this->avatar_path ? asset('storage/' . $this->avatar_path) : null;
+        return $this->avatar_path ? "/storage/" . $this->avatar_path : null;
     }
 
     /**
