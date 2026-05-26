@@ -24,12 +24,6 @@ class InvitationService
     private const CODE_LENGTH = 8;
 
     /**
-     * Nombre de tentatives max pour générer un code unique
-     * Évite une boucle infinie si tous les codes sont pris
-     */
-    private const MAX_ATTEMPTS = 10;
-
-    /**
      * Génère une invitation complète pour une partie
      * 
      * @param Partie $partie La partie à partager
@@ -64,13 +58,10 @@ class InvitationService
      * Facile à lire et à saisir manuellement
      * 
      * @return string Le code généré
-     * @throws \Exception Après MAX_ATTEMPTS échouées
      */
     private function genererCodeUnique(): string
     {
-        $attempts = 0;
-
-        do {
+        while (true) {
             // Génère 8 caractères alphanumériques majuscules
             $code = strtoupper(Str::random(self::CODE_LENGTH));
 
@@ -80,17 +71,11 @@ class InvitationService
             // Vérifie si ce code existe déjà en BDD
             $existe = Partie::where('code_liaison', $codeFormate)->exists();
 
-            $attempts++;
-
             // Si le code n'existe pas, on le retourne
             if (!$existe) {
                 return $codeFormate;
             }
-
-        } while ($attempts < self::MAX_ATTEMPTS);
-
-        // Si toutes les tentatives échouent (extrêmement rare), on ajoute un suffixe aléatoire plus long
-        return substr(strtoupper(Str::random(10)), 0, 4) . '-' . substr(strtoupper(Str::random(10)), 0, 4);
+        }
     }
 
     /**

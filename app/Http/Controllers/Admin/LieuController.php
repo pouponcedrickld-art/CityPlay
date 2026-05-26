@@ -135,7 +135,9 @@ class LieuController extends Controller
         if (!$query) return response()->json([]);
 
         try {
-            $response = \Illuminate\Support\Facades\Http::get('https://nominatim.openstreetmap.org/search', [
+            $response = \Illuminate\Support\Facades\Http::withHeaders([
+                'User-Agent' => 'CityPlay-App/1.0 (contact@cityplay.com)'
+            ])->get('https://nominatim.openstreetmap.org/search', [
                 'q' => $query,
                 'format' => 'json',
                 'limit' => 5,
