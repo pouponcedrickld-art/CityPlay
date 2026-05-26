@@ -1082,13 +1082,13 @@ onUnmounted(() => {
                         >
                             <!-- Avatar -->
                             <div class="flex-shrink-0">
-                                <div v-if="msg.user.full_avatar_url" 
+                                <div v-if="msg.user?.full_avatar_url" 
                                      class="w-8 h-8 rounded-full border-2 border-[var(--cave-border-dark)] overflow-hidden bg-white shadow-sm">
                                     <img :src="msg.user.full_avatar_url" class="w-full h-full object-cover" />
                                 </div>
                                 <div v-else 
                                      class="w-8 h-8 rounded-full border-2 border-[var(--cave-border-dark)] bg-[#D4C5B3] flex items-center justify-center text-xs font-bold text-[#4A3525] shadow-sm">
-                                    {{ msg.user.name.charAt(0) }}
+                                    {{ msg.user?.name?.charAt(0) || '?' }}
                                 </div>
                             </div>
 
@@ -1160,39 +1160,39 @@ onUnmounted(() => {
             >
                 <div class="space-y-3 py-2">
                     <div
-                        v-for="user in partie.team?.users"
-                        :key="user.id"
+                        v-for="member in partie.team?.users"
+                        :key="member.id"
                         class="flex items-center justify-between p-3 rounded-2xl border-2 border-[var(--cave-border-dark)] bg-white shadow-[0_4px_0_var(--cave-border-darker)]"
                         :class="{
                             'bg-[rgba(255,215,0,0.05)]':
-                                user.id === $page.props.auth.user.id,
+                                member.id === $page.props.auth.user.id,
                         }"
                     >
                         <div class="flex items-center gap-3">
-                            <div v-if="user.full_avatar_url" 
+                            <div v-if="member?.full_avatar_url" 
                                  class="w-10 h-10 rounded-xl border-2 border-[var(--cave-border-dark)] overflow-hidden bg-white shadow-sm">
-                                <img :src="user.full_avatar_url" class="w-full h-full object-cover" />
+                                <img :src="member.full_avatar_url" class="w-full h-full object-cover" />
                             </div>
                             <div v-else
                                 class="w-10 h-10 rounded-xl bg-[var(--cave-rock-light)] border-2 border-[var(--cave-border-dark)] flex items-center justify-center font-black shadow-sm"
                             >
-                                {{ user.name.charAt(0).toUpperCase() }}
+                                {{ member?.name?.charAt(0).toUpperCase() || '?' }}
                             </div>
                             <div>
                                 <p
                                     class="font-black text-sm uppercase leading-none"
                                 >
-                                    {{ user.name }}
+                                    {{ member?.name }}
                                 </p>
                                 <span
                                     class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border border-[var(--cave-border-dark)]"
                                     :class="
-                                        user.pivot.role === 'challenger'
+                                        member?.pivot?.role === 'challenger'
                                             ? 'bg-orange-100 text-orange-700'
                                             : 'bg-blue-100 text-blue-700'
                                     "
                                 >
-                                    {{ user.pivot.role }}
+                                    {{ member?.pivot?.role || 'participant' }}
                                 </span>
                             </div>
                         </div>
@@ -1203,7 +1203,7 @@ onUnmounted(() => {
                                 Score Global
                             </p>
                             <p class="text-sm font-black text-orange-600">
-                                {{ user.total_score || 0 }}
+                                {{ member?.total_score || 0 }}
                                 <span class="text-[10px]">pts</span>
                             </p>
                         </div>

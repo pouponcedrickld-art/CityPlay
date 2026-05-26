@@ -76,6 +76,8 @@ class Partie extends Model
     protected $casts = [
         'parametres' => 'array',
         'verrouillee' => 'boolean',
+        'lat_depart' => 'float',
+        'lng_depart' => 'float',
         'expire_at' => 'datetime',
         'started_at' => 'datetime',
         'ended_at' => 'datetime',

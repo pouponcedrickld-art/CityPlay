@@ -1,29 +1,42 @@
 <script setup>
 import { Link, useForm, usePage } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
 
 const props = defineProps({
     mustVerifyEmail: Boolean,
     status: String,
 });
 
-const user = usePage().props.auth.user;
+const page = usePage();
+// Utilisation d'un computed pour garder la réactivité sur l'utilisateur
+const user = computed(() => page.props.auth.user);
 
 const form = useForm({
     _method: 'patch',
-    name: user.name,
-    pseudo: user.pseudo || '',
-    email: user.email,
+    name: user.value.name,
+    pseudo: user.value.pseudo || '',
+    email: user.value.email,
     avatar: null,
 });
 
+const avatarPreview = ref(null);
+
 const onFileChange = (e) => {
-    form.avatar = e.target.files[0];
+    const file = e.target.files[0];
+    form.avatar = file;
+    if (file) {
+        avatarPreview.value = URL.createObjectURL(file);
+    }
 };
 
 const submit = () => {
     form.post(route('profile.update'), {
         preserveScroll: true,
         forceFormData: true,
+        onSuccess: () => {
+            form.avatar = null;
+            avatarPreview.value = null;
+        },
     });
 };
 </script>
@@ -38,9 +51,10 @@ const submit = () => {
         <form class="space-y-4" @submit.prevent="submit">
             <div class="flex flex-col items-center mb-4">
                 <div class="relative">
-                    <div v-if="user.avatar_path" 
+                    <!-- Priorité à la preview locale, puis à l'avatar stocké, puis aux initiales -->
+                    <div v-if="avatarPreview || user.avatar_path" 
                          class="w-24 h-24 rounded-full border-4 border-[#4A3525] overflow-hidden shadow-lg bg-white">
-                        <img :src="user.avatar_path" class="w-full h-full object-cover" />
+                        <img :src="avatarPreview || user.avatar_path" class="w-full h-full object-cover" />
                     </div>
                     <div v-else 
                          class="w-24 h-24 rounded-full border-4 border-[#4A3525] bg-[#D4C5B3] flex items-center justify-center text-4xl font-bold text-[#4A3525] shadow-lg">

@@ -74,6 +74,15 @@ watch(() => form.locomotion, () => {
     form.duree = estimatedTime.value;
 });
 
+// Sécurité pour le nombre de joueurs en mode équipe
+watch(() => form.mode, (newMode) => {
+    if (newMode === 'team' && form.nb_joueurs < 2) {
+        form.nb_joueurs = 2;
+    } else if (newMode === 'solo') {
+        form.nb_joueurs = 1;
+    }
+});
+
 const submit = () => {
     if (form.ordre_jeu === 'proximite' && "geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition((position) => {
@@ -131,8 +140,12 @@ const setTab = (tab) => {
         <div v-if="page.props.flash?.success" class="cave-flash cave-flash--success">
             <i class="pi pi-check-circle mr-2" />{{ page.props.flash.success }}
         </div>
-        <div v-if="form.errors.environnement_id" class="cave-flash cave-flash--error">
-            Veuillez sélectionner un parcours valide.
+        
+        <!-- Erreurs de validation groupées -->
+        <div v-if="Object.keys(form.errors).length > 0" class="cave-flash cave-flash--error">
+            <ul class="list-disc list-inside">
+                <li v-for="(error, field) in form.errors" :key="field">{{ error }}</li>
+            </ul>
         </div>
 
         <!-- REJOINDRE : code -->
