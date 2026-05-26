@@ -421,9 +421,27 @@ class PartieController extends Controller
 
     /**
      * Met la partie en pause ou la reprend
+     * Seul le créateur ou le chef d'équipe (challenger) peut mettre en pause.
      */
     public function pause(Partie $partie)
     {
+        $this->authorize('view', $partie);
+
+        // Vérification des droits : Créateur de la partie ou Challenger dans l'équipe
+        $isCreator = $partie->createur_id === auth()->id();
+        $isChallenger = false;
+
+        if ($partie->team) {
+            $isChallenger = $partie->team->users()
+                ->where('user_id', auth()->id())
+                ->where('role', 'challenger')
+                ->exists();
+        }
+
+        if (! $isCreator && ! $isChallenger) {
+            return back()->with('error', 'Seul le chef d\'équipe peut mettre la mission en pause.');
+        }
+
         $progression = $partie->progression;
         if (! $progression) {
             return back();

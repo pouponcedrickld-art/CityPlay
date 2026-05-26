@@ -656,10 +656,11 @@ onUnmounted(() => {
                             </div>
                             <h3 class="cave-section-title" style="font-size:0.7rem;margin:0">Radar de zone</h3>
                         </div>
-                        <button type="button" class="absolute bottom-2 right-2 z-10 cave-hud__btn"
-                            style="width:32px;height:32px;background:var(--cave-rock-light);color:var(--cave-border-dark);border:2px solid var(--cave-border-dark)"
+                        <button type="button" class="absolute bottom-2 right-2 z-10 cave-hud__btn flex items-center gap-2 px-3"
+                            style="width:auto;height:32px;background:var(--cave-rock-light);color:var(--cave-border-dark);border:2px solid var(--cave-border-dark);border-radius:12px"
                             @click="recenterMap">
-                            <i class="pi pi-crosshairs text-sm" />
+                            <i class="pi pi-crosshairs text-xs" />
+                            <span class="text-[9px] font-black uppercase tracking-tighter">Ma position</span>
                         </button>
                     </div>
 
