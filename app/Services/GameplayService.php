@@ -36,11 +36,17 @@ class GameplayService
      * - Crée la progression
      *
      * @param Partie $partie La partie à initialiser
+     * @param float|null $lat Latitude de départ
+     * @param float|null $lng Longitude de départ
      * @return ProgressionPartie La progression créée
      */
-    public function initialiserPartie(Partie $partie): ProgressionPartie
+    public function initialiserPartie(Partie $partie, ?float $lat = null, ?float $lng = null): ProgressionPartie
     {
-        \Log::info('GameplayService: Début initialisation progression', ['partie_id' => $partie->id]);
+        \Log::info('GameplayService: Début initialisation progression', [
+            'partie_id' => $partie->id,
+            'lat' => $lat,
+            'lng' => $lng
+        ]);
 
         // Récupère les paramètres de la partie
         $parametres = $partie->parametres;
@@ -51,7 +57,8 @@ class GameplayService
         \Log::info('GameplayService: Paramètres extraits', [
             'duree' => $dureeMinutes,
             'locomotion' => $locomotion,
-            'difficulte' => $difficulte
+            'difficulte' => $difficulte,
+            'ordre_jeu' => $partie->ordre_jeu
         ]);
 
         // === ÉTAPE 1 : Calcul du nombre d'énigmes ===
@@ -61,6 +68,15 @@ class GameplayService
         // === ÉTAPE 2 : Sélection des lieux ===
         $user = \App\Models\User::find($partie->createur_id);
         $lieux = $this->selectionnerLieux($partie->environnement_id, $nbEnigmes, $difficulte, $user);
+
+        // --- TRI PAR PROXIMITÉ (Point 6) ---
+        if ($partie->ordre_jeu === 'proximite' && $lat !== null && $lng !== null) {
+            \Log::info('GameplayService: Tri des lieux par proximité');
+            $lieux = $lieux->sortBy(function ($lieu) use ($lat, $lng) {
+                return $this->gpsService->calculerDistance($lat, $lng, $lieu->latitude, $lieu->longitude);
+            })->values();
+        }
+
         \Log::info('GameplayService: Lieux sélectionnés', ['count' => $lieux->count(), 'ids' => $lieux->pluck('id')]);
 
         if ($lieux->isEmpty()) {
@@ -255,6 +271,26 @@ class GameplayService
             return ['succes' => false, 'message' => 'La partie est terminée.'];
         }
 
+        // --- ANTI-TRICHE ---
+        if ($progression->last_lat && $progression->last_lng && $progression->last_validated_at) {
+            $distanceKm = $this->gpsService->calculerDistance($progression->last_lat, $progression->last_lng, $lat, $lng) / 1000;
+            $tempsHeures = now()->diffInSeconds($progression->last_validated_at) / 3600;
+            
+            if ($tempsHeures > 0) {
+                $vitesse = $distanceKm / $tempsHeures;
+                if ($vitesse > 120) {
+                    \Log::warning('ANTI-TRICHE: Vitesse suspecte détectée', [
+                        'user_id' => auth()->id(),
+                        'partie_id' => $partie->id,
+                        'vitesse' => $vitesse,
+                        'distance_km' => $distanceKm,
+                        'temps_heures' => $tempsHeures
+                    ]);
+                    return ['succes' => false, 'message' => 'Vitesse de déplacement incohérente détectée. Validation bloquée par sécurité.'];
+                }
+            }
+        }
+
         // Récupère le lieu de l'énigme courante
         $enigme = $progression->enigmeCourante;
         if (!$enigme) {
@@ -274,6 +310,14 @@ class GameplayService
         // Si succès, marque l'énigme comme résolue et crédite les points
         if ($resultat['succes']) {
             $pointsGagnes = $progression->resoudreEnigmeCourante();
+            
+            // Mise à jour des infos anti-triche
+            $progression->update([
+                'last_lat' => $lat,
+                'last_lng' => $lng,
+                'last_validated_at' => now(),
+            ]);
+
             $progression->refresh();
 
             $aSuivante = $progression->passerEnigmeSuivante();

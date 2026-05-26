@@ -78,6 +78,9 @@ class PartieService
             'createur_id' => $createurId,
             'team_id' => $teamId,
             'mode' => $data['mode'],
+            'ordre_jeu' => $data['ordre_jeu'] ?? 'lineaire',
+            'lat_depart' => $data['lat_depart'] ?? null,
+            'lng_depart' => $data['lng_depart'] ?? null,
             'parametres' => [
                 'duree' => $data['duree'],
                 'locomotion' => $data['locomotion'],

@@ -360,6 +360,9 @@ class PartieController extends Controller
                 'locomotion' => 'required|in:pied,velo,voiture,moto',
                 'difficulte' => 'required|integer|between:1,3',
                 'nb_joueurs' => 'required|integer|between:1,10',
+                'ordre_jeu' => 'nullable|in:lineaire,proximite',
+                'latitude' => 'nullable|numeric',
+                'longitude' => 'nullable|numeric',
             ]);
 
             \Log::info('Validation réussie', $validated);
@@ -371,6 +374,9 @@ class PartieController extends Controller
                 'locomotion' => $validated['locomotion'],
                 'difficulte' => $validated['difficulte'],
                 'nb_joueurs' => $validated['nb_joueurs'],
+                'ordre_jeu' => $validated['ordre_jeu'] ?? 'lineaire',
+                'lat_depart' => $validated['latitude'] ?? null,
+                'lng_depart' => $validated['longitude'] ?? null,
             ];
 
             $partie = $this->partieService->creerPartie($data, auth()->id());
@@ -421,9 +427,27 @@ class PartieController extends Controller
 
     /**
      * Met la partie en pause ou la reprend
+     * Seul le créateur ou le chef d'équipe (challenger) peut mettre en pause.
      */
     public function pause(Partie $partie)
     {
+        $this->authorize('view', $partie);
+
+        // Vérification des droits : Créateur de la partie ou Challenger dans l'équipe
+        $isCreator = $partie->createur_id === auth()->id();
+        $isChallenger = false;
+
+        if ($partie->team) {
+            $isChallenger = $partie->team->users()
+                ->where('user_id', auth()->id())
+                ->where('role', 'challenger')
+                ->exists();
+        }
+
+        if (! $isCreator && ! $isChallenger) {
+            return back()->with('error', 'Seul le chef d\'équipe peut mettre la mission en pause.');
+        }
+
         $progression = $partie->progression;
         if (! $progression) {
             return back();

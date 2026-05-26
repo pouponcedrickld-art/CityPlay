@@ -35,6 +35,8 @@ class User extends Authenticatable
         'is_admin',
         'keep_account',
         'total_score',
+        'balance_coins',
+        'avatar_path',
     ];
 
     /**
@@ -62,6 +64,16 @@ class User extends Authenticatable
     ];
 
     /**
+     * URL complète de l'avatar.
+     */
+    protected $appends = ['full_avatar_url'];
+
+    public function getFullAvatarUrlAttribute()
+    {
+        return $this->avatar_path ? asset('storage/' . $this->avatar_path) : null;
+    }
+
+    /**
      * Équipes auxquelles appartient l'utilisateur.
      * Relation Many-to-Many avec pivot pour le rôle (Challenger/Participant).
      */
@@ -86,6 +98,11 @@ class User extends Authenticatable
     public function parties()
     {
         return $this->hasMany(Partie::class, 'createur_id');
+    }
+
+    public function joinRequests()
+    {
+        return $this->hasMany(TeamJoinRequest::class);
     }
 
     /**

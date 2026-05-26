@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\User;
+use App\Services\GamingService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -35,6 +37,9 @@ class ProgressionPartie extends Model
         'temps_restant',       // Temps en secondes
         'score',               // Score actuel
         'statut',              // en_cours / pause / terminee
+        'last_lat',
+        'last_lng',
+        'last_validated_at',
     ];
 
     /**
@@ -191,11 +196,14 @@ class ProgressionPartie extends Model
         $partie = $this->partie;
         if (!$partie) return;
 
+        $gamingService = app(GamingService::class);
+
         if ($partie->mode === 'solo') {
             // Solo : Tous les points au créateur
             $user = User::find($partie->createur_id);
             if ($user) {
                 $user->increment('total_score', $points);
+                $gamingService->awardCoinsFromPoints($user, $points);
             }
         } elseif ($partie->mode === 'team' && $partie->team) {
             // Team : Logique Participant vs Challenger
@@ -207,11 +215,12 @@ class ProgressionPartie extends Model
                 if ($role === 'participant') {
                     // Participant : Reçoit les points (partagés par tous les participants)
                     $user->increment('total_score', $points);
+                    $gamingService->awardCoinsFromPoints($user, $points);
                 } elseif ($role === 'challenger') {
                     // Challenger : Reçoit les points seulement s'il est l'auteur de l'action
-                    // NOTE: Pour l'instant, l'auteur est auth()->id()
                     if (auth()->id() === $user->id) {
                         $user->increment('total_score', $points);
+                        $gamingService->awardCoinsFromPoints($user, $points);
                     }
                 }
             }

@@ -60,4 +60,12 @@ class Team extends Model
     {
         return $this->hasMany(TeamMessage::class);
     }
+
+    /**
+     * Demandes d'adhésion en attente pour cette équipe.
+     */
+    public function joinRequests()
+    {
+        return $this->hasMany(TeamJoinRequest::class);
+    }
 }

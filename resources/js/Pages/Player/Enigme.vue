@@ -888,6 +888,7 @@ onUnmounted(() => {
                                 Radar de zone
                             </h3>
                         </div>
+
                         <button
                             type="button"
                             class="absolute bottom-2 right-2 z-10 cave-hud__btn"
@@ -901,6 +902,13 @@ onUnmounted(() => {
                             @click="recenterMap"
                         >
                             <i class="pi pi-crosshairs text-sm" />
+
+                        <button type="button" class="absolute bottom-2 right-2 z-10 cave-hud__btn flex items-center gap-2 px-3"
+                            style="width:auto;height:32px;background:var(--cave-rock-light);color:var(--cave-border-dark);border:2px solid var(--cave-border-dark);border-radius:12px"
+                            @click="recenterMap">
+                            <i class="pi pi-crosshairs text-xs" />
+                            <span class="text-[9px] font-black uppercase tracking-tighter">Ma position</span>
+
                         </button>
                     </div>
 
@@ -1065,34 +1073,54 @@ onUnmounted(() => {
                         <div
                             v-for="msg in messages"
                             :key="msg.id"
-                            class="flex flex-col"
+                            class="flex gap-3 mb-4"
                             :class="
                                 msg.user_id === $page.props.auth.user.id
-                                    ? 'items-end'
-                                    : 'items-start'
+                                    ? 'flex-row-reverse'
+                                    : 'flex-row'
                             "
                         >
-                            <div class="flex items-center gap-2 mb-1">
-                                <span
-                                    class="text-[9px] font-black uppercase opacity-60"
-                                    >{{ msg.user.name }}</span
-                                >
-                                <span class="text-[8px] opacity-40">{{
-                                    new Date(msg.created_at).toLocaleTimeString(
-                                        [],
-                                        { hour: "2-digit", minute: "2-digit" },
-                                    )
-                                }}</span>
+                            <!-- Avatar -->
+                            <div class="flex-shrink-0">
+                                <div v-if="msg.user.full_avatar_url" 
+                                     class="w-8 h-8 rounded-full border-2 border-[var(--cave-border-dark)] overflow-hidden bg-white shadow-sm">
+                                    <img :src="msg.user.full_avatar_url" class="w-full h-full object-cover" />
+                                </div>
+                                <div v-else 
+                                     class="w-8 h-8 rounded-full border-2 border-[var(--cave-border-dark)] bg-[#D4C5B3] flex items-center justify-center text-xs font-bold text-[#4A3525] shadow-sm">
+                                    {{ msg.user.name.charAt(0) }}
+                                </div>
                             </div>
-                            <div
-                                class="px-4 py-2 rounded-2xl max-w-[85%] text-sm font-medium border-2"
+
+                            <div class="flex flex-col"
                                 :class="
                                     msg.user_id === $page.props.auth.user.id
-                                        ? 'bg-[var(--cave-gold)] border-[var(--cave-gold-dark)] text-[var(--cave-border-dark)] rounded-tr-none shadow-[3px_3px_0_var(--cave-gold-dark)]'
-                                        : 'bg-white border-[var(--cave-border-dark)] text-[var(--cave-border-dark)] rounded-tl-none shadow-[3px_3px_0_var(--cave-border-darker)]'
+                                        ? 'items-end'
+                                        : 'items-start'
                                 "
                             >
-                                {{ msg.content }}
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span
+                                        class="text-[9px] font-black uppercase opacity-60"
+                                        >{{ msg.user.name }}</span
+                                    >
+                                    <span class="text-[8px] opacity-40">{{
+                                        new Date(msg.created_at).toLocaleTimeString(
+                                            [],
+                                            { hour: "2-digit", minute: "2-digit" },
+                                        )
+                                    }}</span>
+                                </div>
+                                <div
+                                    class="px-4 py-2 rounded-2xl max-w-[85%] text-sm font-medium border-2"
+                                    :class="
+                                        msg.user_id === $page.props.auth.user.id
+                                            ? 'bg-[var(--cave-gold)] border-[var(--cave-gold-dark)] text-[var(--cave-border-dark)] rounded-tr-none shadow-[3px_3px_0_var(--cave-gold-dark)]'
+                                            : 'bg-white border-[var(--cave-border-dark)] text-[var(--cave-border-dark)] rounded-tl-none shadow-[3px_3px_0_var(--cave-border-darker)]'
+                                    "
+                                >
+                                    {{ msg.content }}
+                                </div>
                             </div>
                         </div>
                         <div
@@ -1141,8 +1169,12 @@ onUnmounted(() => {
                         }"
                     >
                         <div class="flex items-center gap-3">
-                            <div
-                                class="w-10 h-10 rounded-xl bg-[var(--cave-rock-light)] border-2 border-[var(--cave-border-dark)] flex items-center justify-center font-black"
+                            <div v-if="user.full_avatar_url" 
+                                 class="w-10 h-10 rounded-xl border-2 border-[var(--cave-border-dark)] overflow-hidden bg-white shadow-sm">
+                                <img :src="user.full_avatar_url" class="w-full h-full object-cover" />
+                            </div>
+                            <div v-else
+                                class="w-10 h-10 rounded-xl bg-[var(--cave-rock-light)] border-2 border-[var(--cave-border-dark)] flex items-center justify-center font-black shadow-sm"
                             >
                                 {{ user.name.charAt(0).toUpperCase() }}
                             </div>

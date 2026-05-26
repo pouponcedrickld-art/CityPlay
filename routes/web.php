@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TeamJoinRequestController;
 use App\Http\Controllers\Admin\EnigmeController;
 use App\Http\Controllers\Admin\EnvironnementController;
 use App\Http\Controllers\Admin\LieuController as AdminLieuController;
@@ -70,6 +71,13 @@ Route::middleware('auth')->group(function () {
         // Chat d'équipe (WebSockets via Reverb)
         Route::get('/teams/{team}/messages', [ChatController::class, 'getMessages'])->name('chat.messages');
         Route::post('/teams/{team}/messages', [ChatController::class, 'sendMessage'])->name('chat.send');
+
+        // Système d'adhésion aux équipes
+        Route::get('/teams/discover', [TeamJoinRequestController::class, 'discover'])->name('teams.discover');
+        Route::post('/teams/{team}/join', [TeamJoinRequestController::class, 'store'])->name('teams.join');
+        Route::get('/teams/requests', [TeamJoinRequestController::class, 'index'])->name('teams.requests.index');
+        Route::post('/teams/requests/{request}/accept', [TeamJoinRequestController::class, 'accept'])->name('teams.requests.accept');
+        Route::post('/teams/requests/{request}/reject', [TeamJoinRequestController::class, 'reject'])->name('teams.requests.reject');
 
         // Gestion des Parties
         Route::post('/parties/rejoindre', [PartieController::class, 'rejoindre'])->name('parties.rejoindre.form');

@@ -17,18 +17,49 @@
                     {{ $page.props.auth.user.total_score || 0 }} <span class="star">pts</span>
                 </span>
             </div>
+            <div class="w-px h-8 bg-white/20 mx-2"></div>
+            <div class="flex flex-col items-center">
+                <span class="cave-lives-label">CityCoins</span>
+                <span class="cave-score-value" style="color: #FFD700;">
+                    {{ $page.props.auth.user.balance_coins || 0 }} <span class="star">🪙</span>
+                </span>
+            </div>
         </div>
 
         <h2 class="cave-section-title">Camp de base</h2>
-        <p class="text-center text-sm font-bold mb-4" style="color: var(--cave-border-dark); opacity: 0.75">
-            Bonjour, <strong>{{ $page.props.auth.user.name }}</strong> !
-        </p>
+        <div class="flex flex-col items-center mb-6">
+            <div class="relative mb-3">
+                <div v-if="$page.props.auth.user.avatar_path" 
+                     class="w-20 h-20 rounded-full border-4 border-[#4A3525] overflow-hidden shadow-lg bg-white">
+                    <img :src="$page.props.auth.user.avatar_path" class="w-full h-full object-cover" />
+                </div>
+                <div v-else 
+                     class="w-20 h-20 rounded-full border-4 border-[#4A3525] bg-[#D4C5B3] flex items-center justify-center text-3xl font-bold text-[#4A3525] shadow-lg">
+                    {{ $page.props.auth.user.name.charAt(0) }}
+                </div>
+                <Link :href="route('profile.edit')" 
+                      class="absolute bottom-0 right-0 w-8 h-8 bg-[#FF9500] border-2 border-[#4A3525] rounded-full flex items-center justify-center text-white shadow-md hover:scale-110 transition-transform">
+                    <i class="pi pi-pencil text-xs" />
+                </Link>
+            </div>
+            <p class="text-center text-sm font-bold" style="color: var(--cave-border-dark); opacity: 0.75">
+                Bonjour, <strong>{{ $page.props.auth.user.name }}</strong> !
+            </p>
+        </div>
 
         <!-- Boutons principaux (stack pierre) -->
         <div class="cave-btn-stack mb-6">
             <Link :href="route('parties.web.create')" class="cave-btn" style="text-decoration:none">
                 <i class="cave-btn__icon pi pi-play" />
                 <span class="cave-btn__label">Nouvelle aventure</span>
+            </Link>
+            <Link :href="route('teams.discover')" class="cave-btn cave-btn--survival" style="text-decoration:none">
+                <i class="cave-btn__icon pi pi-search" />
+                <span class="cave-btn__label">Trouver une équipe</span>
+            </Link>
+            <Link v-if="$page.props.auth.user.created_teams_count > 0" :href="route('teams.requests.index')" class="cave-btn cave-btn--survival" style="text-decoration:none">
+                <i class="cave-btn__icon pi pi-bell" />
+                <span class="cave-btn__label">Demandes d'adhésion</span>
             </Link>
             <Link
                 :href="route('parties.web.create') + '?tab=join'"

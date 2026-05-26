@@ -33,7 +33,7 @@ class ProgressionController extends Controller
      *
      * Gère l'initialisation de la progression si c'est le début de la partie.
      */
-    public function getCurrentEnigme(Partie $partie)
+    public function getCurrentEnigme(Request $request, Partie $partie)
     {
         try {
             // 1. Sécurité : Une partie terminée ne doit plus être jouée
@@ -46,7 +46,11 @@ class ProgressionController extends Controller
 
             // 2. Initialisation si première visite
             if (!$progression) {
-                $progression = $this->gameplayService->initialiserPartie($partie);
+                $progression = $this->gameplayService->initialiserPartie(
+                    $partie,
+                    $partie->lat_depart ? (float) $partie->lat_depart : ($request->latitude ? (float) $request->latitude : null),
+                    $partie->lng_depart ? (float) $partie->lng_depart : ($request->longitude ? (float) $request->longitude : null)
+                );
             }
 
             // 3. Vérification si la progression vient d'être terminée (après init ou skip)

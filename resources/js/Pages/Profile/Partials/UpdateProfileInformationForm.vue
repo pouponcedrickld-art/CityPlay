@@ -9,21 +9,55 @@ const props = defineProps({
 const user = usePage().props.auth.user;
 
 const form = useForm({
+    _method: 'patch',
     name: user.name,
+    pseudo: user.pseudo || '',
     email: user.email,
+    avatar: null,
 });
+
+const onFileChange = (e) => {
+    form.avatar = e.target.files[0];
+};
+
+const submit = () => {
+    form.post(route('profile.update'), {
+        preserveScroll: true,
+        forceFormData: true,
+    });
+};
 </script>
 
 <template>
     <section class="cave-profile-section">
         <h3 class="cave-profile-section__title">Informations personnelles</h3>
         <p class="cave-profile-section__desc">
-            Mettez à jour votre nom et votre adresse e-mail.
+            Mettez à jour vos informations de profil.
         </p>
 
-        <form class="space-y-1" @submit.prevent="form.patch(route('profile.update'))">
+        <form class="space-y-4" @submit.prevent="submit">
+            <div class="flex flex-col items-center mb-4">
+                <div class="relative">
+                    <div v-if="user.avatar_path" 
+                         class="w-24 h-24 rounded-full border-4 border-[#4A3525] overflow-hidden shadow-lg bg-white">
+                        <img :src="user.avatar_path" class="w-full h-full object-cover" />
+                    </div>
+                    <div v-else 
+                         class="w-24 h-24 rounded-full border-4 border-[#4A3525] bg-[#D4C5B3] flex items-center justify-center text-4xl font-bold text-[#4A3525] shadow-lg">
+                        {{ user.name.charAt(0) }}
+                    </div>
+                    <label for="avatar" 
+                           class="absolute bottom-0 right-0 w-8 h-8 bg-[#FF9500] border-2 border-[#4A3525] rounded-full flex items-center justify-center text-white shadow-md cursor-pointer hover:scale-110 transition-transform">
+                        <i class="pi pi-camera text-xs" />
+                        <input id="avatar" type="file" class="hidden" @change="onFileChange" accept="image/*" />
+                    </label>
+                </div>
+                <p class="text-[10px] text-[#4A3525]/60 mt-2 uppercase font-bold">Changer d'avatar</p>
+                <span v-if="form.errors.avatar" class="cave-field-error">{{ form.errors.avatar }}</span>
+            </div>
+
             <div class="cave-field">
-                <label for="name" class="cave-field-label">Nom</label>
+                <label for="name" class="cave-field-label">Nom complet</label>
                 <input
                     id="name"
                     v-model="form.name"
@@ -34,6 +68,19 @@ const form = useForm({
                     autocomplete="name"
                 />
                 <span v-if="form.errors.name" class="cave-field-error">{{ form.errors.name }}</span>
+            </div>
+
+            <div class="cave-field">
+                <label for="pseudo" class="cave-field-label">Pseudo (Gaming)</label>
+                <input
+                    id="pseudo"
+                    v-model="form.pseudo"
+                    type="text"
+                    class="cave-field-input"
+                    placeholder="Votre pseudo"
+                    autocomplete="nickname"
+                />
+                <span v-if="form.errors.pseudo" class="cave-field-error">{{ form.errors.pseudo }}</span>
             </div>
 
             <div class="cave-field">

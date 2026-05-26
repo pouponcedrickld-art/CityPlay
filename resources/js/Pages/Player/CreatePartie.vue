@@ -29,7 +29,15 @@ const form = useForm({
     locomotion: 'pied',
     difficulte: 2,
     nb_joueurs: 1,
+    ordre_jeu: 'lineaire',
+    latitude: null,
+    longitude: null,
 });
+
+const orders = [
+    { label: 'Linéaire', value: 'lineaire', icon: 'pi pi-sort-amount-down' },
+    { label: 'Proximité', value: 'proximite', icon: 'pi pi-map-marker' },
+];
 
 const modes = [
     { label: 'Solo', value: 'solo', icon: 'pi pi-user' },
@@ -67,9 +75,25 @@ watch(() => form.locomotion, () => {
 });
 
 const submit = () => {
-    form.post(route('parties.web.store'), {
-        onSuccess: () => { showConfig.value = false; },
-    });
+    if (form.ordre_jeu === 'proximite' && "geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition((position) => {
+            form.latitude = position.coords.latitude;
+            form.longitude = position.coords.longitude;
+            form.post(route('parties.web.store'), {
+                onSuccess: () => { showConfig.value = false; },
+            });
+        }, (error) => {
+            console.warn("Geolocation failed, falling back to linear", error);
+            form.ordre_jeu = 'lineaire';
+            form.post(route('parties.web.store'), {
+                onSuccess: () => { showConfig.value = false; },
+            });
+        }, { timeout: 5000 });
+    } else {
+        form.post(route('parties.web.store'), {
+            onSuccess: () => { showConfig.value = false; },
+        });
+    }
 };
 
 const submitJoin = () => {
@@ -235,6 +259,18 @@ const setTab = (tab) => {
                             :class="{ 'cave-tab--active': form.difficulte === d.value }"
                             @click="form.difficulte = d.value">
                             {{ d.label }}
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <span class="cave-config-label">Ordre de jeu</span>
+                    <div class="cave-tabs">
+                        <button v-for="o in orders" :key="o.value" type="button" class="cave-tab"
+                            :class="{ 'cave-tab--active': form.ordre_jeu === o.value }"
+                            @click="form.ordre_jeu = o.value">
+                            <i :class="o.icon" class="cave-tab-icon" />
+                            {{ o.label }}
                         </button>
                     </div>
                 </div>
